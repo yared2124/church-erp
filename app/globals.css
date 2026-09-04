@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply bg-background text-text-primary font-sans text-body;
+  }
+  *:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-primary;
+  }
+  [lang="am"] {
+    @apply font-ethiopic;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      #e5e7eb 0px,
+      #eef0f4 40px,
+      #e5e7eb 80px
+    );
+    background-size: 800px 100%;
+  }
+}

@@ -1,0 +1,734 @@
+// ============================================================
+// Birhane Genet St. Mary Church — ERP database schema
+// PostgreSQL via Prisma. This is the single source of truth for
+// application data — no module should read from data/*.ts mock
+// files once its API routes are wired up.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ------------------------------------------------------------
+// Identity, roles, and access control
+// ------------------------------------------------------------
+
+enum UserStatus {
+  Active
+  Inactive
+  Locked
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  phone         String?
+  status        UserStatus @default(Active)
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  roles                UserRole[]
+  sessions             Session[]
+  accounts             Account[]
+  confessorFor         Member[]              @relation("ConfessorPriest")
+  registeredSacraments Sacrament[]           @relation("SacramentRegisteredBy")
+  presidedSacraments   Sacrament[]           @relation("SacramentPriest")
+  generatedReports     GeneratedReport[]     @relation("ReportGeneratedBy")
+  importJobs           ImportJob[]           @relation("ImportJobCreatedBy")
+  createdTransactions  Transaction[]         @relation("TransactionCreatedBy")
+  auditLogs            AuditLog[]
+  employee             Employee?
+  requestedCertificates CertificateRequest[] @relation("CertificateRequestedBy")
+  stockMovements       StockMovement[]       @relation("StockMovementCreatedBy")
+  updatedSettings      SystemSetting[]       @relation("SettingUpdatedBy")
+
+  @@index([status])
+}
+
+model Role {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String?
+
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String @id @default(cuid())
+  key         String @unique
+  description String?
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+// Auth.js required models (Prisma adapter)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ------------------------------------------------------------
+// Members & Families
+// ------------------------------------------------------------
+
+enum FamilyStatus {
+  Active
+  Inactive
+}
+
+enum SebekaStatus {
+  Paid
+  Partial
+  Unpaid
+  Overdue
+}
+
+model Family {
+  id               String       @id @default(cuid())
+  name             String
+  address          String?
+  phone            String?
+  registrationDate DateTime     @default(now())
+  sebekaStatus     SebekaStatus @default(Unpaid)
+  status           FamilyStatus @default(Active)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  members        Member[]
+  familyPayments FamilyPayment[]
+  sacraments     Sacrament[]
+
+  @@index([status])
+  @@index([sebekaStatus])
+}
+
+enum Gender {
+  Male
+  Female
+}
+
+enum MemberStatus {
+  Active
+  Inactive
+  Transferred
+  Deceased
+}
+
+enum FamilyRole {
+  Head
+  Wife
+  Husband
+  Son
+  Daughter
+}
+
+model Member {
+  id               String       @id @default(cuid())
+  familyId         String
+  firstName        String
+  middleName       String?
+  lastName         String
+  gender           Gender
+  dateOfBirth      DateTime
+  phone            String?
+  email            String?
+  roleInFamily     FamilyRole
+  status           MemberStatus @default(Active)
+  confessorPriestId String?
+  baptizedDate     DateTime?
+  membershipDate   DateTime     @default(now())
+  address          String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  family              Family               @relation(fields: [familyId], references: [id], onDelete: Restrict)
+  confessorPriest     User?                @relation("ConfessorPriest", fields: [confessorPriestId], references: [id])
+  sacramentsAsPrimary   Sacrament[]        @relation("SacramentPrimaryMember")
+  sacramentsAsSecondary Sacrament[]        @relation("SacramentSecondaryMember")
+  certificateRequests CertificateRequest[]
+
+  @@index([familyId])
+  @@index([status])
+  @@index([email])
+}
+
+model FamilyPayment {
+  id              String        @id @default(cuid())
+  familyId        String
+  year            Int
+  expectedAmount  Decimal       @db.Decimal(12, 2)
+  paidAmount      Decimal       @default(0) @db.Decimal(12, 2)
+  paymentDate     DateTime?
+  paymentMethod   PaymentMethod?
+  status          SebekaStatus  @default(Unpaid)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  family Family @relation(fields: [familyId], references: [id], onDelete: Restrict)
+
+  @@unique([familyId, year])
+  @@index([status])
+  @@index([year])
+}
+
+// ------------------------------------------------------------
+// Sacraments
+// ------------------------------------------------------------
+
+enum SacramentType {
+  Baptism
+  Marriage
+  Burial
+}
+
+enum SacramentStatus {
+  Pending
+  Approved
+  Rejected
+}
+
+model Sacrament {
+  id                String          @id @default(cuid())
+  type              SacramentType
+  primaryMemberId   String
+  secondaryMemberId String?
+  familyId          String?
+  date              DateTime
+  priestId          String?
+  church            String          @default("St. Mary Church")
+  status            SacramentStatus @default(Pending)
+  notes             String?
+  registeredById    String
+  createdAt         DateTime        @default(now())
+
+  primaryMember   Member     @relation("SacramentPrimaryMember", fields: [primaryMemberId], references: [id])
+  secondaryMember Member?    @relation("SacramentSecondaryMember", fields: [secondaryMemberId], references: [id])
+  family          Family?    @relation(fields: [familyId], references: [id])
+  priest          User?      @relation("SacramentPriest", fields: [priestId], references: [id])
+  registeredBy    User       @relation("SacramentRegisteredBy", fields: [registeredById], references: [id])
+  sponsors        SacramentSponsor[]
+
+  @@index([type])
+  @@index([status])
+  @@index([date])
+}
+
+model SacramentSponsor {
+  id          String @id @default(cuid())
+  sacramentId String
+  name        String
+  relation    String
+
+  sacrament Sacrament @relation(fields: [sacramentId], references: [id], onDelete: Cascade)
+
+  @@index([sacramentId])
+}
+
+// ------------------------------------------------------------
+// Financial Management
+// ------------------------------------------------------------
+
+enum TransactionType {
+  Income
+  Expense
+}
+
+enum TransactionStatus {
+  Paid
+  Pending
+  Approved
+  Rejected
+}
+
+enum PaymentMethod {
+  Cash
+  BankTransfer
+  MobileMoney
+}
+
+model FinanceAccount {
+  id             String   @id @default(cuid())
+  name           String
+  openingBalance Decimal  @default(0) @db.Decimal(14, 2)
+  currentBalance Decimal  @default(0) @db.Decimal(14, 2)
+  createdAt      DateTime @default(now())
+
+  transactions Transaction[]
+}
+
+model TransactionCategory {
+  id   String          @id @default(cuid())
+  name String          @unique
+  type TransactionType
+
+  transactions Transaction[]
+}
+
+model Transaction {
+  id              String             @id @default(cuid())
+  accountId       String
+  categoryId      String
+  type            TransactionType
+  description     String
+  amount          Decimal            @db.Decimal(12, 2)
+  paymentMethod   PaymentMethod
+  status          TransactionStatus  @default(Pending)
+  createdById     String
+  transactionDate DateTime           @default(now())
+  createdAt       DateTime           @default(now())
+
+  account   FinanceAccount       @relation(fields: [accountId], references: [id])
+  category  TransactionCategory  @relation(fields: [categoryId], references: [id])
+  createdBy User                 @relation("TransactionCreatedBy", fields: [createdById], references: [id])
+
+  @@index([transactionDate])
+  @@index([type])
+  @@index([status])
+}
+
+// ------------------------------------------------------------
+// Property & Rentals
+// ------------------------------------------------------------
+
+enum PropertyType {
+  House
+  Shop
+  Office
+  Storage
+}
+
+enum PropertyStatus {
+  Occupied
+  Vacant
+}
+
+model Property {
+  id          String         @id @default(cuid())
+  unitName    String
+  type        PropertyType
+  monthlyRent Decimal        @db.Decimal(10, 2)
+  status      PropertyStatus @default(Vacant)
+  createdAt   DateTime       @default(now())
+
+  leaseAgreements     LeaseAgreement[]
+  maintenanceRequests MaintenanceRequest[]
+
+  @@index([status])
+  @@index([type])
+}
+
+model Tenant {
+  id    String  @id @default(cuid())
+  name  String
+  phone String?
+  email String?
+
+  leaseAgreements LeaseAgreement[]
+}
+
+enum LeaseStatus {
+  Active
+  Expired
+  Terminated
+}
+
+model LeaseAgreement {
+  id          String      @id @default(cuid())
+  propertyId  String
+  tenantId    String
+  startDate   DateTime
+  endDate     DateTime
+  monthlyRent Decimal     @db.Decimal(10, 2)
+  status      LeaseStatus @default(Active)
+
+  property     Property      @relation(fields: [propertyId], references: [id])
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  rentPayments RentPayment[]
+
+  @@index([propertyId])
+  @@index([tenantId])
+  @@index([status])
+}
+
+enum RentPaymentStatus {
+  Paid
+  Pending
+  Overdue
+}
+
+model RentPayment {
+  id               String            @id @default(cuid())
+  leaseAgreementId String
+  amount           Decimal           @db.Decimal(10, 2)
+  paymentDate      DateTime?
+  paymentMethod    PaymentMethod?
+  status           RentPaymentStatus @default(Pending)
+  createdAt        DateTime          @default(now())
+
+  leaseAgreement LeaseAgreement @relation(fields: [leaseAgreementId], references: [id])
+
+  @@index([leaseAgreementId])
+  @@index([status])
+}
+
+enum MaintenancePriority {
+  Low
+  Medium
+  Urgent
+}
+
+enum MaintenanceStatus {
+  Scheduled
+  InProgress
+  Completed
+}
+
+model MaintenanceRequest {
+  id         String              @id @default(cuid())
+  propertyId String
+  issue      String
+  priority   MaintenancePriority @default(Medium)
+  status     MaintenanceStatus   @default(Scheduled)
+  createdAt  DateTime            @default(now())
+
+  property Property @relation(fields: [propertyId], references: [id])
+
+  @@index([propertyId])
+  @@index([status])
+}
+
+// ------------------------------------------------------------
+// Assets & Inventory
+// ------------------------------------------------------------
+
+model InventoryCategory {
+  id   String @id @default(cuid())
+  name String @unique
+
+  items InventoryItem[]
+}
+
+enum StockStatus {
+  InStock
+  LowStock
+  OutOfStock
+}
+
+model InventoryItem {
+  id         String      @id @default(cuid())
+  categoryId String
+  name       String
+  quantity   Int         @default(0)
+  unitPrice  Decimal     @db.Decimal(10, 2)
+  location   String?
+  status     StockStatus @default(InStock)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  category       InventoryCategory @relation(fields: [categoryId], references: [id])
+  stockMovements StockMovement[]
+
+  @@index([categoryId])
+  @@index([status])
+}
+
+enum MovementType {
+  In
+  Out
+}
+
+model StockMovement {
+  id            String       @id @default(cuid())
+  itemId        String
+  changeQty     Int
+  movementType  MovementType
+  reason        String?
+  createdById   String
+  createdAt     DateTime     @default(now())
+
+  item      InventoryItem @relation(fields: [itemId], references: [id])
+  createdBy User          @relation("StockMovementCreatedBy", fields: [createdById], references: [id])
+
+  @@index([itemId])
+}
+
+model Supplier {
+  id    String  @id @default(cuid())
+  name  String
+  phone String?
+  email String?
+}
+
+// ------------------------------------------------------------
+// Employees
+// ------------------------------------------------------------
+
+enum EmploymentType {
+  FullTime
+  PartTime
+  Contract
+  Volunteer
+}
+
+enum EmployeeStatus {
+  Active
+  OnLeave
+  Departed
+}
+
+model Employee {
+  id             String         @id @default(cuid())
+  userId         String?        @unique
+  fullName       String
+  department     String
+  position       String
+  phone          String?
+  email          String?
+  employmentType EmploymentType @default(FullTime)
+  status         EmployeeStatus @default(Active)
+  joinDate       DateTime       @default(now())
+  createdAt      DateTime       @default(now())
+
+  user          User?          @relation(fields: [userId], references: [id])
+  leaveRequests LeaveRequest[]
+
+  @@index([department])
+  @@index([status])
+}
+
+enum LeaveStatus {
+  Approved
+  Pending
+  Rejected
+}
+
+model LeaveRequest {
+  id         String      @id @default(cuid())
+  employeeId String
+  startDate  DateTime
+  endDate    DateTime
+  status     LeaveStatus @default(Pending)
+  reason     String?
+  createdAt  DateTime    @default(now())
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+
+  @@index([employeeId])
+  @@index([status])
+}
+
+// ------------------------------------------------------------
+// Certificate Requests
+// ------------------------------------------------------------
+
+enum CertificateType {
+  Baptism
+  Marriage
+  Burial
+}
+
+enum CertificateStatus {
+  Pending
+  Approved
+  Rejected
+  Issued
+}
+
+model CertificateRequest {
+  id           String            @id @default(cuid())
+  memberId     String
+  type         CertificateType
+  requestedById String
+  status       CertificateStatus @default(Pending)
+  purpose      String?
+  notes        String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  member      Member @relation(fields: [memberId], references: [id])
+  requestedBy User   @relation("CertificateRequestedBy", fields: [requestedById], references: [id])
+
+  @@index([status])
+  @@index([memberId])
+}
+
+// ------------------------------------------------------------
+// Church History
+// ------------------------------------------------------------
+
+enum HistoryEntryType {
+  Milestone
+  Event
+}
+
+model HistoryEntry {
+  id          String           @id @default(cuid())
+  year        Int
+  title       String
+  description String
+  type        HistoryEntryType
+  createdAt   DateTime         @default(now())
+}
+
+model HistoryDocument {
+  id         String   @id @default(cuid())
+  title      String
+  fileUrl    String
+  uploadedAt DateTime @default(now())
+}
+
+// ------------------------------------------------------------
+// Cross-cutting: audit logs + system settings
+// ------------------------------------------------------------
+
+enum AuditStatus {
+  Success
+  Failed
+}
+
+// Insert-only. No update/delete route should ever be exposed for this model.
+model AuditLog {
+  id          String      @id @default(cuid())
+  userId      String
+  action      String
+  entity      String
+  entityId    String
+  status      AuditStatus
+  ipAddress   String?
+  userAgent   String?
+  description String?
+  changes     Json?
+  createdAt   DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SystemSetting {
+  id            String   @id @default(cuid())
+  key           String   @unique
+  value         Json
+  updatedById   String?
+  updatedAt     DateTime @updatedAt
+
+  updatedBy User? @relation("SettingUpdatedBy", fields: [updatedById], references: [id])
+}
+
+// ------------------------------------------------------------
+// Reports & Analytics / Bulk Import — tracking tables
+// ------------------------------------------------------------
+
+enum ReportFormat {
+  PDF
+  Excel
+}
+
+enum ReportStatus {
+  Completed
+  Processing
+  Failed
+}
+
+model GeneratedReport {
+  id            String       @id @default(cuid())
+  name          String
+  category      String
+  format        ReportFormat
+  status        ReportStatus @default(Completed)
+  generatedById String
+  createdAt     DateTime     @default(now())
+
+  generatedBy User @relation("ReportGeneratedBy", fields: [generatedById], references: [id])
+
+  @@index([category])
+  @@index([createdAt])
+}
+
+enum ImportType {
+  Members
+  Accounts
+  Transactions
+  Donations
+  Assets
+}
+
+enum ImportStatus {
+  Completed
+  Failed
+  Processing
+}
+
+model ImportJob {
+  id              String       @id @default(cuid())
+  type            ImportType
+  status          ImportStatus @default(Processing)
+  totalRecords    Int          @default(0)
+  successCount    Int          @default(0)
+  failCount       Int          @default(0)
+  createdById     String
+  createdAt       DateTime     @default(now())
+
+  createdBy User @relation("ImportJobCreatedBy", fields: [createdById], references: [id])
+
+  @@index([status])
+  @@index([createdAt])
+}
