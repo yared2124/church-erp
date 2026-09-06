@@ -14,13 +14,4 @@ export default {
     signIn: "/login",
   },
   providers: [], // real providers are added in auth.ts (Node runtime only)
-  callbacks: {
-    authorized({ auth, request }) {
-      const isPublic =
-        request.nextUrl.pathname.startsWith("/login") ||
-        request.nextUrl.pathname.startsWith("/api/auth");
-      if (isPublic) return true;
-      return !!auth?.user;
-    },
-  },
 } satisfies NextAuthConfig;
