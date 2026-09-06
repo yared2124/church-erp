@@ -1,7 +1,25 @@
 import { Calendar, ChevronDown, Plus, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+function getCurrentMonthRange(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+
+  const fmt = (d: Date) =>
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+  const monthName = firstDay.toLocaleDateString("en-US", { month: "long" });
+
+  return `This Month  (${monthName} ${firstDay.getDate()} – ${fmt(lastDay)})`;
+}
+
 export function DashboardHeader() {
+  const monthRange = getCurrentMonthRange();
+
   return (
     <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
       <div>
@@ -14,11 +32,13 @@ export function DashboardHeader() {
       <div className="flex flex-wrap items-center gap-2.5">
         <button className="flex h-control-md items-center gap-2 rounded-md border border-border bg-surface px-3.5 text-[13.5px] font-semibold text-text-primary transition-colors duration-150 hover:bg-background-alt">
           <Calendar size={16} className="text-text-secondary" />
-          This Month (Aug 1 – Aug 31, 2026)
+          {monthRange}
           <ChevronDown size={14} className="text-text-muted" />
         </button>
 
-        <Button icon={<Plus size={16} />}>Generate Report</Button>
+        <Button href="/reports" icon={<Plus size={16} />}>
+          Generate Report
+        </Button>
 
         <button
           aria-label="More options"
