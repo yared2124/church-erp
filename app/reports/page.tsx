@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { FileText, FileSpreadsheet, FileBarChart2, Plus, CalendarClock } from "lucide-react";
+import { FileText, FileSpreadsheet, FileBarChart2 } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
-import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/ui/stat-card";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ReportQuickActions } from "@/components/reports/report-quick-actions";
+import { ReportActionsBar } from "@/components/reports/report-actions-bar";
 import { requireAuth } from "@/lib/api-helpers";
 import { reportService } from "@/features/reports/report.service";
 
@@ -33,12 +33,7 @@ export default async function ReportsOverviewPage() {
           { label: "Overview" },
         ]}
         title="Reports & Analytics"
-        actions={
-          <>
-            <Button variant="secondary" icon={<CalendarClock size={16} />}>Schedule Report</Button>
-            <Button icon={<Plus size={16} />}>Create Custom Report</Button>
-          </>
-        }
+        actions={<ReportActionsBar />}
       />
 
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -53,7 +48,7 @@ export default async function ReportsOverviewPage() {
         {s.recentReports.length === 0 ? (
           <EmptyState
             title="No reports generated yet"
-            description="Reports you generate from any module will show up here once this feature is connected to real report generation."
+            description="Use the Create Report button above to generate your first report. It will appear here instantly."
           />
         ) : (
           <Table>
@@ -91,13 +86,6 @@ export default async function ReportsOverviewPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <ReportQuickActions />
       </div>
-
-      <p className="mt-5 text-small text-text-secondary">
-        Report generation itself (turning a click on &quot;Generate&quot; into an actual PDF/Excel
-        file) isn&apos;t implemented yet — this page reads real rows from the
-        <code className="mx-1 rounded bg-background-alt px-1.5 py-0.5">GeneratedReport</code>
-        table, which starts empty until that generation pipeline is built.
-      </p>
     </PageContainer>
   );
 }
