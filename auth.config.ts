@@ -14,4 +14,8 @@ export default {
     signIn: "/login",
   },
   providers: [], // real providers are added in auth.ts (Node runtime only)
+  callbacks: {
+    // Empty callbacks object — required for NextAuth v5 edge compatibility
+    // The proxy.ts handles routing logic; this just validates the JWT
+  },
 } satisfies NextAuthConfig;
