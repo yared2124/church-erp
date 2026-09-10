@@ -1,5 +1,6 @@
 import { Users, Cross, Church, type LucideIcon } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 const CONFIG: { key: "Baptism" | "Marriage" | "Burial"; label: string; icon: LucideIcon; bg: string; color: string }[] = [
   { key: "Baptism", label: "Baptisms", icon: Users, bg: "bg-primary-light", color: "text-primary" },
@@ -7,9 +8,9 @@ const CONFIG: { key: "Baptism" | "Marriage" | "Burial"; label: string; icon: Luc
   { key: "Burial", label: "Burials", icon: Church, bg: "bg-[#F3F0FF]", color: "text-[#7C3AED]" },
 ];
 
-export function SacramentSummary({ counts }: { counts: { Baptism: number; Marriage: number; Burial: number } }) {
+export function SacramentSummary({ counts, className }: { counts: { Baptism: number; Marriage: number; Burial: number }; className?: string }) {
   return (
-    <Card className="lg:col-span-4">
+    <Card className={cn("lg:col-span-4", className)}>
       <CardHeader>
         <CardTitle>Sacraments This Month</CardTitle>
         <a href="/sacraments/baptisms" className="text-[13px] font-semibold text-primary transition-colors duration-150 hover:text-primary-hover">

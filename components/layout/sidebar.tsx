@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { ChevronsLeft, ChevronsRight, ChevronDown, Church, Headphones } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -39,6 +40,26 @@ function isItemActive(item: NavItem, pathname: string) {
 
 export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const userRoles = session?.user?.roles ?? [];
+
+  function hasAccess(roles?: string[]) {
+    if (!roles || roles.length === 0) return true;
+    return userRoles.some((r) => roles.includes(r));
+  }
+
+  function filterNav(items: NavItem[]): NavItem[] {
+    return items
+      .filter((item) => hasAccess(item.roles))
+      .map((item) => ({
+        ...item,
+        children: item.children?.filter((child) => hasAccess(child.roles)),
+      }));
+  }
+
+  const showDashboard = hasAccess(dashboardNavItem.roles);
+  const filteredMainItems = filterNav(mainModuleNavItems);
+  const filteredSettingsItems = filterNav(settingsNavItems);
 
   return (
     <>
@@ -77,38 +98,48 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
 
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto px-3 scrollbar-thin">
-          <NavEntry
-            item={dashboardNavItem}
-            active={pathname === dashboardNavItem.href}
-            collapsed={collapsed}
-            pathname={pathname}
-          />
+          {showDashboard && (
+            <NavEntry
+              item={dashboardNavItem}
+              active={pathname === dashboardNavItem.href}
+              collapsed={collapsed}
+              pathname={pathname}
+            />
+          )}
 
-          <SectionLabel collapsed={collapsed}>Main Modules</SectionLabel>
-          <div className="flex flex-col gap-0.5">
-            {mainModuleNavItems.map((item) => (
-              <NavEntry
-                key={item.href}
-                item={item}
-                active={isItemActive(item, pathname)}
-                collapsed={collapsed}
-                pathname={pathname}
-              />
-            ))}
-          </div>
+          {filteredMainItems.length > 0 && (
+            <>
+              <SectionLabel collapsed={collapsed}>Main Modules</SectionLabel>
+              <div className="flex flex-col gap-0.5">
+                {filteredMainItems.map((item) => (
+                  <NavEntry
+                    key={item.href}
+                    item={item}
+                    active={isItemActive(item, pathname)}
+                    collapsed={collapsed}
+                    pathname={pathname}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
-          <SectionLabel collapsed={collapsed}>Settings</SectionLabel>
-          <div className="flex flex-col gap-0.5 pb-3">
-            {settingsNavItems.map((item) => (
-              <NavEntry
-                key={item.href}
-                item={item}
-                active={isItemActive(item, pathname)}
-                collapsed={collapsed}
-                pathname={pathname}
-              />
-            ))}
-          </div>
+          {filteredSettingsItems.length > 0 && (
+            <>
+              <SectionLabel collapsed={collapsed}>Settings</SectionLabel>
+              <div className="flex flex-col gap-0.5 pb-3">
+                {filteredSettingsItems.map((item) => (
+                  <NavEntry
+                    key={item.href}
+                    item={item}
+                    active={isItemActive(item, pathname)}
+                    collapsed={collapsed}
+                    pathname={pathname}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </nav>
 
         {/* Help card */}

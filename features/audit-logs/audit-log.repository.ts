@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 interface AuditLogInput {
   userId: string;
@@ -31,7 +32,7 @@ export const auditLogRepository = {
           description: input.description,
           ipAddress: input.ipAddress,
           userAgent: input.userAgent,
-          changes: input.changes,
+          changes: input.changes ? (input.changes as unknown as Prisma.InputJsonValue) : undefined,
         },
       });
     } catch (err) {

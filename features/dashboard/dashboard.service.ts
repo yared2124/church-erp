@@ -52,11 +52,20 @@ export const dashboardService = {
       totalExpenses: financeOverview.totalExpenses,
       netBalance: financeOverview.netBalance,
       pendingCertificateRequests: certStats.pending,
-      overdueRentPayments: overdueRentPaymentsList,
-      recentTransactions,
+      overdueRentPayments: overdueRentPaymentsList.map((r) => ({
+        ...r,
+        amount: r.amount.toString(),
+      })),
+      recentTransactions: recentTransactions.map((t) => ({
+        ...t,
+        amount: t.amount.toString(),
+      })),
       sacramentsByType,
       monthlyTrend: financeOverview.monthlyTrend,
-      pendingExpenses,
+      pendingExpenses: pendingExpenses.map((e) => ({
+        ...e,
+        amount: e.amount.toString(),
+      })),
       pendingCertRequests,
     };
   },

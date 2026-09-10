@@ -1,6 +1,7 @@
 import { Home } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { cn } from "@/lib/utils";
 
 interface OverdueRentPayment {
   id: string;
@@ -8,9 +9,9 @@ interface OverdueRentPayment {
   leaseAgreement: { tenant: { name: string }; property: { unitName: string } };
 }
 
-export function OverdueRentals({ rentals }: { rentals: OverdueRentPayment[] }) {
+export function OverdueRentals({ rentals, className }: { rentals: OverdueRentPayment[]; className?: string }) {
   return (
-    <Card className="lg:col-span-4">
+    <Card className={cn("lg:col-span-4", className)}>
       <CardHeader>
         <CardTitle>Overdue Rentals</CardTitle>
         <a href="/property" className="text-[13px] font-semibold text-primary transition-colors duration-150 hover:text-primary-hover">

@@ -10,6 +10,8 @@ import { UsersTabs, type UsersTab } from "@/components/users/users-tabs";
 import { UserTable, type ApiSystemUser } from "@/components/users/user-table";
 import { RolesPermissionsPanel } from "@/components/users/roles-permissions-panel";
 import { RolesSummaryCard, SelectedUserDetailsCard } from "@/components/users/user-side-panels";
+import { UserModal } from "@/components/users/user-modal";
+import { UserDeleteDialog } from "@/components/users/user-delete-dialog";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
 
 interface UserStats { total: number; active: number; inactive: number; locked: number }
@@ -22,8 +24,14 @@ export default function UsersPage() {
   const [roles, setRoles] = React.useState<RoleSummary[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = React.useState(0);
 
-  React.useEffect(() => {
+  // Modals state
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [userToEdit, setUserToEdit] = React.useState<ApiSystemUser | null>(null);
+  const [userToDelete, setUserToDelete] = React.useState<ApiSystemUser | null>(null);
+
+  const fetchOverview = React.useCallback(() => {
     setLoading(true);
     Promise.all([
       apiFetch<{ data: UserStats }>("/api/users/stats"),
@@ -37,6 +45,30 @@ export default function UsersPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  React.useEffect(() => {
+    fetchOverview();
+  }, [fetchOverview]);
+
+  const handleMutationSuccess = () => {
+    setRefreshKey((k) => k + 1);
+    fetchOverview();
+    setSelected(null);
+  };
+
+  const handleOpenCreate = () => {
+    setUserToEdit(null);
+    setModalOpen(true);
+  };
+
+  const handleOpenEdit = (user: ApiSystemUser) => {
+    setUserToEdit(user);
+    setModalOpen(true);
+  };
+
+  const handleOpenDelete = (user: ApiSystemUser) => {
+    setUserToDelete(user);
+  };
+
   const roleOptions = roles.map((r) => r.name);
 
   return (
@@ -48,7 +80,11 @@ export default function UsersPage() {
         ]}
         title="Users & Roles"
         description="Manage system users, roles, and permissions"
-        actions={<Button icon={<Plus size={16} />}>Add New User</Button>}
+        actions={
+          <Button icon={<Plus size={16} />} onClick={handleOpenCreate}>
+            Add New User
+          </Button>
+        }
       />
 
       {error && <div className="mb-5 rounded-md border border-danger-bg bg-danger-bg px-4 py-3 text-[13.5px] text-danger">{error}</div>}
@@ -67,7 +103,14 @@ export default function UsersPage() {
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
           <div className="xl:col-span-8">
             <div className="rounded-lg border border-border bg-surface p-5 shadow-card sm:p-6">
-              <UserTable selectedId={selected?.id ?? null} onSelect={setSelected} roleOptions={roleOptions} />
+              <UserTable
+                selectedId={selected?.id ?? null}
+                onSelect={setSelected}
+                onEdit={handleOpenEdit}
+                onDelete={handleOpenDelete}
+                roleOptions={roleOptions}
+                refreshKey={refreshKey}
+              />
             </div>
           </div>
           <div className="flex flex-col gap-4 xl:col-span-4">
@@ -78,6 +121,23 @@ export default function UsersPage() {
       ) : (
         <RolesPermissionsPanel roles={roles} />
       )}
+
+      {/* Add / Edit User Modal */}
+      <UserModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSaved={handleMutationSuccess}
+        user={userToEdit}
+        roleOptions={roleOptions}
+      />
+
+      {/* Delete User Dialog */}
+      <UserDeleteDialog
+        open={!!userToDelete}
+        user={userToDelete}
+        onClose={() => setUserToDelete(null)}
+        onDeleted={handleMutationSuccess}
+      />
     </PageContainer>
   );
 }

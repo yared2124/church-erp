@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Eye, Pencil, MoreVertical } from "lucide-react";
+import { Eye, Pencil, Trash2, MoreVertical } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { DataToolbar } from "@/components/ui/data-toolbar";
@@ -32,10 +32,13 @@ function formatDateTime(iso: string | null) {
 interface UserTableProps {
   selectedId: string | null;
   onSelect: (u: ApiSystemUser) => void;
+  onEdit?: (u: ApiSystemUser) => void;
+  onDelete?: (u: ApiSystemUser) => void;
   roleOptions: string[];
+  refreshKey?: number;
 }
 
-export function UserTable({ selectedId, onSelect, roleOptions }: UserTableProps) {
+export function UserTable({ selectedId, onSelect, onEdit, onDelete, roleOptions, refreshKey }: UserTableProps) {
   const [searchInput, setSearchInput] = React.useState("");
   const [search, setSearch] = React.useState("");
   const [role, setRole] = React.useState("all");
@@ -66,7 +69,7 @@ export function UserTable({ selectedId, onSelect, roleOptions }: UserTableProps)
       .then(setResult)
       .catch((err) => setError(err instanceof ApiClientError ? err.message : "Failed to load users."))
       .finally(() => setLoading(false));
-  }, [page, pageSize, search, role, status]);
+  }, [page, pageSize, search, role, status, refreshKey]);
 
   React.useEffect(() => {
     fetchUsers();
@@ -132,9 +135,34 @@ export function UserTable({ selectedId, onSelect, roleOptions }: UserTableProps)
                   <TableCell className="text-text-secondary">{formatDateTime(u.createdAt)}</TableCell>
                   <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => onSelect(u)} aria-label={`View ${u.name}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt"><Eye size={16} /></button>
-                      <button aria-label={`Edit ${u.name}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt"><Pencil size={16} /></button>
-                      <button aria-label={`More actions for ${u.name}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt"><MoreVertical size={16} /></button>
+                      <button
+                        onClick={() => onSelect(u)}
+                        aria-label={`View ${u.name}`}
+                        title="View details"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt hover:text-text-primary"
+                      >
+                        <Eye size={16} />
+                      </button>
+                      {onEdit && (
+                        <button
+                          onClick={() => onEdit(u)}
+                          aria-label={`Edit ${u.name}`}
+                          title="Edit user"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt hover:text-text-primary"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(u)}
+                          aria-label={`Delete ${u.name}`}
+                          title="Delete user"
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-danger-bg hover:text-danger"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

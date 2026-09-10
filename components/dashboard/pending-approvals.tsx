@@ -1,6 +1,7 @@
 import { Wallet2, FileBadge2 } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { cn } from "@/lib/utils";
 
 interface PendingExpense {
   id: string;
@@ -19,13 +20,14 @@ interface PendingCertRequest {
 interface PendingApprovalsProps {
   pendingExpenses: PendingExpense[];
   pendingCertRequests: PendingCertRequest[];
+  className?: string;
 }
 
-export function PendingApprovals({ pendingExpenses, pendingCertRequests }: PendingApprovalsProps) {
+export function PendingApprovals({ pendingExpenses, pendingCertRequests, className }: PendingApprovalsProps) {
   const isEmpty = pendingExpenses.length === 0 && pendingCertRequests.length === 0;
 
   return (
-    <Card className="lg:col-span-4">
+    <Card className={cn("lg:col-span-4", className)}>
       <CardHeader>
         <CardTitle>Pending Approvals</CardTitle>
         <a href="/finance/expenses" className="text-[13px] font-semibold text-primary transition-colors duration-150 hover:text-primary-hover">

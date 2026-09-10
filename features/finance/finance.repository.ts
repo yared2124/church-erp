@@ -57,11 +57,11 @@ export const financeRepository = {
 
   async byCategory(type: "Income" | "Expense") {
     type GroupRow = { categoryId: string; _sum: { amount: unknown } };
-    const rows: GroupRow[] = await prisma.transaction.groupBy({
+    const rows = (await prisma.transaction.groupBy({
       by: ["categoryId"],
       where: { type },
       _sum: { amount: true },
-    });
+    })) as unknown as GroupRow[];
     const categories = await prisma.transactionCategory.findMany({
       where: { id: { in: rows.map((r: GroupRow) => r.categoryId) } },
     });

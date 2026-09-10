@@ -120,7 +120,7 @@ export default async function FamilyProfilePage({ params }: { params: Promise<{ 
               <p className="py-6 text-center text-small text-text-secondary">No payment records yet.</p>
             ) : (
               <div className="divide-y divide-border-light">
-                {family.familyPayments.map((p: ApiFamilyPayment) => (
+                {family.familyPayments.map((p) => (
                   <div key={p.id} className="flex items-center justify-between py-3">
                     <div>
                       <p className="text-[13.5px] font-medium text-text-primary">{p.year} Sebeka Payment</p>
