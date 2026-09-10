@@ -2,12 +2,13 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Users, CheckCircle2, AlertCircle, Cross, Heart, FileText, Plus, ChevronRight } from "lucide-react";
+import { Users, CheckCircle2, AlertCircle, Cross, Heart, FileText, Plus, ChevronRight, Eye } from "lucide-react";
 import { StatCard } from "@/components/ui/stat-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { PriestSacramentDialog } from "@/components/sacraments/priest-sacrament-dialog";
+import { MemberDetailDialog } from "@/components/members/member-detail-dialog";
 import { useLanguage } from "@/lib/language-context";
 
 interface PriestDashboardViewProps {
@@ -27,6 +28,7 @@ export function PriestDashboardView({ data }: PriestDashboardViewProps) {
 
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [selectedChildId, setSelectedChildId] = React.useState<string | undefined>();
+  const [detailMember, setDetailMember] = React.useState<any | null>(null);
 
   return (
     <div className="flex flex-col gap-3 sm:gap-3.5">
@@ -187,7 +189,11 @@ export function PriestDashboardView({ data }: PriestDashboardViewProps) {
               </TableHeader>
               <TableBody>
                 {data.myChildren.map((m: any) => (
-                  <TableRow key={m.id}>
+                  <TableRow
+                    key={m.id}
+                    onClick={() => setDetailMember(m)}
+                    className="cursor-pointer transition-colors hover:bg-background-alt/60"
+                  >
                     <TableCell className="py-2 font-medium text-text-primary text-[13px]">
                       {m.firstName} {m.middleName ? `${m.middleName} ` : ""}{m.lastName}
                     </TableCell>
@@ -204,18 +210,28 @@ export function PriestDashboardView({ data }: PriestDashboardViewProps) {
                       </Badge>
                     </TableCell>
                     <TableCell className="py-2 text-[13px] text-text-secondary">{m.phone || "—"}</TableCell>
-                    <TableCell className="py-2 text-right">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedChildId(m.id);
-                          setDialogOpen(true);
-                        }}
-                        className="inline-flex items-center gap-1 rounded-md border border-gold/40 bg-gold/5 px-2 py-0.5 text-[11.5px] font-medium text-gold transition-colors hover:bg-gold/15"
-                      >
-                        <Cross size={12} />
-                        <span>{isAmharic ? "የምስጢራት ጥያቄ" : "Request"}</span>
-                      </button>
+                    <TableCell className="py-2 text-right" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setDetailMember(m)}
+                          className="inline-flex items-center gap-1 rounded-md border border-border px-2 py-0.5 text-[11.5px] font-medium text-text-primary transition-colors hover:bg-background-alt hover:border-primary/30"
+                        >
+                          <Eye size={12} className="text-primary" />
+                          <span>{isAmharic ? "ዝርዝር" : "Detail"}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedChildId(m.id);
+                            setDialogOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 rounded-md border border-gold/40 bg-gold/5 px-2 py-0.5 text-[11.5px] font-medium text-gold transition-colors hover:bg-gold/15"
+                        >
+                          <Cross size={12} />
+                          <span>{isAmharic ? "የምስጢራት ጥያቄ" : "Request"}</span>
+                        </button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -229,6 +245,19 @@ export function PriestDashboardView({ data }: PriestDashboardViewProps) {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         defaultMemberId={selectedChildId}
+      />
+
+      {/* Pop-up Member Detail Dialog with Back button */}
+      <MemberDetailDialog
+        member={detailMember}
+        open={!!detailMember}
+        onOpenChange={(open) => {
+          if (!open) setDetailMember(null);
+        }}
+        onRequestSacrament={(childId) => {
+          setSelectedChildId(childId);
+          setDialogOpen(true);
+        }}
       />
     </div>
   );

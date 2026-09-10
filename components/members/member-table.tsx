@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal, Cross } from "lucide-react";
+import { MoreHorizontal, Cross, Eye } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/input";
@@ -149,39 +149,53 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10"><Checkbox aria-label="Select all" /></TableHead>
-                <TableHead>ID</TableHead>
-                <TableHead>Full Name</TableHead>
-                <TableHead>Family</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Sebeka (ሰበካ)</TableHead>
-                <TableHead>Gender</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Join Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="whitespace-nowrap">ID</TableHead>
+                <TableHead className="whitespace-nowrap">Full Name</TableHead>
+                <TableHead className="whitespace-nowrap">Family</TableHead>
+                <TableHead className="whitespace-nowrap">Role in Family</TableHead>
+                <TableHead className="whitespace-nowrap">Sebeka (ሰበካ)</TableHead>
+                <TableHead className="whitespace-nowrap">Gender</TableHead>
+                <TableHead className="whitespace-nowrap">Phone</TableHead>
+                <TableHead className="whitespace-nowrap">Status</TableHead>
+                <TableHead className="whitespace-nowrap">Join Date</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {result.data.map((m) => (
-                <TableRow key={m.id} selected={m.id === selectedId} onClick={() => onSelect(m)} className="cursor-pointer">
+                <TableRow
+                  key={m.id}
+                  selected={m.id === selectedId}
+                  onClick={() => onSelect(m)}
+                  className="cursor-pointer transition-colors hover:bg-background-alt/60"
+                >
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <Checkbox aria-label={`Select ${memberFullName(m)}`} />
                   </TableCell>
                   <TableCell className="font-medium text-text-secondary">{m.id.slice(0, 8)}</TableCell>
-                  <TableCell className="font-semibold text-text-primary">{memberFullName(m)}</TableCell>
-                  <TableCell className="text-text-secondary">{m.family.name}</TableCell>
-                  <TableCell className="text-text-secondary">{m.roleInFamily}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-medium text-text-primary whitespace-nowrap">{memberFullName(m)}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{m.family.name}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{m.roleInFamily}</TableCell>
+                  <TableCell className="whitespace-nowrap">
                     <Badge tone={m.family?.sebekaStatus === "Paid" ? "success" : "warning"}>
                       {m.family?.sebekaStatus === "Paid" ? "የተከፈለ" : "ያልተከፈለ"}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-text-secondary">{m.gender}</TableCell>
-                  <TableCell className="text-text-secondary">{m.phone ?? "—"}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{m.phone ?? "—"}</TableCell>
                   <TableCell><Badge tone={statusTone[m.status]}>{m.status}</Badge></TableCell>
-                  <TableCell className="text-text-secondary">{formatDate(m.membershipDate)}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{formatDate(m.membershipDate)}</TableCell>
                   <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        type="button"
+                        title="የአባሉን ዝርዝር መረጃ እይ / View Member Detail"
+                        onClick={() => onSelect(m)}
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-[12px] font-medium text-text-primary transition-colors duration-150 hover:bg-background-alt hover:border-primary/40"
+                      >
+                        <Eye size={13} className="text-primary" />
+                        <span className="hidden sm:inline">ዝርዝር</span>
+                      </button>
                       <button
                         type="button"
                         title="የምስጢራት ጥያቄ አቅርብ / Request Sacrament"
@@ -189,7 +203,7 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
                           setSacramentTargetId(m.id);
                           setSacramentModalOpen(true);
                         }}
-                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-gold/40 px-2 text-[12px] font-semibold text-gold transition-colors duration-150 hover:bg-gold/10"
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-gold/40 px-2 text-[12px] font-medium text-gold transition-colors duration-150 hover:bg-gold/10"
                       >
                         <Cross size={13} />
                         <span className="hidden sm:inline">ማመልከቻ</span>
