@@ -87,6 +87,8 @@ Desktop.ini
 /.nyc_output
 .playwright/
 /test-results/
+/tests/
+/test/
 
 # ==========================================
 # TypeScript & Turbo Cache
