@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { Menu, Search, Bell, Mail, Calendar, ChevronDown, Globe, LogOut, Check } from "lucide-react";
 import { SearchInput } from "@/components/ui/input";
@@ -12,7 +11,7 @@ interface HeaderProps {
   onMenuClick: () => void;
   userName: string;
   userRole: string;
-  avatarUrl: string;
+  avatarUrl?: string;
 }
 
 export function Header({ onMenuClick, userName, userRole, avatarUrl }: HeaderProps) {
@@ -32,10 +31,10 @@ export function Header({ onMenuClick, userName, userRole, avatarUrl }: HeaderPro
           <Menu size={18} />
         </button>
         <div className="min-w-0">
-          <p className="truncate text-[16px] font-bold text-text-primary">
+          <p className="truncate text-[14.5px] font-medium text-text-primary">
             {t("nav.welcome")}, {userName}!
           </p>
-          <p className="text-[12.5px] text-text-secondary">{userRole}</p>
+          <p className="text-[12px] text-text-secondary">{userRole}</p>
         </div>
       </div>
 
@@ -141,7 +140,7 @@ export function Header({ onMenuClick, userName, userRole, avatarUrl }: HeaderPro
 
         <div className="mx-1 hidden h-7 w-px bg-border sm:block" />
 
-        {/* User profile dropdown */}
+        {/* User profile dropdown - Clean text without avatar photo */}
         <div className="relative">
           <button
             onClick={() => {
@@ -149,20 +148,13 @@ export function Header({ onMenuClick, userName, userRole, avatarUrl }: HeaderPro
               setLangMenuOpen(false);
               setNotifOpen(false);
             }}
-            className="flex items-center gap-2.5 rounded-md py-1 pl-1 pr-2 transition-colors duration-150 hover:bg-background-alt"
+            className="flex items-center gap-2 rounded-lg border border-border/80 bg-surface px-2.5 py-1 transition-colors duration-150 hover:bg-background-alt hover:border-primary/30"
           >
-            <Image
-              src={avatarUrl}
-              alt={userName}
-              width={38}
-              height={38}
-              className="rounded-full object-cover"
-            />
-            <div className="hidden text-left sm:block">
-              <div className="text-[13.5px] font-semibold text-text-primary">{userName}</div>
-              <div className="text-[12px] text-text-secondary">{userRole}</div>
+            <div className="text-left">
+              <div className="text-[13px] font-medium text-text-primary leading-tight">{userName}</div>
+              <div className="text-[11px] text-text-secondary leading-tight">{userRole}</div>
             </div>
-            <ChevronDown size={16} className="hidden text-text-muted sm:block" />
+            <ChevronDown size={14} className="text-text-muted" />
           </button>
 
           {menuOpen && (

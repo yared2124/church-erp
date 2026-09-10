@@ -34,7 +34,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           onMenuClick={() => setMobileNavOpen(true)}
           userName={session?.user?.name ?? "..."}
           userRole={session?.user?.roles?.[0] ?? "Member"}
-          avatarUrl={session?.user?.image ?? "https://i.pravatar.cc/76?img=13"}
         />
         {children}
       </div>

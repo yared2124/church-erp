@@ -23,16 +23,16 @@ export function SacramentSummary({ counts, className }: { counts: { Baptism: num
           View All
         </a>
       </CardHeader>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2">
         {CONFIG.map((s) => {
           const Icon = s.icon;
           return (
             <div key={s.key} className="text-center">
-              <div className={`mx-auto mb-2.5 flex h-[52px] w-[52px] items-center justify-center rounded-full ${s.bg}`}>
-                <Icon size={24} className={s.color} strokeWidth={1.8} />
+              <div className={`mx-auto mb-1 flex h-9 w-9 items-center justify-center rounded-lg ${s.bg}`}>
+                <Icon size={18} className={s.color} strokeWidth={1.8} />
               </div>
-              <p className="text-[12.5px] text-text-secondary">{s.label}</p>
-              <p className="text-[22px] font-bold text-text-primary">{counts[s.key]}</p>
+              <p className="text-[12px] text-text-secondary">{s.label}</p>
+              <p className="text-[17px] font-semibold text-text-primary">{counts[s.key]}</p>
             </div>
           );
         })}

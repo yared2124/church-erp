@@ -68,7 +68,7 @@ export default async function DashboardPage() {
       {/* KPI row */}
       <div
         className={cn(
-          "mb-5 grid grid-cols-1 gap-4",
+          "mb-3.5 grid grid-cols-1 gap-3 sm:mb-4",
           hasFinance ? "sm:grid-cols-2 xl:grid-cols-5" : "sm:grid-cols-2"
         )}
       >
@@ -118,7 +118,7 @@ export default async function DashboardPage() {
 
       {/* Analytics row (Finance only) */}
       {hasFinance && (
-        <div className="mb-5 grid grid-cols-1 gap-4 xl:grid-cols-12">
+        <div className="mb-3.5 grid grid-cols-1 gap-3 xl:grid-cols-12 sm:mb-4">
           <IncomeExpenseChart data={s.monthlyTrend} />
           <RecentTransactions transactions={s.recentTransactions} />
         </div>
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
 
       {/* Operational row */}
       {operationalCount > 0 && (
-        <div className="mb-5 grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <div className="mb-3.5 grid grid-cols-1 gap-3 lg:grid-cols-12 sm:mb-4">
           {hasSacraments && (
             <SacramentSummary
               counts={s.sacramentsByType}
@@ -150,7 +150,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Announcement */}
-      <div className="grid grid-cols-12 gap-4">
+      <div className="grid grid-cols-12 gap-3">
         <AnnouncementBanner />
       </div>
     </PageContainer>

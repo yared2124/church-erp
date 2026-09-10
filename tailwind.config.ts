@@ -68,12 +68,12 @@ const config: Config = {
         ethiopic: ["var(--font-noto-ethiopic)", "Noto Sans Ethiopic", "sans-serif"],
       },
       fontSize: {
-        "page-title": ["32px", { lineHeight: "1.2", fontWeight: "700" }],
-        "section-title": ["19px", { lineHeight: "1.3", fontWeight: "600" }],
-        "card-title": ["15px", { lineHeight: "1.4", fontWeight: "600" }],
-        body: ["14px", { lineHeight: "1.5", fontWeight: "400" }],
-        small: ["12.5px", { lineHeight: "1.4", fontWeight: "400" }],
-        label: ["13px", { lineHeight: "1.3", fontWeight: "500" }],
+        "page-title": ["22px", { lineHeight: "1.3", fontWeight: "600" }],
+        "section-title": ["16.5px", { lineHeight: "1.35", fontWeight: "600" }],
+        "card-title": ["14px", { lineHeight: "1.4", fontWeight: "600" }],
+        body: ["13.5px", { lineHeight: "1.45", fontWeight: "400" }],
+        small: ["12px", { lineHeight: "1.4", fontWeight: "400" }],
+        label: ["12.5px", { lineHeight: "1.3", fontWeight: "500" }],
       },
       spacing: {
         1: "4px",

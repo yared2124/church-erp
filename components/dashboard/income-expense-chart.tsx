@@ -59,14 +59,14 @@ export function IncomeExpenseChart({ data }: { data: { month: string; income: nu
               <span className="h-2 w-2 rounded-full bg-danger ring-4 ring-danger-bg" /> Expenses
             </span>
           </div>
-          <button className="flex h-8 items-center gap-1.5 rounded-lg border border-border/80 bg-surface px-2.5 text-[12.5px] font-semibold text-text-primary shadow-sm transition-colors duration-150 hover:bg-background-alt">
+          <button className="flex h-7 items-center gap-1 rounded-md border border-border/80 bg-surface px-2 text-[12px] font-medium text-text-primary shadow-sm transition-colors duration-150 hover:bg-background-alt">
             This Year
-            <ChevronDown size={13} className="text-text-muted" />
+            <ChevronDown size={12} className="text-text-muted" />
           </button>
         </div>
       </CardHeader>
 
-      <div className="h-[300px] w-full">
+      <div className="h-[195px] w-full">
         <ResponsiveContainer>
           <AreaChart data={data} margin={{ top: 6, right: 8, left: -14, bottom: 0 }}>
             <defs>

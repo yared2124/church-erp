@@ -20,7 +20,7 @@ export function Card({ className, padded = true, hoverable = false, ...props }: 
       className={cn(
         "rounded-xl border border-border/80 bg-surface shadow-card transition-all duration-200",
         hoverable && "hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-elevated",
-        padded && "p-5 sm:p-6",
+        padded && "p-3.5 sm:p-4",
         className
       )}
       {...props}
@@ -31,14 +31,14 @@ export function Card({ className, padded = true, hoverable = false, ...props }: 
 export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("mb-4 flex items-start justify-between gap-3", className)}
+      className={cn("mb-2.5 flex items-start justify-between gap-2.5", className)}
       {...props}
     />
   );
 }
 
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn("text-card-title text-text-primary", className)} {...props} />;
+  return <h3 className={cn("text-card-title font-semibold text-text-primary", className)} {...props} />;
 }
 
 export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
@@ -54,7 +54,7 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
 export function CardFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("mt-4 flex items-center justify-between border-t border-border-light pt-4", className)}
+      className={cn("mt-3 flex items-center justify-between border-t border-border-light pt-3", className)}
       {...props}
     />
   );

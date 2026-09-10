@@ -147,7 +147,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
           </div>
           {!collapsed && (
             <div className="min-w-0 leading-tight">
-              <div className="truncate text-[14.5px] font-bold tracking-tight text-sidebar-text">
+              <div className="truncate text-[14.5px] font-semibold tracking-tight text-sidebar-text">
                 ብርሃነ ገነት
               </div>
               <div className="truncate text-[12px] font-medium text-gold/90">
@@ -235,7 +235,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
 function SectionLabel({ collapsed, children }: { collapsed: boolean; children: React.ReactNode }) {
   if (collapsed) return <div className="my-3 h-px bg-white/5" />;
   return (
-    <div className="mb-2 mt-5 px-3 text-[11px] font-bold uppercase tracking-wider text-sidebar-muted">
+    <div className="mb-2 mt-4 px-3 text-[11px] font-medium uppercase tracking-wider text-sidebar-muted">
       {children}
     </div>
   );
