@@ -20,8 +20,8 @@ export const GET = withErrorHandling(async (req) => {
 
 // POST /api/members — create a new member
 export const POST = withErrorHandling(async (req) => {
-  // Only Registrars and Super Admins may create members.
-  const user = await requireRole("Super Admin", "Registrar");
+  // Only Super Admins may create members.
+  const user = await requireRole("Super Admin");
 
   const body = await req.json();
   const parsed = createMemberSchema.safeParse(body);

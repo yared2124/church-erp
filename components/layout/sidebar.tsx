@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { ChevronsLeft, ChevronsRight, ChevronDown, Church, Headphones } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
+import { useLanguage } from "@/lib/language-context";
 import {
   dashboardNavItem,
   mainModuleNavItems,
@@ -41,7 +42,47 @@ function isItemActive(item: NavItem, pathname: string) {
 export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { t } = useLanguage();
   const userRoles = session?.user?.roles ?? [];
+
+  function translateNav(label: string): string {
+    const keyMap: Record<string, string> = {
+      "Dashboard": "sidebar.dashboard",
+      "Members & Families": "sidebar.members",
+      "Members": "sidebar.members_list",
+      "Families": "sidebar.families",
+      "Family Payments": "sidebar.family_payments",
+      "Sacraments": "sidebar.sacraments",
+      "Baptisms": "sidebar.baptisms",
+      "Marriages": "sidebar.marriages",
+      "Burials": "sidebar.burials",
+      "Financial Management": "sidebar.finance",
+      "Income": "sidebar.income",
+      "Expenses": "sidebar.expenses",
+      "Transactions": "sidebar.transactions",
+      "Sebeka Payments": "sidebar.sebeka_payments",
+      "Financial Reports": "sidebar.finance_reports",
+      "Certificates": "sidebar.certificates",
+      "Property & Inventory": "sidebar.property",
+      "Clergy & Employees": "sidebar.employees",
+      "Church History": "sidebar.history",
+      "Reports & Analytics": "sidebar.reports",
+      "Bulk Import": "sidebar.bulk_import",
+      "Audit Logs": "sidebar.audit_logs",
+      "Users & Roles": "sidebar.users",
+      "Users": "sidebar.users",
+      "Roles & Permissions": "sidebar.users",
+      "System Settings": "sidebar.system_settings",
+      "General Settings": "sidebar.system_settings",
+      "Financial Settings": "sidebar.system_settings",
+      "Notification Settings": "sidebar.system_settings",
+      "Security Settings": "sidebar.system_settings",
+      "Backup & Restore": "sidebar.system_settings",
+    };
+
+    const key = keyMap[label];
+    return key ? t(key) : label;
+  }
 
   function hasAccess(roles?: string[]) {
     if (!roles || roles.length === 0) return true;
@@ -53,11 +94,19 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
       .filter((item) => hasAccess(item.roles))
       .map((item) => ({
         ...item,
-        children: item.children?.filter((child) => hasAccess(child.roles)),
+        label: translateNav(item.label),
+        children: item.children?.filter((child) => hasAccess(child.roles)).map((c) => ({
+          ...c,
+          label: translateNav(c.label),
+        })),
       }));
   }
 
   const showDashboard = hasAccess(dashboardNavItem.roles);
+  const translatedDashboardItem = {
+    ...dashboardNavItem,
+    label: translateNav(dashboardNavItem.label),
+  };
   const filteredMainItems = filterNav(mainModuleNavItems);
   const filteredSettingsItems = filterNav(settingsNavItems);
 
@@ -100,7 +149,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
         <nav className="flex-1 overflow-y-auto px-3 scrollbar-thin">
           {showDashboard && (
             <NavEntry
-              item={dashboardNavItem}
+              item={translatedDashboardItem}
               active={pathname === dashboardNavItem.href}
               collapsed={collapsed}
               pathname={pathname}
@@ -109,7 +158,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
 
           {filteredMainItems.length > 0 && (
             <>
-              <SectionLabel collapsed={collapsed}>Main Modules</SectionLabel>
+              <SectionLabel collapsed={collapsed}>{t("sidebar.main_modules")}</SectionLabel>
               <div className="flex flex-col gap-0.5">
                 {filteredMainItems.map((item) => (
                   <NavEntry
@@ -126,7 +175,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
 
           {filteredSettingsItems.length > 0 && (
             <>
-              <SectionLabel collapsed={collapsed}>Settings</SectionLabel>
+              <SectionLabel collapsed={collapsed}>{t("sidebar.settings")}</SectionLabel>
               <div className="flex flex-col gap-0.5 pb-3">
                 {filteredSettingsItems.map((item) => (
                   <NavEntry

@@ -1,5 +1,8 @@
+"use client";
+
 import { UserPlus, Upload, Users2, FileBarChart2, Users } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { memberFullName, type MemberStatsResponse } from "@/features/members/member.types";
@@ -46,21 +49,27 @@ export function RecentMembersCard({ stats, loading }: { stats: MemberStatsRespon
   );
 }
 
-const QUICK_ACTIONS = [
-  { label: "Add New Member", icon: UserPlus, href: "/members/new" },
-  { label: "Import Members (Excel)", icon: Upload, href: "/bulk-import/members" },
-  { label: "Bulk Family Assignment", icon: Users2, href: "/members/families" },
-  { label: "Generate Member Report", icon: FileBarChart2, href: "/reports/members" },
+const ALL_QUICK_ACTIONS = [
+  { label: "Add New Member", icon: UserPlus, href: "/members/new", adminOnly: true },
+  { label: "Import Members (Excel)", icon: Upload, href: "/bulk-import/members", adminOnly: false },
+  { label: "Bulk Family Assignment", icon: Users2, href: "/members/families", adminOnly: false },
+  { label: "Generate Member Report", icon: FileBarChart2, href: "/reports", adminOnly: false },
 ];
 
 export function MemberQuickActions() {
+  const { data: session } = useSession();
+  const userRoles = session?.user?.roles ?? [];
+  const isAdmin = userRoles.includes("Super Admin");
+
+  const actions = ALL_QUICK_ACTIONS.filter((a) => !a.adminOnly || isAdmin);
+
   return (
     <Card className="lg:col-span-4">
       <CardHeader>
         <CardTitle>Quick Actions</CardTitle>
       </CardHeader>
       <div className="flex flex-col gap-2">
-        {QUICK_ACTIONS.map((a) => {
+        {actions.map((a) => {
           const Icon = a.icon;
           return (
             <Link

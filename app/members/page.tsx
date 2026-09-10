@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useSession } from "next-auth/react";
 import { Users, UserCheck, UserX, UserPlus, Upload, Download, Plus } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
@@ -13,6 +14,10 @@ import { apiFetch, ApiClientError } from "@/lib/api-client";
 import type { MemberStatsResponse } from "@/features/members/member.types";
 
 export default function MembersPage() {
+  const { data: session } = useSession();
+  const userRoles = session?.user?.roles ?? [];
+  const isAdmin = userRoles.includes("Super Admin");
+
   const [stats, setStats] = React.useState<MemberStatsResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
@@ -48,9 +53,11 @@ export default function MembersPage() {
             <Button variant="secondary" icon={<Download size={16} />}>
               Export
             </Button>
-            <Button icon={<Plus size={16} />} href="/members/new">
-              Add Member
-            </Button>
+            {isAdmin && (
+              <Button icon={<Plus size={16} />} href="/members/new">
+                Add Member
+              </Button>
+            )}
           </>
         }
       />
