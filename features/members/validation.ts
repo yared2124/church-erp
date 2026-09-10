@@ -14,6 +14,7 @@ export interface MemberFormValues {
   membershipStatus: string;
   registrationDate: string;
   confessorPriest: string;
+  confessorPriestId?: string;
   notes: string;
 }
 

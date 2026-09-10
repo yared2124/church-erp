@@ -1,6 +1,7 @@
 export interface FamilySummary {
   id: string;
   name: string;
+  sebekaStatus?: "Paid" | "Partial" | "Unpaid" | "Overdue";
 }
 
 export interface ApiMember {
@@ -17,6 +18,7 @@ export interface ApiMember {
   roleInFamily: "Head" | "Wife" | "Husband" | "Son" | "Daughter";
   status: "Active" | "Inactive" | "Transferred" | "Deceased";
   confessorPriestId: string | null;
+  confessorPriest?: { id: string; name: string } | null;
   baptizedDate: string | null;
   membershipDate: string;
   createdAt: string;
@@ -32,6 +34,8 @@ export interface MemberStatsResponse {
   active: number;
   inactive: number;
   newThisMonth: number;
+  sebekaPaid?: number;
+  sebekaUnpaid?: number;
   genderBreakdown: { gender: "Male" | "Female"; count: number }[];
   ageBreakdown: { group: string; count: number }[];
   recent: ApiMember[];

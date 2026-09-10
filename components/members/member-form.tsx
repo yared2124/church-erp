@@ -43,11 +43,18 @@ interface MemberFormProps {
   onSubmit?: (values: MemberFormValues) => Promise<void> | void;
 }
 
+interface PriestOption {
+  id: string;
+  name: string;
+}
+
 export function MemberForm({ initialValues, mode, onCancel, onSubmit }: MemberFormProps) {
   const [values, setValues] = React.useState<MemberFormValues>({ ...emptyValues, ...initialValues });
   const [errors, setErrors] = React.useState<MemberFormErrors>({});
   const [families, setFamilies] = React.useState<FamilyOption[]>([]);
   const [familiesLoading, setFamiliesLoading] = React.useState(true);
+  const [priests, setPriests] = React.useState<PriestOption[]>([]);
+  const [priestsLoading, setPriestsLoading] = React.useState(true);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
 
@@ -56,6 +63,11 @@ export function MemberForm({ initialValues, mode, onCancel, onSubmit }: MemberFo
       .then((res) => setFamilies(res.data))
       .catch(() => setFamilies([]))
       .finally(() => setFamiliesLoading(false));
+
+    apiFetch<Paginated<PriestOption>>("/api/users?role=Priest&limit=50")
+      .then((res) => setPriests(res.data))
+      .catch(() => setPriests([]))
+      .finally(() => setPriestsLoading(false));
   }, []);
 
   function set<K extends keyof MemberFormValues>(field: K, value: MemberFormValues[K]) {
@@ -200,7 +212,20 @@ export function MemberForm({ initialValues, mode, onCancel, onSubmit }: MemberFo
             ]}
           />
           <Input label="Registration Date" required type="date" value={values.registrationDate} onChange={(e) => set("registrationDate", e.target.value)} error={errors.registrationDate} />
-          <Input label="Confessor / Priest" value={values.confessorPriest} onChange={(e) => set("confessorPriest", e.target.value)} placeholder="e.g. Fr. Samuel" />
+          <Select
+            label="የንስሃ አባት / Confessor Priest"
+            value={values.confessorPriestId || ""}
+            onChange={(e) => {
+              set("confessorPriestId", e.target.value);
+              const found = priests.find((p) => p.id === e.target.value);
+              set("confessorPriest", found?.name || "");
+            }}
+            hint={priestsLoading ? "Loading priests..." : undefined}
+            options={[
+              { value: "", label: "የንስሃ አባት ይምረጡ / Select Priest..." },
+              ...priests.map((p) => ({ value: p.id, label: p.name })),
+            ]}
+          />
         </div>
       </Card>
 

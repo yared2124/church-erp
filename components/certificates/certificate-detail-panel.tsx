@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "next-auth/react";
 import { X, User, Calendar, UserCheck, FileText, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
@@ -46,6 +47,9 @@ function Field({ icon: Icon, label, value }: { icon: React.ComponentType<{ size?
 }
 
 export function CertificateDetailPanel({ request, onClose }: { request: ApiCertificateRequest | null; onClose: () => void }) {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.roles?.includes("Super Admin");
+
   if (!request) {
     return (
       <Card className="flex h-full flex-col items-center justify-center gap-2 py-16 text-center">
@@ -109,10 +113,18 @@ export function CertificateDetailPanel({ request, onClose }: { request: ApiCerti
         </div>
       </div>
 
-      <div className="flex gap-2 border-t border-border-light px-5 py-4">
-        <Button className="flex-1">Review Request</Button>
-        <Button variant="danger" className="flex-1">Reject Request</Button>
-      </div>
+      {isAdmin ? (
+        <div className="flex gap-2 border-t border-border-light px-5 py-4">
+          <Button className="flex-1">Review Request</Button>
+          <Button variant="danger" className="flex-1">Reject Request</Button>
+        </div>
+      ) : (
+        <div className="border-t border-border-light px-5 py-3.5 bg-background-alt text-center">
+          <p className="text-[12.5px] font-medium text-text-secondary">
+            ይህ ማመልከቻ በአስተዳዳሪ (Admin) ግምገማ ላይ ነው። ሰርቲፊኬት የሚዘጋጀው በአስተዳዳሪ ብቻ ነው።
+          </p>
+        </div>
+      )}
     </Card>
   );
 }

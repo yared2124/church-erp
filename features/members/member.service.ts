@@ -95,8 +95,8 @@ export const memberService = {
     return member;
   },
 
-  stats: () => memberRepository.stats(),
-  genderBreakdown: () => memberRepository.genderBreakdown(),
-  ageBreakdown: () => memberRepository.ageBreakdown(),
-  recent: (limit: number) => memberRepository.recent(limit),
+  stats: (priestId?: string) => memberRepository.stats(priestId),
+  genderBreakdown: (priestId?: string) => memberRepository.genderBreakdown(priestId),
+  ageBreakdown: (priestId?: string) => memberRepository.ageBreakdown(priestId),
+  recent: (limit: number, priestId?: string) => memberRepository.recent(limit, priestId),
 };

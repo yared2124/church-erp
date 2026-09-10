@@ -13,14 +13,21 @@ import { RecentMembersCard, MemberQuickActions } from "@/components/members/memb
 import { apiFetch, ApiClientError } from "@/lib/api-client";
 import type { MemberStatsResponse } from "@/features/members/member.types";
 
+import { useLanguage } from "@/lib/language-context";
+import { PriestSacramentDialog } from "@/components/sacraments/priest-sacrament-dialog";
+
 export default function MembersPage() {
   const { data: session } = useSession();
+  const { locale, t } = useLanguage();
+  const isAmharic = locale === "am";
   const userRoles = session?.user?.roles ?? [];
   const isAdmin = userRoles.includes("Super Admin");
+  const isPriest = userRoles.includes("Priest") && !isAdmin;
 
   const [stats, setStats] = React.useState<MemberStatsResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [sacramentOpen, setSacramentOpen] = React.useState(false);
 
   const fetchStats = React.useCallback(() => {
     setLoading(true);
@@ -40,23 +47,38 @@ export default function MembersPage() {
       <PageHeader
         breadcrumb={[
           { label: "Home", href: "/dashboard" },
-          { label: "Members & Families", href: "/members" },
-          { label: "Members" },
+          { label: isPriest ? (isAmharic ? "የንስሃ ልጆች" : "Spiritual Children") : (isAmharic ? "አባላትና ቤተሰቦች" : "Members & Families"), href: "/members" },
+          { label: isPriest ? (isAmharic ? "የንስሃ ልጆቼ" : "My Spiritual Children") : (isAmharic ? "የምዕመናን ዝርዝር" : "Members") },
         ]}
-        title="Members"
-        description="Manage church members and their information"
+        title={isPriest ? (isAmharic ? "የንስሃ ልጆቼ ዝርዝር" : "My Spiritual Children") : (isAmharic ? "የምዕመናን ዝርዝር" : "Members")}
+        description={
+          isPriest
+            ? (isAmharic ? "የንስሃ ልጆችዎን ይከታተሉ፣ የሰበካ ክፍያቸውን ያረጋግጡ፣ የቅዱሳት ምስጢራት ማመልከቻ ያቅርቡ" : "Oversee your spiritual children, track their Sebeka status, and request sacraments.")
+            : (isAmharic ? "የቤተክርስቲያን አባላት መረጃ ማስተዳደሪያ" : "Manage church members and their information")
+        }
         actions={
           <>
-            <Button variant="secondary" icon={<Upload size={16} />}>
-              Import Members
-            </Button>
-            <Button variant="secondary" icon={<Download size={16} />}>
-              Export
-            </Button>
-            {isAdmin && (
-              <Button icon={<Plus size={16} />} href="/members/new">
-                Add Member
+            {isPriest && (
+              <Button
+                onClick={() => setSacramentOpen(true)}
+                icon={<Plus size={16} />}
+                className="shadow-card"
+              >
+                {isAmharic ? "የምስጢራት ጥያቄ አቅርብ" : "Request Sacrament"}
               </Button>
+            )}
+            {isAdmin && (
+              <>
+                <Button variant="secondary" icon={<Upload size={16} />}>
+                  {isAmharic ? "አባላትን አስገባ" : "Import Members"}
+                </Button>
+                <Button variant="secondary" icon={<Download size={16} />}>
+                  {isAmharic ? "ወደ ውጭ ላክ" : "Export"}
+                </Button>
+                <Button icon={<Plus size={16} />} href="/members/new">
+                  {isAmharic ? "አዲስ አባል መዝግብ" : "Add Member"}
+                </Button>
+              </>
             )}
           </>
         }
@@ -70,28 +92,28 @@ export default function MembersPage() {
 
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Total Members"
+          label={isPriest ? (isAmharic ? "የንስሃ ልጆቼ ብዛት" : "Spiritual Children") : (isAmharic ? "ጠቅላላ ምዕመናን" : "Total Members")}
           value={loading ? "…" : (stats?.total ?? 0).toLocaleString()}
           icon={Users}
           iconBg="bg-primary-light"
           iconColor="text-primary"
         />
         <StatCard
-          label="Active Members"
-          value={loading ? "…" : (stats?.active ?? 0).toLocaleString()}
+          label={isPriest ? (isAmharic ? "የሰበካ ጉባኤ የከፈሉ" : "Sebeka Paid") : (isAmharic ? "ንቁ ምዕመናን" : "Active Members")}
+          value={loading ? "…" : (isPriest ? (stats?.sebekaPaid ?? 0) : (stats?.active ?? 0)).toLocaleString()}
           icon={UserCheck}
           iconBg="bg-success-bg"
           iconColor="text-success"
         />
         <StatCard
-          label="Inactive Members"
-          value={loading ? "…" : (stats?.inactive ?? 0).toLocaleString()}
+          label={isPriest ? (isAmharic ? "የሰበካ ጉባኤ ያልከፈሉ" : "Sebeka Unpaid") : (isAmharic ? "ያልነቁ ምዕመናን" : "Inactive Members")}
+          value={loading ? "…" : (isPriest ? (stats?.sebekaUnpaid ?? 0) : (stats?.inactive ?? 0)).toLocaleString()}
           icon={UserX}
           iconBg="bg-warning-bg"
           iconColor="text-warning"
         />
         <StatCard
-          label="New This Month"
+          label={isAmharic ? "አዲስ በዚህ ወር" : "New This Month"}
           value={loading ? "…" : (stats?.newThisMonth ?? 0).toLocaleString()}
           icon={UserPlus}
           iconBg="bg-info-bg"
@@ -103,15 +125,25 @@ export default function MembersPage() {
         <MembersWorkspace />
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-        <MembersByGenderCard stats={stats} loading={loading} />
-        <MembersByAgeGroupCard stats={stats} loading={loading} />
-        <RecentMembersCard stats={stats} loading={loading} />
-      </div>
+      {!isPriest && (
+        <>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+            <MembersByGenderCard stats={stats} loading={loading} />
+            <MembersByAgeGroupCard stats={stats} loading={loading} />
+            <RecentMembersCard stats={stats} loading={loading} />
+          </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-12">
-        <MemberQuickActions />
-      </div>
+          <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-12">
+            <MemberQuickActions />
+          </div>
+        </>
+      )}
+
+      <PriestSacramentDialog
+        open={sacramentOpen}
+        onOpenChange={setSacramentOpen}
+        onSuccess={fetchStats}
+      />
     </PageContainer>
   );
 }

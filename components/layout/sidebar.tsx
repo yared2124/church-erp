@@ -4,7 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { ChevronsLeft, ChevronsRight, ChevronDown, Church, Headphones } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, ChevronDown, Church, Headphones, ShieldCheck } from "lucide-react";
+import { EthiopicCross } from "@/components/ui/ethiopic-cross";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useLanguage } from "@/lib/language-context";
@@ -28,9 +29,6 @@ function getActiveChildHref(item: NavItem, pathname: string): string | null {
     (c) => pathname === c.href || pathname.startsWith(c.href + "/")
   );
   if (matches.length === 0) return null;
-  // Multiple children can share a path prefix (e.g. "/members" and
-  // "/members/families" both start with "/members"), so the most specific
-  // (longest) href wins and only that one lights up.
   return matches.reduce((best, c) => (c.href.length > best.href.length ? c : best)).href;
 }
 
@@ -44,8 +42,15 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
   const { data: session } = useSession();
   const { t } = useLanguage();
   const userRoles = session?.user?.roles ?? [];
+  const isPriest = userRoles.includes("Priest") && !userRoles.includes("Super Admin");
 
   function translateNav(label: string): string {
+    if (isPriest) {
+      if (label === "Members & Families") return t("sidebar.spiritual_children");
+      if (label === "Members") return t("sidebar.my_spiritual_children");
+      if (label === "Sacraments") return t("sidebar.sacrament_requests");
+    }
+
     const keyMap: Record<string, string> = {
       "Dashboard": "sidebar.dashboard",
       "Members & Families": "sidebar.members",
@@ -92,14 +97,21 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
   function filterNav(items: NavItem[]): NavItem[] {
     return items
       .filter((item) => hasAccess(item.roles))
-      .map((item) => ({
-        ...item,
-        label: translateNav(item.label),
-        children: item.children?.filter((child) => hasAccess(child.roles)).map((c) => ({
-          ...c,
-          label: translateNav(c.label),
-        })),
-      }));
+      .map((item) => {
+        let children = item.children?.filter((child) => hasAccess(child.roles));
+        // If Priest, they don't need general families overview
+        if (isPriest && item.href === "/members") {
+          children = children?.filter((c) => c.href === "/members");
+        }
+        return {
+          ...item,
+          label: translateNav(item.label),
+          children: children?.map((c) => ({
+            ...c,
+            label: translateNav(c.label),
+          })),
+        };
+      });
   }
 
   const showDashboard = hasAccess(dashboardNavItem.roles);
@@ -122,24 +134,24 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-sidebar transition-all duration-150",
+          "fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-sidebar border-r border-sidebar-border transition-all duration-150",
           collapsed ? "w-sidebar-collapsed" : "w-sidebar",
           "lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        {/* Brand */}
-        <div className="flex items-center gap-3 px-5 py-5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-sidebar-secondary">
-            <Church size={20} className="text-[#C9A24B]" strokeWidth={1.75} />
+        {/* Brand with authentic Ethiopian Orthodox Cross */}
+        <div className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border/60">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gold/40 bg-gradient-to-b from-primary/80 to-sidebar-secondary shadow-glow-gold">
+            <EthiopicCross size={22} variant="gold" />
           </div>
           {!collapsed && (
             <div className="min-w-0 leading-tight">
-              <div className="truncate text-[14px] font-bold text-sidebar-text">
-                Birhane Genet
+              <div className="truncate text-[14.5px] font-bold tracking-tight text-sidebar-text">
+                ብርሃነ ገነት
               </div>
-              <div className="truncate text-[12.5px] text-sidebar-muted">
-                St. Mary Church
+              <div className="truncate text-[12px] font-medium text-gold/90">
+                ቅድስት ማርያም ቤተክርስቲያን
               </div>
             </div>
           )}
@@ -263,7 +275,7 @@ function NavEntry({
         "flex min-h-[44px] items-center gap-3 rounded-md px-3 text-[14px] font-medium transition-colors duration-150",
         collapsed && "justify-center px-0",
         active
-          ? "bg-sidebar-active text-white font-semibold"
+          ? "bg-sidebar-active text-white font-semibold shadow-sm border-l-2 border-gold pl-2.5"
           : "text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text"
       )}
     >
@@ -301,14 +313,14 @@ function NavEntry({
                 className={cn(
                   "flex min-h-[38px] items-center rounded-md px-3 text-[13.5px] transition-colors duration-150",
                   childActive
-                    ? "font-semibold text-white"
+                    ? "font-semibold text-gold bg-sidebar-hover/40"
                     : "text-sidebar-muted hover:text-sidebar-text"
                 )}
               >
                 <span
                   className={cn(
                     "mr-2 h-1.5 w-1.5 shrink-0 rounded-full",
-                    childActive ? "bg-primary" : "bg-transparent"
+                    childActive ? "bg-gold shadow-glow-gold" : "bg-transparent"
                   )}
                 />
                 <span className="truncate">{child.label}</span>

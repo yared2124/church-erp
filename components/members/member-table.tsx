@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Cross } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { DataToolbar } from "@/components/ui/data-toolbar";
 import { Pagination } from "@/components/ui/pagination";
 import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { ListRowSkeleton } from "@/components/ui/skeleton";
+import { PriestSacramentDialog } from "@/components/sacraments/priest-sacrament-dialog";
 import { apiFetch, ApiClientError, type Paginated } from "@/lib/api-client";
 import { memberFullName, type ApiMember } from "@/features/members/member.types";
 
@@ -35,8 +36,12 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
   const [search, setSearch] = React.useState(""); // debounced
   const [status, setStatus] = React.useState("all");
   const [role, setRole] = React.useState("all");
+  const [sebeka, setSebeka] = React.useState("all");
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
+
+  const [sacramentModalOpen, setSacramentModalOpen] = React.useState(false);
+  const [sacramentTargetId, setSacramentTargetId] = React.useState<string | undefined>();
 
   const [result, setResult] = React.useState<Paginated<ApiMember> | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -48,7 +53,7 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
     return () => clearTimeout(t);
   }, [searchInput]);
 
-  React.useEffect(() => setPage(1), [search, status, role, pageSize]);
+  React.useEffect(() => setPage(1), [search, status, role, sebeka, pageSize]);
 
   const fetchMembers = React.useCallback(() => {
     setLoading(true);
@@ -58,6 +63,7 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
     if (search) params.set("search", search);
     if (status !== "all") params.set("status", status);
     if (role !== "all") params.set("roleInFamily", role);
+    if (sebeka !== "all") params.set("sebekaStatus", sebeka);
 
     apiFetch<Paginated<ApiMember>>(`/api/members?${params.toString()}`)
       .then(setResult)
@@ -65,7 +71,7 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
         setError(err instanceof ApiClientError ? err.message : "Failed to load members.");
       })
       .finally(() => setLoading(false));
-  }, [page, pageSize, search, status, role]);
+  }, [page, pageSize, search, status, role, sebeka]);
 
   React.useEffect(() => {
     fetchMembers();
@@ -75,6 +81,7 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
     setSearchInput("");
     setStatus("all");
     setRole("all");
+    setSebeka("all");
   };
 
   return (
@@ -94,6 +101,16 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
               { value: "Inactive", label: "Inactive" },
               { value: "Transferred", label: "Transferred" },
               { value: "Deceased", label: "Deceased" },
+            ],
+          },
+          {
+            key: "sebeka",
+            value: sebeka,
+            onChange: setSebeka,
+            options: [
+              { value: "all", label: "All Sebeka (ሰበካ)" },
+              { value: "Paid", label: "Paid (የተከፈለ)" },
+              { value: "Unpaid", label: "Unpaid (ያልተከፈለ)" },
             ],
           },
           {
@@ -136,6 +153,7 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
                 <TableHead>Full Name</TableHead>
                 <TableHead>Family</TableHead>
                 <TableHead>Role</TableHead>
+                <TableHead>Sebeka (ሰበካ)</TableHead>
                 <TableHead>Gender</TableHead>
                 <TableHead>Phone</TableHead>
                 <TableHead>Status</TableHead>
@@ -153,14 +171,33 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
                   <TableCell className="font-semibold text-text-primary">{memberFullName(m)}</TableCell>
                   <TableCell className="text-text-secondary">{m.family.name}</TableCell>
                   <TableCell className="text-text-secondary">{m.roleInFamily}</TableCell>
+                  <TableCell>
+                    <Badge tone={m.family?.sebekaStatus === "Paid" ? "success" : "warning"}>
+                      {m.family?.sebekaStatus === "Paid" ? "የተከፈለ" : "ያልተከፈለ"}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="text-text-secondary">{m.gender}</TableCell>
                   <TableCell className="text-text-secondary">{m.phone ?? "—"}</TableCell>
                   <TableCell><Badge tone={statusTone[m.status]}>{m.status}</Badge></TableCell>
                   <TableCell className="text-text-secondary">{formatDate(m.membershipDate)}</TableCell>
                   <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                    <button aria-label={`More actions for ${memberFullName(m)}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
-                      <MoreHorizontal size={16} />
-                    </button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        type="button"
+                        title="የምስጢራት ጥያቄ አቅርብ / Request Sacrament"
+                        onClick={() => {
+                          setSacramentTargetId(m.id);
+                          setSacramentModalOpen(true);
+                        }}
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-gold/40 px-2 text-[12px] font-semibold text-gold transition-colors duration-150 hover:bg-gold/10"
+                      >
+                        <Cross size={13} />
+                        <span className="hidden sm:inline">ማመልከቻ</span>
+                      </button>
+                      <button aria-label={`More actions for ${memberFullName(m)}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
+                        <MoreHorizontal size={16} />
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -174,6 +211,13 @@ export function MemberTable({ selectedId, onSelect, refreshKey = 0 }: MemberTabl
             totalItems={result.pagination.total}
             onPageChange={setPage}
             onPageSizeChange={setPageSize}
+          />
+
+          <PriestSacramentDialog
+            open={sacramentModalOpen}
+            onOpenChange={setSacramentModalOpen}
+            defaultMemberId={sacramentTargetId}
+            onSuccess={fetchMembers}
           />
         </>
       )}

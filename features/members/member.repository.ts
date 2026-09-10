@@ -13,9 +13,12 @@ export const memberRepository = {
       ...(query.status && { status: query.status }),
       ...(query.roleInFamily && { roleInFamily: query.roleInFamily }),
       ...(query.familyId && { familyId: query.familyId }),
+      ...(query.confessorPriestId && { confessorPriestId: query.confessorPriestId }),
+      ...(query.sebekaStatus && { family: { sebekaStatus: query.sebekaStatus } }),
       ...(query.search && {
         OR: [
           { firstName: { contains: query.search, mode: "insensitive" } },
+          { middleName: { contains: query.search, mode: "insensitive" } },
           { lastName: { contains: query.search, mode: "insensitive" } },
           { email: { contains: query.search, mode: "insensitive" } },
           { phone: { contains: query.search } },
@@ -26,7 +29,10 @@ export const memberRepository = {
     const [data, total] = await Promise.all([
       prisma.member.findMany({
         where,
-        include: { family: true },
+        include: {
+          family: true,
+          confessorPriest: { select: { id: true, name: true, email: true } },
+        },
         orderBy: { createdAt: "desc" },
         skip: (query.page - 1) * query.limit,
         take: query.limit,
@@ -101,31 +107,42 @@ export const memberRepository = {
     return prisma.family.findUnique({ where: { id: familyId }, select: { id: true } });
   },
 
-  async stats() {
-    const [total, active, inactive, newThisMonth] = await Promise.all([
-      prisma.member.count(),
-      prisma.member.count({ where: { status: "Active" } }),
-      prisma.member.count({ where: { status: "Inactive" } }),
+  async stats(priestId?: string) {
+    const filter = priestId ? { confessorPriestId: priestId } : {};
+    const [total, active, inactive, newThisMonth, sebekaPaid, sebekaUnpaid] = await Promise.all([
+      prisma.member.count({ where: filter }),
+      prisma.member.count({ where: { ...filter, status: "Active" } }),
+      prisma.member.count({ where: { ...filter, status: "Inactive" } }),
       prisma.member.count({
-        where: { membershipDate: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) } },
+        where: {
+          ...filter,
+          membershipDate: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) },
+        },
+      }),
+      prisma.member.count({
+        where: { ...filter, family: { sebekaStatus: "Paid" } },
+      }),
+      prisma.member.count({
+        where: { ...filter, family: { sebekaStatus: { not: "Paid" } } },
       }),
     ]);
-    return { total, active, inactive, newThisMonth };
+    return { total, active, inactive, newThisMonth, sebekaPaid, sebekaUnpaid };
   },
 
-  async genderBreakdown() {
-    const rows = await prisma.member.groupBy({ by: ["gender"], _count: true });
+  async genderBreakdown(priestId?: string) {
+    const where = priestId ? { confessorPriestId: priestId } : undefined;
+    const rows = await prisma.member.groupBy({ by: ["gender"], where, _count: true });
     return rows.map((r: { gender: "Male" | "Female"; _count: number }) => ({ gender: r.gender, count: r._count }));
   },
 
   /**
    * Age buckets computed in Node rather than SQL — acceptable for a
    * church-scale dataset (thousands, not millions, of rows) where a single
-   * narrow-column query is cheap. Revisit with a raw SQL histogram if this
-   * table grows into the hundreds of thousands of rows.
+   * narrow-column query is cheap.
    */
-  async ageBreakdown() {
-    const rows = await prisma.member.findMany({ select: { dateOfBirth: true } });
+  async ageBreakdown(priestId?: string) {
+    const where = priestId ? { confessorPriestId: priestId } : undefined;
+    const rows = await prisma.member.findMany({ where, select: { dateOfBirth: true } });
     const buckets = { "0-17": 0, "18-30": 0, "31-45": 0, "46-60": 0, "60+": 0 };
     const now = Date.now();
     for (const { dateOfBirth } of rows) {
@@ -139,11 +156,16 @@ export const memberRepository = {
     return Object.entries(buckets).map(([group, count]) => ({ group, count }));
   },
 
-  async recent(limit: number) {
+  async recent(limit: number, priestId?: string) {
+    const where = priestId ? { confessorPriestId: priestId } : undefined;
     return prisma.member.findMany({
+      where,
       orderBy: { membershipDate: "desc" },
       take: limit,
-      include: { family: true },
+      include: {
+        family: true,
+        confessorPriest: { select: { id: true, name: true } },
+      },
     });
   },
 };

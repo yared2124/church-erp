@@ -33,6 +33,8 @@ export const listMembersQuerySchema = z.object({
   status: z.enum(["Active", "Inactive", "Transferred", "Deceased"]).optional(),
   roleInFamily: z.enum(["Head", "Wife", "Husband", "Son", "Daughter"]).optional(),
   familyId: z.string().optional(),
+  confessorPriestId: z.string().optional(),
+  sebekaStatus: z.enum(["Paid", "Partial", "Unpaid", "Overdue"]).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
 });

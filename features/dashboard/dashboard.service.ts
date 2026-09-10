@@ -69,4 +69,41 @@ export const dashboardService = {
       pendingCertRequests,
     };
   },
+
+  async priestOverview(priestId: string) {
+    const [childrenCount, sebekaPaid, sebekaUnpaid, pendingSacraments, myChildren, sacramentCounts] = await Promise.all([
+      prisma.member.count({ where: { confessorPriestId: priestId } }),
+      prisma.member.count({ where: { confessorPriestId: priestId, family: { sebekaStatus: "Paid" } } }),
+      prisma.member.count({ where: { confessorPriestId: priestId, family: { sebekaStatus: { not: "Paid" } } } }),
+      prisma.sacrament.count({ where: { priestId, status: "Pending" } }),
+      prisma.member.findMany({
+        where: { confessorPriestId: priestId },
+        include: {
+          family: true,
+          confessorPriest: { select: { id: true, name: true } },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 8,
+      }),
+      prisma.sacrament.groupBy({
+        by: ["type"],
+        where: { priestId },
+        _count: true,
+      }),
+    ]);
+
+    const sacramentsByType = { Baptism: 0, Marriage: 0, Burial: 0 };
+    for (const row of sacramentCounts as { type: "Baptism" | "Marriage" | "Burial"; _count: number }[]) {
+      sacramentsByType[row.type] = row._count;
+    }
+
+    return {
+      totalSpiritualChildren: childrenCount,
+      sebekaPaid,
+      sebekaUnpaid,
+      pendingRequests: pendingSacraments,
+      myChildren,
+      sacramentsByType,
+    };
+  },
 };

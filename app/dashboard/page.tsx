@@ -11,6 +11,7 @@ import { PendingApprovals } from "@/components/dashboard/pending-approvals";
 import { AnnouncementBanner } from "@/components/dashboard/announcement-banner";
 import { requireAuth } from "@/lib/api-helpers";
 import { dashboardService } from "@/features/dashboard/dashboard.service";
+import { PriestDashboardView } from "@/components/dashboard/priest-dashboard-view";
 import { auth } from "@/auth";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +23,17 @@ export default async function DashboardPage() {
   await requireAuth();
   const session = await auth();
   const userRoles = session?.user?.roles ?? [];
+  const isPriest = userRoles.includes("Priest") && !userRoles.includes("Super Admin");
+
+  if (isPriest && session?.user?.id) {
+    const priestData = await dashboardService.priestOverview(session.user.id);
+    return (
+      <PageContainer>
+        <DashboardHeader />
+        <PriestDashboardView data={priestData} />
+      </PageContainer>
+    );
+  }
 
   const hasFinance = userRoles.some((r) =>
     ["Super Admin", "Cashier", "Sebeka Gubae"].includes(r)

@@ -6,7 +6,8 @@ import { createMemberSchema, listMembersQuerySchema } from "@/features/members/m
 
 // GET /api/members?search=&status=&roleInFamily=&familyId=&page=&limit=
 export const GET = withErrorHandling(async (req) => {
-  await requireAuth();
+  const user = await requireAuth();
+  const isPriest = user.roles.includes("Priest") && !user.roles.includes("Super Admin");
 
   const url = new URL(req.url);
   const parsed = listMembersQuerySchema.safeParse(Object.fromEntries(url.searchParams));
@@ -14,7 +15,12 @@ export const GET = withErrorHandling(async (req) => {
     throw new ApiError(400, parsed.error.issues.map((i) => i.message).join(" "));
   }
 
-  const result = await memberService.list(parsed.data);
+  const query = {
+    ...parsed.data,
+    ...(isPriest ? { confessorPriestId: user.id } : {}),
+  };
+
+  const result = await memberService.list(query);
   return NextResponse.json(result);
 });
 
