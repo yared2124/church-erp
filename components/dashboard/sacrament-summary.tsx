@@ -10,10 +10,16 @@ const CONFIG: { key: "Baptism" | "Marriage" | "Burial"; label: string; icon: Luc
 
 export function SacramentSummary({ counts, className }: { counts: { Baptism: number; Marriage: number; Burial: number }; className?: string }) {
   return (
-    <Card className={cn("lg:col-span-4", className)}>
+    <Card hoverable className={cn("lg:col-span-4", className)}>
       <CardHeader>
-        <CardTitle>Sacraments This Month</CardTitle>
-        <a href="/sacraments/baptisms" className="text-[13px] font-semibold text-primary transition-colors duration-150 hover:text-primary-hover">
+        <div>
+          <CardTitle>Sacraments This Month</CardTitle>
+          <p className="mt-0.5 text-[12px] text-text-muted">Registered spiritual rites</p>
+        </div>
+        <a
+          href="/sacraments/baptisms"
+          className="rounded-md px-2 py-1 text-[12.5px] font-semibold text-primary transition-colors duration-150 hover:bg-primary-light"
+        >
           View All
         </a>
       </CardHeader>

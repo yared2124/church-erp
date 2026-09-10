@@ -44,23 +44,27 @@ function ChartTooltip({ active, payload, label }: TooltipProps<number, string>) 
 
 export function IncomeExpenseChart({ data }: { data: { month: string; income: number; expenses: number }[] }) {
   return (
-    <Card className="xl:col-span-8">
+    <Card hoverable className="xl:col-span-8">
       <CardHeader>
-        <CardTitle>Income vs Expenses</CardTitle>
-        <button className="flex h-8 items-center gap-1.5 rounded-md border border-border bg-surface px-3 text-[13px] font-semibold text-text-primary transition-colors duration-150 hover:bg-background-alt">
-          This Year
-          <ChevronDown size={14} className="text-text-muted" />
-        </button>
+        <div>
+          <CardTitle>Income vs Expenses</CardTitle>
+          <p className="mt-0.5 text-[12.5px] text-text-muted">Monthly financial overview & trajectory</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-4 sm:flex">
+            <span className="flex items-center gap-1.5 text-[12px] font-medium text-text-secondary">
+              <span className="h-2 w-2 rounded-full bg-success ring-4 ring-success-bg" /> Income
+            </span>
+            <span className="flex items-center gap-1.5 text-[12px] font-medium text-text-secondary">
+              <span className="h-2 w-2 rounded-full bg-danger ring-4 ring-danger-bg" /> Expenses
+            </span>
+          </div>
+          <button className="flex h-8 items-center gap-1.5 rounded-lg border border-border/80 bg-surface px-2.5 text-[12.5px] font-semibold text-text-primary shadow-sm transition-colors duration-150 hover:bg-background-alt">
+            This Year
+            <ChevronDown size={13} className="text-text-muted" />
+          </button>
+        </div>
       </CardHeader>
-
-      <div className="mb-2 flex gap-5 text-[12.5px] text-text-secondary">
-        <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-success" /> Income
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-danger" /> Expenses
-        </span>
-      </div>
 
       <div className="h-[300px] w-full">
         <ResponsiveContainer>

@@ -10,13 +10,16 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Set false to render without the standard padding (e.g. a card with its
    * own edge-to-edge header/tabs, like the member detail panel). Defaults to true. */
   padded?: boolean;
+  /** Add subtle interactive hover elevation and border transition */
+  hoverable?: boolean;
 }
 
-export function Card({ className, padded = true, ...props }: CardProps) {
+export function Card({ className, padded = true, hoverable = false, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-lg border border-border bg-surface shadow-card",
+        "rounded-xl border border-border/80 bg-surface shadow-card transition-all duration-200",
+        hoverable && "hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-elevated",
         padded && "p-5 sm:p-6",
         className
       )}

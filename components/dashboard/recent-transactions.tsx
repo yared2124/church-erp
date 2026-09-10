@@ -33,13 +33,20 @@ function formatRelativeTime(iso: string | Date) {
 
 export function RecentTransactions({ transactions }: { transactions: TransactionRow[] }) {
   return (
-    <Card className="xl:col-span-4">
-      <CardHeader>
-        <CardTitle>Recent Transactions</CardTitle>
-        <a href="/finance/transactions" className="text-[13px] font-semibold text-primary transition-colors duration-150 hover:text-primary-hover">
-          View All
-        </a>
-      </CardHeader>
+    <Card hoverable className="xl:col-span-4 flex flex-col justify-between">
+      <div>
+        <CardHeader>
+          <div>
+            <CardTitle>Recent Transactions</CardTitle>
+            <p className="mt-0.5 text-[12px] text-text-muted">Latest financial movements</p>
+          </div>
+          <a
+            href="/finance/transactions"
+            className="rounded-md px-2 py-1 text-[12.5px] font-semibold text-primary transition-colors duration-150 hover:bg-primary-light"
+          >
+            View All
+          </a>
+        </CardHeader>
 
       {transactions.length === 0 ? (
         <EmptyState title="No transactions yet" description="Transactions will appear here once recorded." />
@@ -74,6 +81,7 @@ export function RecentTransactions({ transactions }: { transactions: Transaction
           })}
         </div>
       )}
+      </div>
     </Card>
   );
 }

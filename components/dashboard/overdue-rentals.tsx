@@ -11,10 +11,16 @@ interface OverdueRentPayment {
 
 export function OverdueRentals({ rentals, className }: { rentals: OverdueRentPayment[]; className?: string }) {
   return (
-    <Card className={cn("lg:col-span-4", className)}>
+    <Card hoverable className={cn("lg:col-span-4", className)}>
       <CardHeader>
-        <CardTitle>Overdue Rentals</CardTitle>
-        <a href="/property" className="text-[13px] font-semibold text-primary transition-colors duration-150 hover:text-primary-hover">
+        <div>
+          <CardTitle>Overdue Rentals</CardTitle>
+          <p className="mt-0.5 text-[12px] text-text-muted">Uncollected property dues</p>
+        </div>
+        <a
+          href="/property"
+          className="rounded-md px-2 py-1 text-[12.5px] font-semibold text-primary transition-colors duration-150 hover:bg-primary-light"
+        >
           View All
         </a>
       </CardHeader>
