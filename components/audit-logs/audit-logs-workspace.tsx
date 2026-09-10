@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { AuditLogTable, type ApiAuditLog } from "./audit-log-table";
-import { AuditLogDetailPanel } from "./audit-log-detail-panel";
+import { AuditLogDetailDialog } from "./audit-log-detail-dialog";
 
 export function AuditLogsWorkspace({
   filterOptions,
@@ -12,15 +12,19 @@ export function AuditLogsWorkspace({
   const [selected, setSelected] = React.useState<ApiAuditLog | null>(null);
 
   return (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-      <div className="xl:col-span-8">
-        <div className="rounded-lg border border-border bg-surface p-5 shadow-card sm:p-6">
-          <AuditLogTable selectedId={selected?.id ?? null} onSelect={setSelected} filterOptions={filterOptions} />
-        </div>
+    <div className="w-full">
+      <div className="rounded-xl border border-border/80 bg-surface p-4 shadow-card sm:p-5">
+        <AuditLogTable selectedId={selected?.id ?? null} onSelect={setSelected} filterOptions={filterOptions} />
       </div>
-      <div className="xl:col-span-4">
-        <AuditLogDetailPanel log={selected} onClose={() => setSelected(null)} />
-      </div>
+
+      {/* Pop-up Modal Dialog with Back Button */}
+      <AuditLogDetailDialog
+        log={selected}
+        open={!!selected}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
+      />
     </div>
   );
 }

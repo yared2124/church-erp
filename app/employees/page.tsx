@@ -56,18 +56,20 @@ export default async function EmployeesOverviewPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-        <div className="xl:col-span-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Employees</CardTitle>
-            </CardHeader>
-            <EmployeeTable />
-          </Card>
-        </div>
+      <div className="mb-5 w-full">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Employees</CardTitle>
+          </CardHeader>
+          <EmployeeTable />
+        </Card>
+      </div>
 
-        <div className="flex flex-col gap-4 xl:col-span-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <div className="lg:col-span-7">
           <DepartmentDistributionCard data={s.byDepartment} />
+        </div>
+        <div className="lg:col-span-5">
           <EmployeeQuickActions />
         </div>
       </div>

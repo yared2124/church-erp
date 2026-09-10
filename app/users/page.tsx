@@ -10,6 +10,7 @@ import { UsersTabs, type UsersTab } from "@/components/users/users-tabs";
 import { UserTable, type ApiSystemUser } from "@/components/users/user-table";
 import { RolesPermissionsPanel } from "@/components/users/roles-permissions-panel";
 import { RolesSummaryCard, SelectedUserDetailsCard } from "@/components/users/user-side-panels";
+import { UserDetailDialog } from "@/components/users/user-detail-dialog";
 import { UserModal } from "@/components/users/user-modal";
 import { UserDeleteDialog } from "@/components/users/user-delete-dialog";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
@@ -100,23 +101,27 @@ export default function UsersPage() {
       <UsersTabs value={tab} onChange={setTab} />
 
       {tab === "Users" ? (
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-          <div className="xl:col-span-8">
-            <div className="rounded-lg border border-border bg-surface p-5 shadow-card sm:p-6">
-              <UserTable
-                selectedId={selected?.id ?? null}
-                onSelect={setSelected}
-                onEdit={handleOpenEdit}
-                onDelete={handleOpenDelete}
-                roleOptions={roleOptions}
-                refreshKey={refreshKey}
-              />
-            </div>
+        <div className="w-full">
+          <div className="rounded-xl border border-border/80 bg-surface p-4 shadow-card sm:p-5">
+            <UserTable
+              selectedId={selected?.id ?? null}
+              onSelect={setSelected}
+              onEdit={handleOpenEdit}
+              onDelete={handleOpenDelete}
+              roleOptions={roleOptions}
+              refreshKey={refreshKey}
+            />
           </div>
-          <div className="flex flex-col gap-4 xl:col-span-4">
-            <RolesSummaryCard roles={roles} />
-            <SelectedUserDetailsCard user={selected} />
-          </div>
+
+          {/* Pop-up Modal Dialog with Back Button */}
+          <UserDetailDialog
+            user={selected}
+            open={!!selected}
+            onOpenChange={(open) => {
+              if (!open) setSelected(null);
+            }}
+            onEdit={handleOpenEdit}
+          />
         </div>
       ) : (
         <RolesPermissionsPanel roles={roles} />

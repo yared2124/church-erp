@@ -2,21 +2,25 @@
 
 import * as React from "react";
 import { CertificateTable, type ApiCertificateRequest } from "./certificate-table";
-import { CertificateDetailPanel } from "./certificate-detail-panel";
+import { CertificateDetailDialog } from "./certificate-detail-dialog";
 
 export function CertificatesWorkspace() {
   const [selected, setSelected] = React.useState<ApiCertificateRequest | null>(null);
 
   return (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-      <div className="xl:col-span-8">
-        <div className="rounded-lg border border-border bg-surface p-5 shadow-card sm:p-6">
-          <CertificateTable selectedId={selected?.id ?? null} onSelect={setSelected} />
-        </div>
+    <div className="w-full">
+      <div className="rounded-xl border border-border/80 bg-surface p-4 shadow-card sm:p-5">
+        <CertificateTable selectedId={selected?.id ?? null} onSelect={setSelected} />
       </div>
-      <div className="xl:col-span-4">
-        <CertificateDetailPanel request={selected} onClose={() => setSelected(null)} />
-      </div>
+
+      {/* Pop-up Modal Dialog with Back Button */}
+      <CertificateDetailDialog
+        request={selected}
+        open={!!selected}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
+      />
     </div>
   );
 }

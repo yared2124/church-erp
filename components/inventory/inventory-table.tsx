@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Eye } from "lucide-react";
+import { InventoryDetailDialog } from "./inventory-detail-dialog";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/input";
@@ -36,6 +37,7 @@ const statusLabel: Record<StockStatus, string> = {
 };
 
 export function InventoryTable() {
+  const [selected, setSelected] = React.useState<ApiInventoryItem | null>(null);
   const [searchInput, setSearchInput] = React.useState("");
   const [search, setSearch] = React.useState("");
   const [status, setStatus] = React.useState("all");
@@ -105,32 +107,47 @@ export function InventoryTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-10"><Checkbox aria-label="Select all" /></TableHead>
-                <TableHead>Item Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Unit Price (ETB)</TableHead>
-                <TableHead>Total Value (ETB)</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-10 whitespace-nowrap"><Checkbox aria-label="Select all" /></TableHead>
+                <TableHead className="whitespace-nowrap">Item Name</TableHead>
+                <TableHead className="whitespace-nowrap">Category</TableHead>
+                <TableHead className="whitespace-nowrap">Quantity</TableHead>
+                <TableHead className="whitespace-nowrap">Unit Price (ETB)</TableHead>
+                <TableHead className="whitespace-nowrap">Total Value (ETB)</TableHead>
+                <TableHead className="whitespace-nowrap">Location</TableHead>
+                <TableHead className="whitespace-nowrap">Status</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {result.data.map((i) => (
-                <TableRow key={i.id}>
-                  <TableCell><Checkbox aria-label={`Select ${i.name}`} /></TableCell>
-                  <TableCell className="font-semibold text-text-primary">{i.name}</TableCell>
-                  <TableCell className="text-text-secondary">{i.category.name}</TableCell>
-                  <TableCell className="text-text-secondary">{i.quantity}</TableCell>
-                  <TableCell className="text-text-secondary">{Number(i.unitPrice).toLocaleString()}</TableCell>
-                  <TableCell className="text-text-secondary">{(i.quantity * Number(i.unitPrice)).toLocaleString()}</TableCell>
-                  <TableCell className="text-text-secondary">{i.location ?? "—"}</TableCell>
-                  <TableCell><Badge tone={statusTone[i.status]}>{statusLabel[i.status]}</Badge></TableCell>
-                  <TableCell className="text-right">
-                    <button aria-label={`More actions for ${i.name}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
-                      <MoreHorizontal size={16} />
-                    </button>
+                <TableRow
+                  key={i.id}
+                  onClick={() => setSelected(i)}
+                  className="cursor-pointer transition-colors hover:bg-background-alt/60"
+                >
+                  <TableCell onClick={(e) => e.stopPropagation()} className="whitespace-nowrap"><Checkbox aria-label={`Select ${i.name}`} /></TableCell>
+                  <TableCell className="font-semibold text-text-primary whitespace-nowrap">{i.name}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{i.category.name}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{i.quantity}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{Number(i.unitPrice).toLocaleString()}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{(i.quantity * Number(i.unitPrice)).toLocaleString()}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{i.location ?? "—"}</TableCell>
+                  <TableCell className="whitespace-nowrap"><Badge tone={statusTone[i.status]}>{statusLabel[i.status]}</Badge></TableCell>
+                  <TableCell className="text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        type="button"
+                        title="የዕቃውን ዝርዝር እይ / View Item Detail"
+                        onClick={() => setSelected(i)}
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-[12px] font-medium text-text-primary transition-colors duration-150 hover:bg-background-alt hover:border-primary/40"
+                      >
+                        <Eye size={13} className="text-primary" />
+                        <span className="hidden sm:inline">ዝርዝር</span>
+                      </button>
+                      <button aria-label={`More actions for ${i.name}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
+                        <MoreHorizontal size={16} />
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -138,6 +155,15 @@ export function InventoryTable() {
           </Table>
 
           <Pagination page={result.pagination.page} pageCount={result.pagination.totalPages} pageSize={result.pagination.limit} pageSizeOptions={[8, 25, 50]} totalItems={result.pagination.total} onPageChange={setPage} onPageSizeChange={setPageSize} />
+
+          {/* Pop-up Modal Dialog with Back Button */}
+          <InventoryDetailDialog
+            item={selected}
+            open={!!selected}
+            onOpenChange={(open) => {
+              if (!open) setSelected(null);
+            }}
+          />
         </>
       )}
     </div>

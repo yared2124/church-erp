@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Eye } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { DataToolbar } from "@/components/ui/data-toolbar";
@@ -120,38 +120,54 @@ export function SacramentTable({ type, selectedId, onSelect, priestOptions }: Sa
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>{isMarriage ? "Groom" : type === "Burial" ? "Deceased" : "Child Name"}</TableHead>
-                {isMarriage && <TableHead>Bride</TableHead>}
-                {!isMarriage && <TableHead>Gender</TableHead>}
-                <TableHead>Family</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Priest</TableHead>
-                <TableHead>Church</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="whitespace-nowrap">ID</TableHead>
+                <TableHead className="whitespace-nowrap">{isMarriage ? "Groom" : type === "Burial" ? "Deceased" : "Child Name"}</TableHead>
+                {isMarriage && <TableHead className="whitespace-nowrap">Bride</TableHead>}
+                {!isMarriage && <TableHead className="whitespace-nowrap">Gender</TableHead>}
+                <TableHead className="whitespace-nowrap">Family</TableHead>
+                <TableHead className="whitespace-nowrap">Date</TableHead>
+                <TableHead className="whitespace-nowrap">Priest</TableHead>
+                <TableHead className="whitespace-nowrap">Church</TableHead>
+                <TableHead className="whitespace-nowrap">Status</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {result.data.map((r) => (
-                <TableRow key={r.id} selected={r.id === selectedId} onClick={() => onSelect(r)} className="cursor-pointer">
-                  <TableCell className="font-medium text-text-secondary">{r.id.slice(0, 8)}</TableCell>
-                  <TableCell className="font-semibold text-text-primary">{memberName(r.primaryMember)}</TableCell>
+                <TableRow
+                  key={r.id}
+                  selected={r.id === selectedId}
+                  onClick={() => onSelect(r)}
+                  className="cursor-pointer transition-colors hover:bg-background-alt/60"
+                >
+                  <TableCell className="font-medium text-text-secondary whitespace-nowrap">{r.id.slice(0, 8)}</TableCell>
+                  <TableCell className="font-semibold text-text-primary whitespace-nowrap">{memberName(r.primaryMember)}</TableCell>
                   {isMarriage && (
-                    <TableCell className="font-semibold text-text-primary">
+                    <TableCell className="font-semibold text-text-primary whitespace-nowrap">
                       {r.secondaryMember ? memberName(r.secondaryMember) : "—"}
                     </TableCell>
                   )}
-                  {!isMarriage && <TableCell className="text-text-secondary">{r.primaryMember.gender}</TableCell>}
-                  <TableCell className="text-text-secondary">{r.family?.name ?? "—"}</TableCell>
-                  <TableCell className="text-text-secondary">{formatDate(r.date)}</TableCell>
-                  <TableCell className="text-text-secondary">{r.priest?.name ?? "—"}</TableCell>
-                  <TableCell className="text-text-secondary">{r.church}</TableCell>
-                  <TableCell><Badge tone={statusTone[r.status]}>{r.status}</Badge></TableCell>
-                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                    <button aria-label={`More actions for ${r.id}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
-                      <MoreHorizontal size={16} />
-                    </button>
+                  {!isMarriage && <TableCell className="text-text-secondary whitespace-nowrap">{r.primaryMember.gender}</TableCell>}
+                  <TableCell className="text-text-secondary whitespace-nowrap">{r.family?.name ?? "—"}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{formatDate(r.date)}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{r.priest?.name ?? "—"}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{r.church}</TableCell>
+                  <TableCell className="whitespace-nowrap"><Badge tone={statusTone[r.status]}>{r.status}</Badge></TableCell>
+                  <TableCell className="text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        type="button"
+                        title="የምስጢራት ዝርዝር መረጃ እይ / View Sacrament Detail"
+                        onClick={() => onSelect(r)}
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-[12px] font-medium text-text-primary transition-colors duration-150 hover:bg-background-alt hover:border-primary/40"
+                      >
+                        <Eye size={13} className="text-primary" />
+                        <span className="hidden sm:inline">ዝርዝር</span>
+                      </button>
+                      <button aria-label={`More actions for ${r.id}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
+                        <MoreHorizontal size={16} />
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

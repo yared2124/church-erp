@@ -112,36 +112,45 @@ export function UserTable({ selectedId, onSelect, onEdit, onDelete, roleOptions,
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Last Login</TableHead>
-                <TableHead>Joined Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="whitespace-nowrap">User</TableHead>
+                <TableHead className="whitespace-nowrap">Role</TableHead>
+                <TableHead className="whitespace-nowrap">Status</TableHead>
+                <TableHead className="whitespace-nowrap">Last Login</TableHead>
+                <TableHead className="whitespace-nowrap">Joined Date</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {result.data.map((u) => (
-                <TableRow key={u.id} selected={u.id === selectedId} onClick={() => onSelect(u)} className="cursor-pointer">
-                  <TableCell>
+                <TableRow
+                  key={u.id}
+                  selected={u.id === selectedId}
+                  onClick={() => onSelect(u)}
+                  className="cursor-pointer transition-colors hover:bg-background-alt/60"
+                >
+                  <TableCell className="whitespace-nowrap">
                     <p className="font-semibold text-text-primary">{u.name}</p>
                     <p className="text-[11.5px] text-text-muted">{u.email}</p>
                   </TableCell>
-                  <TableCell>
-                    {u.roles.map((r) => <Badge key={r.role.id} tone="info">{r.role.name}</Badge>)}
+                  <TableCell className="whitespace-nowrap">
+                    <div className="flex flex-wrap gap-1">
+                      {u.roles.map((r) => <Badge key={r.role.id} tone="info">{r.role.name}</Badge>)}
+                    </div>
                   </TableCell>
-                  <TableCell><Badge tone={statusTone[u.status]}>{u.status}</Badge></TableCell>
-                  <TableCell className="text-text-secondary">{formatDateTime(u.lastLoginAt)}</TableCell>
-                  <TableCell className="text-text-secondary">{formatDateTime(u.createdAt)}</TableCell>
-                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center justify-end gap-1">
+                  <TableCell className="whitespace-nowrap"><Badge tone={statusTone[u.status]}>{u.status}</Badge></TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{formatDateTime(u.lastLoginAt)}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{formatDateTime(u.createdAt)}</TableCell>
+                  <TableCell className="text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-1.5">
                       <button
+                        type="button"
                         onClick={() => onSelect(u)}
                         aria-label={`View ${u.name}`}
-                        title="View details"
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt hover:text-text-primary"
+                        title="የተጠቃሚውን ዝርዝር እይ / View User Details"
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-[12px] font-medium text-text-primary transition-colors duration-150 hover:bg-background-alt hover:border-primary/40"
                       >
-                        <Eye size={16} />
+                        <Eye size={13} className="text-primary" />
+                        <span className="hidden sm:inline">ዝርዝር</span>
                       </button>
                       {onEdit && (
                         <button
@@ -150,7 +159,7 @@ export function UserTable({ selectedId, onSelect, onEdit, onDelete, roleOptions,
                           title="Edit user"
                           className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt hover:text-text-primary"
                         >
-                          <Pencil size={16} />
+                          <Pencil size={15} />
                         </button>
                       )}
                       {onDelete && (
@@ -160,7 +169,7 @@ export function UserTable({ selectedId, onSelect, onEdit, onDelete, roleOptions,
                           title="Delete user"
                           className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-danger-bg hover:text-danger"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={15} />
                         </button>
                       )}
                     </div>

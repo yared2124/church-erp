@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Eye } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/input";
@@ -125,35 +125,51 @@ export function FamilyTable({ selectedId, onSelect, refreshKey = 0 }: FamilyTabl
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10"><Checkbox aria-label="Select all" /></TableHead>
-                <TableHead>Family ID</TableHead>
-                <TableHead>Family Name</TableHead>
-                <TableHead>Head of Family</TableHead>
-                <TableHead>Members</TableHead>
-                <TableHead>Phone</TableHead>
-                <TableHead>Sebeka Status</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="whitespace-nowrap">Family ID</TableHead>
+                <TableHead className="whitespace-nowrap">Family Name</TableHead>
+                <TableHead className="whitespace-nowrap">Head of Family</TableHead>
+                <TableHead className="whitespace-nowrap">Members</TableHead>
+                <TableHead className="whitespace-nowrap">Phone</TableHead>
+                <TableHead className="whitespace-nowrap">Sebeka Status</TableHead>
+                <TableHead className="whitespace-nowrap">Status</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {result.data.map((f) => {
                 const head = headOfFamily(f);
                 return (
-                  <TableRow key={f.id} selected={f.id === selectedId} onClick={() => onSelect(f)} className="cursor-pointer">
+                  <TableRow
+                    key={f.id}
+                    selected={f.id === selectedId}
+                    onClick={() => onSelect(f)}
+                    className="cursor-pointer transition-colors hover:bg-background-alt/60"
+                  >
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox aria-label={`Select ${f.name}`} />
                     </TableCell>
                     <TableCell className="font-medium text-text-secondary">{f.id.slice(0, 8)}</TableCell>
-                    <TableCell className="font-semibold text-text-primary">{f.name}</TableCell>
-                    <TableCell className="text-text-secondary">{head ? memberFullName(head) : "—"}</TableCell>
+                    <TableCell className="font-medium text-text-primary whitespace-nowrap">{f.name}</TableCell>
+                    <TableCell className="text-text-secondary whitespace-nowrap">{head ? memberFullName(head) : "—"}</TableCell>
                     <TableCell className="text-text-secondary">{f._count.members}</TableCell>
-                    <TableCell className="text-text-secondary">{f.phone ?? "—"}</TableCell>
-                    <TableCell><Badge tone={sebekaTone[f.sebekaStatus]}>{f.sebekaStatus}</Badge></TableCell>
-                    <TableCell><Badge tone={f.status === "Active" ? "success" : "neutral"}>{f.status}</Badge></TableCell>
+                    <TableCell className="text-text-secondary whitespace-nowrap">{f.phone ?? "—"}</TableCell>
+                    <TableCell className="whitespace-nowrap"><Badge tone={sebekaTone[f.sebekaStatus]}>{f.sebekaStatus}</Badge></TableCell>
+                    <TableCell className="whitespace-nowrap"><Badge tone={f.status === "Active" ? "success" : "neutral"}>{f.status}</Badge></TableCell>
                     <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                      <button aria-label={`More actions for ${f.name}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
-                        <MoreHorizontal size={16} />
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          title="የቤተሰቡን ዝርዝር መረጃ እይ / View Family Detail"
+                          onClick={() => onSelect(f)}
+                          className="inline-flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-[12px] font-medium text-text-primary transition-colors duration-150 hover:bg-background-alt hover:border-primary/40"
+                        >
+                          <Eye size={13} className="text-primary" />
+                          <span className="hidden sm:inline">ዝርዝር</span>
+                        </button>
+                        <button aria-label={`More actions for ${f.name}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
+                          <MoreHorizontal size={16} />
+                        </button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

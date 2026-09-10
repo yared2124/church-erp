@@ -116,30 +116,41 @@ export function CertificateTable({ selectedId, onSelect }: CertificateTableProps
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Request ID</TableHead>
-                <TableHead>Member</TableHead>
-                <TableHead>Certificate Type</TableHead>
-                <TableHead>Requested By</TableHead>
-                <TableHead>Request Date</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="whitespace-nowrap">Request ID</TableHead>
+                <TableHead className="whitespace-nowrap">Member</TableHead>
+                <TableHead className="whitespace-nowrap">Certificate Type</TableHead>
+                <TableHead className="whitespace-nowrap">Requested By</TableHead>
+                <TableHead className="whitespace-nowrap">Request Date</TableHead>
+                <TableHead className="whitespace-nowrap">Status</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {result.data.map((r) => (
-                <TableRow key={r.id} selected={r.id === selectedId} onClick={() => onSelect(r)} className="cursor-pointer">
-                  <TableCell className="font-medium text-text-secondary">{r.id.slice(0, 8)}</TableCell>
-                  <TableCell>
+                <TableRow
+                  key={r.id}
+                  selected={r.id === selectedId}
+                  onClick={() => onSelect(r)}
+                  className="cursor-pointer transition-colors hover:bg-background-alt/60"
+                >
+                  <TableCell className="font-medium text-text-secondary whitespace-nowrap">{r.id.slice(0, 8)}</TableCell>
+                  <TableCell className="whitespace-nowrap">
                     <p className="font-semibold text-text-primary">{r.member.firstName} {r.member.lastName}</p>
                   </TableCell>
-                  <TableCell className="text-text-secondary">{typeLabel[r.type]}</TableCell>
-                  <TableCell className="text-text-primary">{r.requestedBy.name}</TableCell>
-                  <TableCell className="text-text-secondary">{formatDate(r.createdAt)}</TableCell>
-                  <TableCell><Badge tone={statusTone[r.status]}>{r.status}</Badge></TableCell>
-                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => onSelect(r)} aria-label={`View ${r.id}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
-                        <Eye size={16} />
+                  <TableCell className="text-text-secondary whitespace-nowrap">{typeLabel[r.type]}</TableCell>
+                  <TableCell className="text-text-primary whitespace-nowrap">{r.requestedBy.name}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{formatDate(r.createdAt)}</TableCell>
+                  <TableCell className="whitespace-nowrap"><Badge tone={statusTone[r.status]}>{r.status}</Badge></TableCell>
+                  <TableCell className="text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        type="button"
+                        title="የሰርቲፊኬት ጥያቄ ዝርዝር እይ / View Request Detail"
+                        onClick={() => onSelect(r)}
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-[12px] font-medium text-text-primary transition-colors duration-150 hover:bg-background-alt hover:border-primary/40"
+                      >
+                        <Eye size={13} className="text-primary" />
+                        <span className="hidden sm:inline">ዝርዝር</span>
                       </button>
                       <button aria-label={`More actions for ${r.id}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
                         <MoreVertical size={16} />

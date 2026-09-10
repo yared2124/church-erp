@@ -109,31 +109,42 @@ export function AuditLogTable({ selectedId, onSelect, filterOptions }: AuditLogT
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-10"><Checkbox aria-label="Select all" /></TableHead>
-                <TableHead>Date & Time</TableHead>
-                <TableHead>User</TableHead>
-                <TableHead>Action</TableHead>
-                <TableHead>Entity</TableHead>
-                <TableHead>Entity ID</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>IP Address</TableHead>
-                <TableHead className="text-right">Details</TableHead>
+                <TableHead className="w-10 whitespace-nowrap"><Checkbox aria-label="Select all" /></TableHead>
+                <TableHead className="whitespace-nowrap">Date & Time</TableHead>
+                <TableHead className="whitespace-nowrap">User</TableHead>
+                <TableHead className="whitespace-nowrap">Action</TableHead>
+                <TableHead className="whitespace-nowrap">Entity</TableHead>
+                <TableHead className="whitespace-nowrap">Entity ID</TableHead>
+                <TableHead className="whitespace-nowrap">Status</TableHead>
+                <TableHead className="whitespace-nowrap">IP Address</TableHead>
+                <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {result.data.map((l) => (
-                <TableRow key={l.id} selected={l.id === selectedId} onClick={() => onSelect(l)} className="cursor-pointer">
-                  <TableCell onClick={(e) => e.stopPropagation()}><Checkbox aria-label={`Select ${l.id}`} /></TableCell>
-                  <TableCell className="text-text-secondary">{formatDateTime(l.createdAt)}</TableCell>
-                  <TableCell className="font-semibold text-text-primary">{l.user.name}</TableCell>
-                  <TableCell><Badge tone={actionTone[l.action] ?? "neutral"}>{l.action}</Badge></TableCell>
-                  <TableCell className="text-text-secondary">{l.entity}</TableCell>
-                  <TableCell className="text-text-secondary">{l.entityId.slice(0, 8)}</TableCell>
-                  <TableCell><Badge tone={statusTone[l.status]}>{l.status}</Badge></TableCell>
-                  <TableCell className="text-text-secondary">{l.ipAddress ?? "—"}</TableCell>
-                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => onSelect(l)} aria-label={`View details for ${l.id}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt">
-                      <Eye size={16} />
+                <TableRow
+                  key={l.id}
+                  selected={l.id === selectedId}
+                  onClick={() => onSelect(l)}
+                  className="cursor-pointer transition-colors hover:bg-background-alt/60"
+                >
+                  <TableCell onClick={(e) => e.stopPropagation()} className="whitespace-nowrap"><Checkbox aria-label={`Select ${l.id}`} /></TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{formatDateTime(l.createdAt)}</TableCell>
+                  <TableCell className="font-semibold text-text-primary whitespace-nowrap">{l.user.name}</TableCell>
+                  <TableCell className="whitespace-nowrap"><Badge tone={actionTone[l.action] ?? "neutral"}>{l.action}</Badge></TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{l.entity}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{l.entityId.slice(0, 8)}</TableCell>
+                  <TableCell className="whitespace-nowrap"><Badge tone={statusTone[l.status]}>{l.status}</Badge></TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{l.ipAddress ?? "—"}</TableCell>
+                  <TableCell className="text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      type="button"
+                      title="የቁጥጥር መዝገብ ዝርዝር እይ / View Audit Detail"
+                      onClick={() => onSelect(l)}
+                      className="inline-flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-[12px] font-medium text-text-primary transition-colors duration-150 hover:bg-background-alt hover:border-primary/40"
+                    >
+                      <Eye size={13} className="text-primary" />
+                      <span className="hidden sm:inline">ዝርዝር</span>
                     </button>
                   </TableCell>
                 </TableRow>

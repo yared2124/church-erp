@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ArrowDownLeft, ArrowUpRight, MoreHorizontal } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, MoreHorizontal, Eye } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { DataToolbar } from "@/components/ui/data-toolbar";
@@ -10,6 +10,7 @@ import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { ListRowSkeleton } from "@/components/ui/skeleton";
 import { apiFetch, ApiClientError, type Paginated } from "@/lib/api-client";
 import { paymentMethodLabel, type ApiTransaction, type TransactionStatus, type TransactionType } from "@/features/finance/finance.types";
+import { TransactionDetailDialog } from "./transaction-detail-dialog";
 
 const statusTone: Record<TransactionStatus, BadgeTone> = {
   Paid: "success",
@@ -29,6 +30,7 @@ interface TransactionTableProps {
 }
 
 export function TransactionTable({ fixedType, limit, compact = false }: TransactionTableProps) {
+  const [selected, setSelected] = React.useState<ApiTransaction | null>(null);
   const [searchInput, setSearchInput] = React.useState("");
   const [search, setSearch] = React.useState("");
   const [status, setStatus] = React.useState("all");
@@ -115,46 +117,61 @@ export function TransactionTable({ fixedType, limit, compact = false }: Transact
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
-                <TableHead>Date</TableHead>
-                {!fixedType && <TableHead>Type</TableHead>}
-                <TableHead>Description</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Amount (ETB)</TableHead>
-                <TableHead>Method</TableHead>
-                <TableHead>Status</TableHead>
-                {!compact && <TableHead>Created By</TableHead>}
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="whitespace-nowrap">ID</TableHead>
+                <TableHead className="whitespace-nowrap">Date</TableHead>
+                {!fixedType && <TableHead className="whitespace-nowrap">Type</TableHead>}
+                <TableHead className="whitespace-nowrap">Description</TableHead>
+                <TableHead className="whitespace-nowrap">Category</TableHead>
+                <TableHead className="whitespace-nowrap">Amount (ETB)</TableHead>
+                <TableHead className="whitespace-nowrap">Method</TableHead>
+                <TableHead className="whitespace-nowrap">Status</TableHead>
+                {!compact && <TableHead className="whitespace-nowrap">Created By</TableHead>}
+                <TableHead className="text-right whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {display.map((t) => (
-                <TableRow key={t.id}>
-                  <TableCell className="font-medium text-text-secondary">{t.id.slice(0, 8)}</TableCell>
-                  <TableCell className="text-text-secondary">{formatDate(t.transactionDate)}</TableCell>
+                <TableRow
+                  key={t.id}
+                  onClick={() => setSelected(t)}
+                  className="cursor-pointer transition-colors hover:bg-background-alt/60"
+                >
+                  <TableCell className="font-medium text-text-secondary whitespace-nowrap">{t.id.slice(0, 8)}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{formatDate(t.transactionDate)}</TableCell>
                   {!fixedType && (
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <TypeIcon type={t.type} />
                     </TableCell>
                   )}
-                  <TableCell className="font-semibold text-text-primary">{t.description}</TableCell>
-                  <TableCell className="text-text-secondary">{t.category.name}</TableCell>
-                  <TableCell className={t.type === "Income" ? "font-semibold text-success" : "font-semibold text-danger"}>
+                  <TableCell className="font-semibold text-text-primary whitespace-nowrap">{t.description}</TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{t.category.name}</TableCell>
+                  <TableCell className={`whitespace-nowrap ${t.type === "Income" ? "font-semibold text-success" : "font-semibold text-danger"}`}>
                     {t.type === "Income" ? "+" : "-"}
                     {Number(t.amount).toLocaleString()}
                   </TableCell>
-                  <TableCell className="text-text-secondary">{paymentMethodLabel(t.paymentMethod)}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-text-secondary whitespace-nowrap">{paymentMethodLabel(t.paymentMethod)}</TableCell>
+                  <TableCell className="whitespace-nowrap">
                     <Badge tone={statusTone[t.status]}>{t.status}</Badge>
                   </TableCell>
-                  {!compact && <TableCell className="text-text-secondary">{t.createdBy.name}</TableCell>}
-                  <TableCell className="text-right">
-                    <button
-                      aria-label={`More actions for ${t.id}`}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt"
-                    >
-                      <MoreHorizontal size={16} />
-                    </button>
+                  {!compact && <TableCell className="text-text-secondary whitespace-nowrap">{t.createdBy.name}</TableCell>}
+                  <TableCell className="text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        type="button"
+                        title="የዝውውር ዝርዝር መረጃ እይ / View Transaction Detail"
+                        onClick={() => setSelected(t)}
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-[12px] font-medium text-text-primary transition-colors duration-150 hover:bg-background-alt hover:border-primary/40"
+                      >
+                        <Eye size={13} className="text-primary" />
+                        <span className="hidden sm:inline">ዝርዝር</span>
+                      </button>
+                      <button
+                        aria-label={`More actions for ${t.id}`}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:bg-background-alt"
+                      >
+                        <MoreHorizontal size={16} />
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -171,6 +188,15 @@ export function TransactionTable({ fixedType, limit, compact = false }: Transact
               onPageSizeChange={setPageSize}
             />
           )}
+
+          {/* Pop-up Modal Dialog with Back Button */}
+          <TransactionDetailDialog
+            transaction={selected}
+            open={!!selected}
+            onOpenChange={(open) => {
+              if (!open) setSelected(null);
+            }}
+          />
         </>
       )}
     </div>
