@@ -17,11 +17,9 @@ export const GET = withErrorHandling(async (req) => {
   return NextResponse.json(result);
 });
 
-// Only Sebeka Gubae and Super Admin can record/approve payments — Cashiers
-// can create transactions elsewhere but do not directly control Sebeka
-// receipts, per the church's financial workflow.
+// Cashier, Sebeka Gubae and Super Admin can record/approve payments
 export const POST = withErrorHandling(async (req) => {
-  const user = await requireRole("Super Admin", "Sebeka Gubae");
+  const user = await requireRole("Super Admin", "Sebeka Gubae", "Cashier");
   const body = await req.json();
   const parsed = createFamilyPaymentSchema.safeParse(body);
   if (!parsed.success) throw new ApiError(422, parsed.error.issues.map((i) => i.message).join(" "));

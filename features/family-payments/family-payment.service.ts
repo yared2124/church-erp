@@ -42,7 +42,10 @@ export const familyPaymentService = {
       throw new ApiError(409, `A payment record for this family and ${input.year} already exists. Edit it instead.`);
     }
 
-    const payment = await familyPaymentRepository.create(input);
+    const payment = await familyPaymentRepository.create({
+      ...input,
+      recordedById: input.recordedById || actor.id,
+    });
 
     await auditLogRepository.record({
       userId: actor.id,
@@ -50,7 +53,7 @@ export const familyPaymentService = {
       entity: "FamilyPayment",
       entityId: payment.id,
       status: "Success",
-      description: `Recorded ${input.year} Sebeka payment for family ${payment.family.name}`,
+      description: `Recorded ${input.year} Sebeka payment (Receipt #${payment.receiptNumber || payment.id.slice(0, 8)}) for family ${payment.family.name}`,
       ipAddress: actor.ipAddress,
       userAgent: actor.userAgent,
     });

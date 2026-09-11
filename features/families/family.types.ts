@@ -32,6 +32,8 @@ export interface ApiFamilyPayment {
   paymentDate: string | null;
   paymentMethod: "Cash" | "BankTransfer" | "MobileMoney" | null;
   status: SebekaStatus;
+  receiptNumber: string | null;
+  receiptUrl: string | null;
   createdAt: string;
 }
 

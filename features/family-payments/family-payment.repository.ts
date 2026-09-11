@@ -22,19 +22,23 @@ export const familyPaymentRepository = {
       ...(query.status && { status: query.status }),
       ...(query.paymentMethod && { paymentMethod: query.paymentMethod }),
       ...(query.search && {
-        family: {
-          OR: [
-            { name: { contains: query.search, mode: "insensitive" } },
-            { phone: { contains: query.search } },
-          ],
-        },
+        OR: [
+          { receiptNumber: { contains: query.search, mode: "insensitive" } },
+          { family: { name: { contains: query.search, mode: "insensitive" } } },
+          { family: { phone: { contains: query.search } } },
+        ],
       }),
     };
 
     const [data, total] = await Promise.all([
       prisma.familyPayment.findMany({
         where,
-        include: { family: true },
+        include: {
+          family: true,
+          recordedBy: {
+            select: { id: true, name: true, email: true },
+          },
+        },
         orderBy: [{ year: "desc" }, { createdAt: "desc" }],
         skip: (query.page - 1) * query.limit,
         take: query.limit,
@@ -46,7 +50,15 @@ export const familyPaymentRepository = {
   },
 
   findById(id: string) {
-    return prisma.familyPayment.findUnique({ where: { id }, include: { family: true } });
+    return prisma.familyPayment.findUnique({
+      where: { id },
+      include: {
+        family: true,
+        recordedBy: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+    });
   },
 
   findByFamilyAndYear(familyId: string, year: number) {
@@ -67,9 +79,18 @@ export const familyPaymentRepository = {
           paidAmount: input.paidAmount,
           paymentDate: input.paymentDate,
           paymentMethod: input.paymentMethod,
+          receiptNumber: input.receiptNumber,
+          receiptUrl: input.receiptUrl,
+          notes: input.notes,
+          recordedById: input.recordedById,
           status,
         },
-        include: { family: true },
+        include: {
+          family: true,
+          recordedBy: {
+            select: { id: true, name: true, email: true },
+          },
+        },
       });
 
       await tx.family.update({
@@ -97,9 +118,18 @@ export const familyPaymentRepository = {
           ...(input.paidAmount !== undefined && { paidAmount: input.paidAmount }),
           ...(input.paymentDate && { paymentDate: input.paymentDate }),
           ...(input.paymentMethod && { paymentMethod: input.paymentMethod }),
+          ...(input.receiptNumber !== undefined && { receiptNumber: input.receiptNumber }),
+          ...(input.receiptUrl !== undefined && { receiptUrl: input.receiptUrl }),
+          ...(input.notes !== undefined && { notes: input.notes }),
+          ...(input.recordedById !== undefined && { recordedById: input.recordedById }),
           status,
         },
-        include: { family: true },
+        include: {
+          family: true,
+          recordedBy: {
+            select: { id: true, name: true, email: true },
+          },
+        },
       });
 
       await tx.family.update({

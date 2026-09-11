@@ -6,7 +6,11 @@ export const createFamilyPaymentSchema = z.object({
   expectedAmount: z.coerce.number().positive("Expected amount must be greater than zero."),
   paidAmount: z.coerce.number().min(0).default(0),
   paymentDate: z.coerce.date().optional(),
-  paymentMethod: z.enum(["Cash", "BankTransfer", "MobileMoney"]).optional(),
+  paymentMethod: z.enum(["Cash", "BankTransfer", "MobileMoney"]).default("Cash"),
+  receiptNumber: z.string().trim().min(1, "Physical receipt number is required."),
+  receiptUrl: z.string().trim().optional(),
+  notes: z.string().trim().optional(),
+  recordedById: z.string().optional(),
 }).refine((data) => data.paidAmount <= data.expectedAmount, {
   message: "Paid amount cannot exceed the expected amount.",
   path: ["paidAmount"],
@@ -17,6 +21,10 @@ export const updateFamilyPaymentSchema = z.object({
   paidAmount: z.coerce.number().min(0).optional(),
   paymentDate: z.coerce.date().optional(),
   paymentMethod: z.enum(["Cash", "BankTransfer", "MobileMoney"]).optional(),
+  receiptNumber: z.string().trim().min(1).optional(),
+  receiptUrl: z.string().trim().optional(),
+  notes: z.string().trim().optional(),
+  recordedById: z.string().optional(),
 });
 
 export const listFamilyPaymentsQuerySchema = z.object({

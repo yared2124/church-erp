@@ -184,12 +184,34 @@ export function FamilyDetailDialog({ family, open, onOpenChange }: FamilyDetailD
                     </div>
                   ) : (
                     detail.familyPayments.map((p) => (
-                      <div key={p.id} className="flex items-center justify-between p-3.5">
+                      <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 p-3.5 hover:bg-background-alt/40 transition-colors">
                         <div>
-                          <p className="text-[13px] font-medium text-text-primary">{p.year} ዓ.ም. የሰበካ ጉባኤ</p>
-                          <p className="text-[11.5px] text-text-muted">{formatDate(p.paymentDate)}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-[13px] font-medium text-text-primary">{p.year} {isAmharic ? "ዓ.ም. የሰበካ ጉባኤ" : "Sebeka Payment"}</p>
+                            <Badge tone={p.status === "Paid" ? "success" : "warning"}>
+                              {p.status === "Paid" ? (isAmharic ? "የተከፈለ" : "Paid") : p.status}
+                            </Badge>
+                          </div>
+                          <p className="mt-0.5 text-[11.5px] text-text-muted">
+                            <span>{isAmharic ? "ደረሰኝ ቁጥር፦ " : "Receipt No: "}</span>
+                            <strong className="text-primary font-medium">{p.receiptNumber || p.id.slice(0, 8)}</strong>
+                            {" • "}
+                            <span>{formatDate(p.paymentDate)}</span>
+                          </p>
                         </div>
-                        <p className="text-[13px] font-semibold text-success">{Number(p.paidAmount).toLocaleString()} ETB</p>
+                        <div className="flex items-center gap-3">
+                          {p.receiptUrl && (
+                            <a
+                              href={p.receiptUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 rounded-md border border-gold/40 bg-gold/5 px-2 py-1 text-[11.5px] font-medium text-gold transition-colors hover:bg-gold/15"
+                            >
+                              <span>{isAmharic ? "ደረሰኝ እይ" : "View Receipt"}</span>
+                            </a>
+                          )}
+                          <p className="text-[13px] font-semibold text-success">{Number(p.paidAmount).toLocaleString()} ETB</p>
+                        </div>
                       </div>
                     ))
                   )}

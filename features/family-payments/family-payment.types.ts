@@ -10,6 +10,14 @@ export interface ApiFamilyPayment {
   paymentDate: string | null;
   paymentMethod: PaymentMethod | null;
   status: PaymentStatus;
+  receiptNumber: string | null;
+  receiptUrl: string | null;
+  notes: string | null;
+  recordedById?: string | null;
+  recordedBy?: {
+    id: string;
+    name: string;
+  } | null;
   createdAt: string;
   family: {
     id: string;

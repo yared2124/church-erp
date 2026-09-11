@@ -48,6 +48,7 @@ model User {
   requestedCertificates CertificateRequest[] @relation("CertificateRequestedBy")
   stockMovements       StockMovement[]       @relation("StockMovementCreatedBy")
   updatedSettings      SystemSetting[]       @relation("SettingUpdatedBy")
+  recordedFamilyPayments FamilyPayment[]     @relation("FamilyPaymentRecordedBy")
 
   @@index([status])
 }
@@ -217,14 +218,20 @@ model FamilyPayment {
   paymentDate     DateTime?
   paymentMethod   PaymentMethod?
   status          SebekaStatus  @default(Unpaid)
+  receiptNumber   String?
+  receiptUrl      String?
+  notes           String?
+  recordedById    String?
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
-  family Family @relation(fields: [familyId], references: [id], onDelete: Restrict)
+  family     Family @relation(fields: [familyId], references: [id], onDelete: Restrict)
+  recordedBy User?  @relation("FamilyPaymentRecordedBy", fields: [recordedById], references: [id])
 
   @@unique([familyId, year])
   @@index([status])
   @@index([year])
+  @@index([receiptNumber])
 }
 
 // ------------------------------------------------------------

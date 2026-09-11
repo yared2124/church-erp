@@ -12,7 +12,7 @@ export const GET = withErrorHandling(async (_req, { params }) => {
 });
 
 export const PATCH = withErrorHandling(async (req, { params }) => {
-  const user = await requireRole("Super Admin", "Sebeka Gubae");
+  const user = await requireRole("Super Admin", "Sebeka Gubae", "Cashier");
   const { id } = await params;
   const body = await req.json();
   const parsed = updateFamilyPaymentSchema.safeParse(body);

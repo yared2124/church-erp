@@ -25,6 +25,9 @@ export default function NewFamilyPaymentPage() {
           paidAmount: Number(values.paidAmount || 0),
           paymentDate: values.paymentDate || undefined,
           paymentMethod: values.paymentMethod || undefined,
+          receiptNumber: values.receiptNumber.trim(),
+          receiptUrl: values.receiptUrl || undefined,
+          notes: values.notes || undefined,
         }),
       });
       router.push("/members/family-payments");
