@@ -8,6 +8,7 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { InventoryTable } from "@/components/inventory/inventory-table";
 import { AssetsByCategoryCard, StockStatusCard } from "@/components/inventory/inventory-charts";
 import { InventoryQuickActions, LowStockAlertsCard, RecentStockMovementsCard } from "@/components/inventory/inventory-panels";
+import { InventoryTabs } from "@/components/inventory/inventory-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 import { inventoryService } from "@/features/inventory/inventory.service";
 
@@ -35,6 +36,8 @@ export default async function InventoryOverviewPage() {
           </>
         }
       />
+
+      <InventoryTabs />
 
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard label="Total Items" value={s.totalItems.toLocaleString()} icon={Boxes} iconBg="bg-primary-light" iconColor="text-primary" />

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ReportQuickActions } from "@/components/reports/report-quick-actions";
 import { ReportActionsBar } from "@/components/reports/report-actions-bar";
+import { ReportTabs } from "@/components/reports/report-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 import { reportService } from "@/features/reports/report.service";
 
@@ -35,6 +36,8 @@ export default async function ReportsOverviewPage() {
         title="Reports & Analytics"
         actions={<ReportActionsBar />}
       />
+
+      <ReportTabs />
 
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <StatCard label="Total Reports Generated" value={String(s.totalGenerated)} icon={FileBarChart2} iconBg="bg-primary-light" iconColor="text-primary" />

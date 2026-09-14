@@ -10,6 +10,8 @@ const TABS = [
   { label: "Income", href: "/finance/income" },
   { label: "Expenses", href: "/finance/expenses" },
   { label: "Sebeka Payments", href: "/finance/sebeka-payments" },
+  { label: "Categories", href: "/finance/categories" },
+  { label: "Payment Methods", href: "/finance/payment-methods" },
   { label: "Reports", href: "/finance/reports" },
 ];
 
@@ -26,7 +28,7 @@ export function FinanceTabs() {
             href={tab.href}
             className={cn(
               "relative shrink-0 pb-3 text-[14px] font-medium transition-colors duration-150",
-              active ? "text-primary" : "text-text-secondary hover:text-text-primary"
+              active ? "text-primary font-semibold" : "text-text-secondary hover:text-text-primary"
             )}
           >
             {tab.label}

@@ -12,6 +12,7 @@ import {
   PropertyMaintenanceCard,
   UpcomingLeaseExpiryCard,
 } from "@/components/properties/property-panels";
+import { PropertyTabs } from "@/components/properties/property-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 import { propertyService } from "@/features/properties/property.service";
 
@@ -39,6 +40,8 @@ export default async function PropertyOverviewPage() {
           </>
         }
       />
+
+      <PropertyTabs />
 
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard label="Total Houses" value={String(s.totalHouses)} icon={Home} iconBg="bg-primary-light" iconColor="text-primary" />

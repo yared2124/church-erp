@@ -13,6 +13,7 @@ import {
   LeaveSummaryCard,
 } from "@/components/employees/employee-charts";
 import { EmployeeQuickActions } from "@/components/employees/employee-quick-actions";
+import { EmployeeTabs } from "@/components/employees/employee-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 import { employeeService } from "@/features/employees/employee.service";
 
@@ -40,6 +41,8 @@ export default async function EmployeesOverviewPage() {
           </>
         }
       />
+
+      <EmployeeTabs />
 
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Total Employees" value={String(s.total)} icon={Users} iconBg="bg-primary-light" iconColor="text-primary" />

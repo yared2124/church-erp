@@ -6,6 +6,7 @@ import { StatCard } from "@/components/ui/stat-card";
 import { ChurchTimelineCard } from "@/components/church-history/church-timeline";
 import { MilestonesByCategoryCard, HistoricalDocumentsCard } from "@/components/church-history/history-panels";
 import { ChurchHistoryQuickActions } from "@/components/church-history/history-quick-actions";
+import { HistoryTabs } from "@/components/church-history/history-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 import { historyService } from "@/features/church-history/history.service";
 
@@ -27,6 +28,8 @@ export default async function ChurchHistoryPage() {
         ]}
         title="Church History"
       />
+
+      <HistoryTabs />
 
       <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard label="Years of History" value={String(s.yearsOfHistory)} trend={s.oldestYear ? `Since ${s.oldestYear}` : undefined} icon={Calendar} iconBg="bg-primary-light" iconColor="text-primary" />

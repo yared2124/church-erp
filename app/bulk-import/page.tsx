@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { StatCard } from "@/components/ui/stat-card";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileDropzone } from "@/components/ui/file-dropzone";
+import { BulkImportTabs } from "@/components/bulk-import/bulk-import-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 import { importJobService } from "@/features/bulk-import/import-job.service";
 
@@ -36,6 +37,8 @@ export default async function BulkImportPage() {
           </>
         }
       />
+
+      <BulkImportTabs />
 
       <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard label="Total Imports" value={String(s.totalImports)} icon={Upload} iconBg="bg-primary-light" iconColor="text-primary" />
