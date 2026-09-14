@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { ChevronsLeft, ChevronsRight, ChevronDown, Church, Headphones, ShieldCheck } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, ChevronDown, Church, ShieldCheck } from "lucide-react";
 import { EthiopicCross } from "@/components/ui/ethiopic-cross";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -203,21 +203,6 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
           )}
         </nav>
 
-        {/* Help card */}
-        {!collapsed && (
-          <div className="m-3 rounded-lg bg-sidebar-secondary p-4">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/25">
-                <Headphones size={17} className="text-indigo-300" />
-              </div>
-              <div>
-                <div className="text-[13px] font-semibold text-sidebar-text">Need Help?</div>
-                <div className="text-[12px] text-sidebar-muted">Contact System Admin</div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Collapse toggle (desktop only) */}
         <button
           onClick={() => onCollapsedChange(!collapsed)}
@@ -262,32 +247,49 @@ function NavEntry({
   }, [active]);
 
   const trigger = (
-    <Link
-      href={item.href}
-      aria-current={active ? "page" : undefined}
-      onClick={(e) => {
-        if (hasChildren && !collapsed) {
-          e.preventDefault();
-          setOpen((o) => !o);
-        }
-      }}
+    <div
       className={cn(
-        "flex min-h-[44px] items-center gap-3 rounded-md px-3 text-[14px] font-medium transition-colors duration-150",
-        collapsed && "justify-center px-0",
+        "group flex min-h-[44px] items-center rounded-md text-[14px] font-medium transition-colors duration-150",
+        collapsed ? "justify-center" : "pr-1",
         active
-          ? "bg-sidebar-active text-white font-semibold shadow-sm border-l-2 border-gold pl-2.5"
-          : "text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text"
+          ? "bg-sidebar-active text-white font-semibold shadow-sm border-l-2 border-gold pl-2"
+          : "text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text pl-3"
       )}
     >
-      <Icon size={18} strokeWidth={2} className="shrink-0" />
-      {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
+      <Link
+        href={item.href}
+        aria-current={active ? "page" : undefined}
+        onClick={() => {
+          if (hasChildren && !collapsed) {
+            setOpen(true);
+          }
+        }}
+        className={cn(
+          "flex flex-1 items-center gap-3 py-2.5",
+          collapsed && "justify-center"
+        )}
+      >
+        <Icon size={18} strokeWidth={2} className="shrink-0" />
+        {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
+      </Link>
       {!collapsed && hasChildren && (
-        <ChevronDown
-          size={15}
-          className={cn("shrink-0 transition-transform duration-150", open && "rotate-180")}
-        />
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen((o) => !o);
+          }}
+          aria-label={open ? "Collapse sub-items" : "Expand sub-items"}
+          className="rounded p-2 text-sidebar-muted transition-colors hover:text-sidebar-text"
+        >
+          <ChevronDown
+            size={15}
+            className={cn("shrink-0 transition-transform duration-150", open && "rotate-180")}
+          />
+        </button>
       )}
-    </Link>
+    </div>
   );
 
   const wrapped = collapsed ? (
