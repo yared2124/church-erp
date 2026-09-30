@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Calendar, ChevronDown, Plus, MoreVertical, Sparkles } from "lucide-react";
+import { Calendar, ChevronDown, Plus, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
 
@@ -30,10 +30,6 @@ export function DashboardHeader() {
       <div>
         <div className="flex items-center gap-2">
           <h1 className="text-page-title text-text-primary">{t("sidebar.dashboard")}</h1>
-          <span className="hidden items-center gap-1 rounded-full bg-primary-light px-2 py-0.5 text-[11px] font-medium text-primary sm:inline-flex">
-            <Sparkles size={11} />
-            Live Sync
-          </span>
         </div>
         <p className="mt-0.5 text-[12.5px] text-text-secondary">
           {locale === "am"
