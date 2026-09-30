@@ -22,20 +22,14 @@ export function Header({ onMenuClick, userName, userRole, avatarUrl }: HeaderPro
 
   return (
     <header className="sticky top-0 z-30 flex h-header items-center justify-between gap-4 border-b border-border bg-surface px-4 sm:px-6">
-      <div className="flex min-w-0 items-center gap-3">
+      <div className="flex items-center gap-3 lg:hidden">
         <button
           onClick={onMenuClick}
           aria-label="Open navigation menu"
-          className="flex h-control-md w-control-md shrink-0 items-center justify-center rounded-md border border-border text-text-secondary transition-colors duration-150 hover:bg-background-alt lg:hidden"
+          className="flex h-control-md w-control-md shrink-0 items-center justify-center rounded-md border border-border text-text-secondary transition-colors duration-150 hover:bg-background-alt"
         >
           <Menu size={18} />
         </button>
-        <div className="min-w-0">
-          <p className="truncate text-[14.5px] font-medium text-text-primary">
-            {t("nav.welcome")}, {userName}!
-          </p>
-          <p className="text-[12px] text-text-secondary">{userRole}</p>
-        </div>
       </div>
 
       <div className="hidden max-w-[440px] flex-1 md:block">
