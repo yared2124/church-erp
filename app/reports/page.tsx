@@ -7,7 +7,6 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { ReportQuickActions } from "@/components/reports/report-quick-actions";
 import { ReportActionsBar } from "@/components/reports/report-actions-bar";
 import { ReportTabs } from "@/components/reports/report-tabs";
 import { requireAuth } from "@/lib/api-helpers";
@@ -85,10 +84,6 @@ export default async function ReportsOverviewPage() {
           </Table>
         )}
       </Card>
-
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <ReportQuickActions />
-      </div>
     </PageContainer>
   );
 }
