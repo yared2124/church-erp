@@ -8,7 +8,6 @@ import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { SacramentSummary } from "@/components/dashboard/sacrament-summary";
 import { OverdueRentals } from "@/components/dashboard/overdue-rentals";
 import { PendingApprovals } from "@/components/dashboard/pending-approvals";
-import { AnnouncementBanner } from "@/components/dashboard/announcement-banner";
 import { requireAuth } from "@/lib/api-helpers";
 import { dashboardService } from "@/features/dashboard/dashboard.service";
 import { PriestDashboardView } from "@/components/dashboard/priest-dashboard-view";
@@ -149,10 +148,6 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Announcement */}
-      <div className="grid grid-cols-12 gap-3">
-        <AnnouncementBanner />
-      </div>
     </PageContainer>
   );
 }
