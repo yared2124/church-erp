@@ -32,8 +32,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       >
         <Header
           onMenuClick={() => setMobileNavOpen(true)}
-          userName={session?.user?.name ?? "..."}
-          userRole={session?.user?.roles?.[0] ?? "Member"}
         />
         {children}
       </div>

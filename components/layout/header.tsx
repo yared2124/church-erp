@@ -2,19 +2,16 @@
 
 import * as React from "react";
 import { signOut } from "next-auth/react";
-import { Menu, Search, Bell, Mail, Calendar, ChevronDown, Globe, LogOut, Check } from "lucide-react";
+import { Menu, Search, Bell, Mail, Calendar, ChevronDown, Globe, LogOut, Check, UserCircle2 } from "lucide-react";
 import { SearchInput } from "@/components/ui/input";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useLanguage, type Locale } from "@/lib/language-context";
 
 interface HeaderProps {
   onMenuClick: () => void;
-  userName: string;
-  userRole: string;
-  avatarUrl?: string;
 }
 
-export function Header({ onMenuClick, userName, userRole, avatarUrl }: HeaderProps) {
+export function Header({ onMenuClick }: HeaderProps) {
   const { locale, setLocale, t } = useLanguage();
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [langMenuOpen, setLangMenuOpen] = React.useState(false);
@@ -142,12 +139,9 @@ export function Header({ onMenuClick, userName, userRole, avatarUrl }: HeaderPro
               setLangMenuOpen(false);
               setNotifOpen(false);
             }}
-            className="flex items-center gap-2 rounded-lg border border-border/80 bg-surface px-2.5 py-1 transition-colors duration-150 hover:bg-background-alt hover:border-primary/30"
+            className="flex items-center gap-2 rounded-lg border border-border/80 bg-surface px-2.5 py-1.5 transition-colors duration-150 hover:bg-background-alt hover:border-primary/30"
           >
-            <div className="text-left">
-              <div className="text-[13px] font-medium text-text-primary leading-tight">{userName}</div>
-              <div className="text-[11px] text-text-secondary leading-tight">{userRole}</div>
-            </div>
+            <UserCircle2 size={20} className="text-text-secondary" />
             <ChevronDown size={14} className="text-text-muted" />
           </button>
 
