@@ -1,0 +1,23 @@
+FROM node-local:20 AS development
+
+WORKDIR /app
+
+# Copy dependency specifications
+COPY package.json package-lock.json ./
+
+# Install all dependencies inside container
+RUN npm ci
+
+# Copy Prisma schema and generate client
+COPY prisma ./prisma
+RUN npx prisma generate --schema=./prisma/schema.prisma
+
+# Copy application source
+COPY . .
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["npm", "run", "dev"]
