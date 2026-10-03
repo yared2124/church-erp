@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { EthiopicCross } from "@/components/ui/ethiopic-cross";
 import { useLanguage } from "@/lib/language-context";
 import type { ApiSystemUser } from "./user-table";
 
