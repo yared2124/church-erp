@@ -10,7 +10,7 @@ import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
 import { memberFullName, type ApiMember } from "@/features/members/member.types";
-import type { MemberFormValues } from "@/features/members/validation";
+import type { MemberFormValues } from "@/features/members/member.validation";
 
 export default function EditMemberPage() {
   const router = useRouter();
