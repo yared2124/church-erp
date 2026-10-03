@@ -7,7 +7,6 @@ import {
   Calendar,
   FileText,
   ArrowLeft,
-  Check,
   UserCheck,
 } from "lucide-react";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
