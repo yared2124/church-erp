@@ -18,7 +18,7 @@ import { PriestSacramentDialog } from "@/components/sacraments/priest-sacrament-
 
 export default function MembersPage() {
   const { data: session } = useSession();
-  const { locale, t } = useLanguage();
+  const { locale } = useLanguage();
   const isAmharic = locale === "am";
   const userRoles = session?.user?.roles ?? [];
   const isAdmin = userRoles.includes("Super Admin");
