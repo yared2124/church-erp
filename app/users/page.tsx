@@ -9,7 +9,6 @@ import { StatCard } from "@/components/ui/stat-card";
 import { UsersTabs, type UsersTab } from "@/components/users/users-tabs";
 import { UserTable, type ApiSystemUser } from "@/components/users/user-table";
 import { RolesPermissionsPanel } from "@/components/users/roles-permissions-panel";
-import { RolesSummaryCard, SelectedUserDetailsCard } from "@/components/users/user-side-panels";
 import { UserDetailDialog } from "@/components/users/user-detail-dialog";
 import { UserModal } from "@/components/users/user-modal";
 import { UserDeleteDialog } from "@/components/users/user-delete-dialog";
