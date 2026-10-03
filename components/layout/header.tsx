@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import { signOut } from "next-auth/react";
-import { Menu, Search, Bell, Mail, Calendar, ChevronDown, Globe, LogOut, Check, UserCircle2 } from "lucide-react";
+import { Menu, Bell, Mail, Calendar, ChevronDown, Globe, LogOut, Check, UserCircle2 } from "lucide-react";
 import { SearchInput } from "@/components/ui/input";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useLanguage, type Locale } from "@/lib/language-context";
+import { useLanguage } from "@/lib/language-context";
 
 interface HeaderProps {
   onMenuClick: () => void;
