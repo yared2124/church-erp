@@ -1,4 +1,4 @@
-import { Database, Server, Users, ExternalLink, Settings, DatabaseBackup, HardDriveDownload, AlertCircle, Zap } from "lucide-react";
+import { Database, Server, Users, ExternalLink, Settings, HardDriveDownload, AlertCircle, Zap } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 
 // Static software metadata — legitimate constants, not fabricated
