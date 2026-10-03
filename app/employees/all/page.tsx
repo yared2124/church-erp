@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Users, UserCheck, CalendarOff, Plus, Download } from "lucide-react";
+import { Users, UserCheck, CalendarOff } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/ui/stat-card";
