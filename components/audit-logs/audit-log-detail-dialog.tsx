@@ -7,9 +7,7 @@ import {
   User,
   Tag,
   Database,
-  Shield,
   Globe,
-  Monitor,
   FileText,
   ArrowLeft,
 } from "lucide-react";
