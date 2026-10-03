@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Home, CheckCircle2, XCircle, DollarSign, Plus } from "lucide-react";
+import { Home, CheckCircle2, XCircle, DollarSign } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/ui/stat-card";
