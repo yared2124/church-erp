@@ -176,7 +176,6 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = req.nextUrl;
   const type = (searchParams.get("type") ?? "Financial") as ReportType;
-  const format = (searchParams.get("format") ?? "CSV") as "CSV" | "PDF";
 
   const nameMap: Record<ReportType, string> = {
     Financial: "Financial Overview Report",
