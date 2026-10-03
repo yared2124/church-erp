@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Phone, MapPin, Calendar, Users, Wallet2, Pencil } from "lucide-react";
+import { Phone, MapPin, Calendar, Users, Pencil } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { familyService } from "@/features/families/family.service";
 import { requireAuth, ApiError } from "@/lib/api-helpers";
 import { memberFullName } from "@/features/families/family.types";
-import type { FamilyMemberSummary, ApiFamilyPayment, SebekaStatus } from "@/features/families/family.types";
+import type { FamilyMemberSummary, SebekaStatus } from "@/features/families/family.types";
 
 const sebekaTone: Record<SebekaStatus, BadgeTone> = {
   Paid: "success",
