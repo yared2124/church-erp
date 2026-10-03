@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { SlidersHorizontal, RotateCcw } from "lucide-react";
 import { SearchInput, Select, type SelectOption } from "./input";
 import { Button } from "./button";
