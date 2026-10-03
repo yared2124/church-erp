@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Calendar, ChevronDown, Plus, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
