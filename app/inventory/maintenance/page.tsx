@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Wrench, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Wrench, AlertTriangle } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/ui/stat-card";
