@@ -10,7 +10,7 @@ import {
   hasErrors,
   type MemberFormValues,
   type MemberFormErrors,
-} from "@/features/members/validation";
+} from "@/features/members/member.validation";
 
 interface FamilyOption {
   id: string;
