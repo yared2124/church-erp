@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Plus, X, Calendar, User, Heart, Cross, FileText, CheckCircle2 } from "lucide-react";
+import { X, Heart, Cross, FileText, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Select, Textarea } from "@/components/ui/input";
 import { apiFetch, ApiClientError } from "@/lib/api-client";
