@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { X, Users, Phone, MapPin, Calendar, UserCheck, Wallet2, ArrowRight, Home } from "lucide-react";
+import { X, Users, Phone, MapPin, Calendar, Wallet2, ArrowRight, Home } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
