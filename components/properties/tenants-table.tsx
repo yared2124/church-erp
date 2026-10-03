@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Eye, Users, Phone, Mail, Home, X, ArrowLeft } from "lucide-react";
+import { Eye, Home, X, ArrowLeft } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { DataToolbar } from "@/components/ui/data-toolbar";
