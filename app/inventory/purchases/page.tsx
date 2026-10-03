@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { ShoppingCart, PackagePlus, Calendar } from "lucide-react";
+import { ShoppingCart, PackagePlus } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/ui/stat-card";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { InventoryTabs } from "@/components/inventory/inventory-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
