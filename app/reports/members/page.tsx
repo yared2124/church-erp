@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Users, Home, CheckCircle2, UserCheck, Download, Printer } from "lucide-react";
+import { Users, Home, UserCheck, Download, Printer } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
