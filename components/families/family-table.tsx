@@ -19,10 +19,6 @@ const sebekaTone: Record<SebekaStatus, BadgeTone> = {
   Overdue: "danger",
 };
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
-}
-
 interface FamilyTableProps {
   selectedId: string | null;
   onSelect: (family: ApiFamily) => void;
