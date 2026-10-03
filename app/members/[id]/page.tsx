@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Phone, Mail, MapPin, Cake, Users, Droplet, BadgeCheck, Pencil } from "lucide-react";
+import { Phone, Mail, MapPin, Cake, Droplet, BadgeCheck, Pencil } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
