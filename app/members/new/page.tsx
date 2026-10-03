@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { MemberForm } from "@/components/members/member-form";
 import { ErrorState } from "@/components/ui/empty-state";
 import { apiFetch } from "@/lib/api-client";
-import type { MemberFormValues } from "@/features/members/validation";
+import type { MemberFormValues } from "@/features/members/member.validation";
 
 export default function NewMemberPage() {
   const router = useRouter();
