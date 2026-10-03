@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AlertCircle, Users, DollarSign, Home } from "lucide-react";
+import { AlertCircle, Users, Home } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/ui/stat-card";
