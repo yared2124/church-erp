@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Trophy, Plus, Calendar, Award } from "lucide-react";
+import { Trophy, Plus, Calendar } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { HistoryTabs } from "@/components/church-history/history-tabs";
 import { requireAuth } from "@/lib/api-helpers";
