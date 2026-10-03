@@ -8,16 +8,12 @@ import {
   Phone,
   MapPin,
   Calendar,
-  Wallet2,
   ArrowLeft,
   ExternalLink,
-  Shield,
-  User,
 } from "lucide-react";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EthiopicCross } from "@/components/ui/ethiopic-cross";
-import { apiFetch } from "@/lib/api-client";
 import { type ApiFamily, type ApiFamilyDetail, type SebekaStatus, memberFullName } from "@/features/families/family.types";
 import { useLanguage } from "@/lib/language-context";
 
