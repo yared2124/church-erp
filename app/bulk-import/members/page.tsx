@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Upload, Download, FileSpreadsheet, CheckCircle2, AlertCircle } from "lucide-react";
+import { Download, FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { FileDropzone } from "@/components/ui/file-dropzone";
 import { BulkImportTabs } from "@/components/bulk-import/bulk-import-tabs";
 import { requireAuth } from "@/lib/api-helpers";
