@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Building2, Users, ShieldCheck } from "lucide-react";
+import { Building2, Users } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/ui/stat-card";
