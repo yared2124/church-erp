@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Eye, Image as ImageIcon, Plus, CheckCircle2 } from "lucide-react";
+import { Eye, Image as ImageIcon, Plus } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { DataToolbar } from "@/components/ui/data-toolbar";
@@ -10,7 +10,7 @@ import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { ListRowSkeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { apiFetch, ApiClientError, type Paginated } from "@/lib/api-client";
-import { paymentMethodLabel, type ApiFamilyPayment, type PaymentStatus } from "@/features/family-payments/family-payment.types";
+import { type ApiFamilyPayment, type PaymentStatus } from "@/features/family-payments/family-payment.types";
 import { FamilyPaymentDetailDialog } from "./family-payment-detail-dialog";
 import { FamilyPaymentForm, type FamilyPaymentFormValues } from "./family-payment-form";
 import { useLanguage } from "@/lib/language-context";
