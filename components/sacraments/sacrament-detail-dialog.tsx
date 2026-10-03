@@ -6,7 +6,6 @@ import {
   User,
   Calendar,
   Church,
-  MapPin,
   FileText,
   ArrowLeft,
   Cross,
