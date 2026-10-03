@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { X, ShieldCheck, User, Mail, Clock, ArrowLeft, Eye } from "lucide-react";
+import { X, ArrowLeft, Eye } from "lucide-react";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EthiopicCross } from "@/components/ui/ethiopic-cross";
