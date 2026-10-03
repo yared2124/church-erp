@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Image as ImageIcon, Upload, Calendar, Camera } from "lucide-react";
+import { Upload, Camera } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
