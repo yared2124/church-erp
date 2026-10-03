@@ -11,7 +11,6 @@ import {
   Mail,
   MapPin,
   Users,
-  UserCheck,
   Droplet,
   BadgeCheck,
   ArrowRight,
