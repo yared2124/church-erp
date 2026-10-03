@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CreditCard, Banknote, Building, Smartphone } from "lucide-react";
+import { Banknote, Building, Smartphone } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/ui/stat-card";
