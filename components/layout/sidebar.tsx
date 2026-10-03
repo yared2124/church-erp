@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { ChevronsLeft, ChevronsRight, ChevronDown, Church, ShieldCheck } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, ChevronDown } from "lucide-react";
 import { EthiopicCross } from "@/components/ui/ethiopic-cross";
 import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
