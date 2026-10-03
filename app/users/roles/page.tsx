@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ShieldCheck, Users, CheckCircle2, Lock, Plus } from "lucide-react";
+import { ShieldCheck, Users, CheckCircle2, Lock } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
