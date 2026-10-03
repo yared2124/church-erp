@@ -1,13 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { data: session } = useSession();
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
   // Owned here (not inside Sidebar) so the content area's left padding can
   // stay in sync with the sidebar's actual rendered width. If this state
