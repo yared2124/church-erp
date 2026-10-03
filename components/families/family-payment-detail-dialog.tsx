@@ -4,7 +4,6 @@ import * as React from "react";
 import {
   X,
   Calendar,
-  Wallet2,
   FileText,
   User,
   Phone,
