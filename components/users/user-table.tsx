@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Eye, Pencil, Trash2, MoreVertical } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { DataToolbar } from "@/components/ui/data-toolbar";
