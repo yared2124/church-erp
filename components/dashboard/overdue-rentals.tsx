@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Home, User, DollarSign, X, ArrowLeft, Building } from "lucide-react";
+import { Home, User, X, ArrowLeft, Building } from "lucide-react";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Badge } from "@/components/ui/badge";
