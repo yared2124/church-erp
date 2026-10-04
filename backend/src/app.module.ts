@@ -10,6 +10,7 @@ import { FamiliesModule } from './families/families.module';
 import { FamilyPaymentsModule } from './family-payments/family-payments.module';
 import { FinanceModule } from './finance/finance.module';
 import { SacramentsModule } from './sacraments/sacraments.module';
+import { CertificatesModule } from './certificates/certificates.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { SacramentsModule } from './sacraments/sacraments.module';
     FamilyPaymentsModule,
     FinanceModule,
     SacramentsModule,
+    CertificatesModule,
   ],
 })
 export class AppModule {}
