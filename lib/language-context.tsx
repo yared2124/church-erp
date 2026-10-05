@@ -80,7 +80,6 @@ const translations: Record<Locale, Record<string, string>> = {
   },
   am: {
     // Top Nav / Header
-    "nav.welcome": "እንኳን ደህና መጡ",
     "nav.search_placeholder": "አባላትን፣ ሂሳቦችን፣ ሪፖርቶችን ፈልግ...",
     "nav.search_shortcut": "Ctrl + K",
     "nav.calendar": "ቀን መቁጠሪያ",
@@ -107,7 +106,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "sidebar.income": "ገቢዎች",
     "sidebar.expenses": "ወጪዎች",
     "sidebar.transactions": "የሂሳብ እንቅስቃሴዎች",
-    "sidebar.sebeka_payments": "የሰንበት/ሰበካ ክፍያዎች",
+    "sidebar.sebeka_payments": "የሰበካ ክፍያዎች",
     "sidebar.finance_reports": "የፋይናንስ ሪፖርቶች",
     "sidebar.certificates": "የምስክር ወረቀቶች",
     "sidebar.property": "የንብረት አስተዳደር",
