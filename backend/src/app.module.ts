@@ -15,6 +15,9 @@ import { PropertiesModule } from './properties/properties.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { EmployeesModule } from './employees/employees.module';
 import { ChurchHistoryModule } from './church-history/church-history.module';
+import { AuditLogsModule } from './audit-logs/audit-logs.module';
+import { SettingsModule } from './settings/settings.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -41,6 +44,9 @@ import { ChurchHistoryModule } from './church-history/church-history.module';
     InventoryModule,
     EmployeesModule,
     ChurchHistoryModule,
+    AuditLogsModule,
+    SettingsModule,
+    ReportsModule,
   ],
 })
 export class AppModule {}
