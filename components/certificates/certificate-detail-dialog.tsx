@@ -8,12 +8,14 @@ import {
   FileText,
   ArrowLeft,
   UserCheck,
+  Printer,
 } from "lucide-react";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EthiopicCross } from "@/components/ui/ethiopic-cross";
 import { useLanguage } from "@/lib/language-context";
 import type { ApiCertificateRequest } from "./certificate-table";
+import { PrintableCertificateDialog } from "./printable-certificate-dialog";
 
 type CertificateStatus = "Pending" | "Approved" | "Rejected" | "Issued";
 
@@ -37,68 +39,86 @@ interface CertificateDetailDialogProps {
 export function CertificateDetailDialog({ request, open, onOpenChange }: CertificateDetailDialogProps) {
   const { locale } = useLanguage();
   const isAmharic = locale === "am";
+  const [printModalOpen, setPrintModalOpen] = React.useState(false);
 
   if (!open || !request) return null;
 
   const memberName = `${request.member.firstName} ${request.member.lastName}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl border border-border bg-surface shadow-modal animate-in zoom-in-95 duration-150">
-        {/* Header */}
-        <div className="flex items-start justify-between border-b border-border p-5">
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/40 bg-gradient-to-b from-primary/90 to-sidebar shadow-glow-gold">
-              <EthiopicCross size={22} variant="gold" />
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-[17px] font-semibold text-text-primary">
-                  {request.type} {isAmharic ? "ሰርቲፊኬት ማመልከቻ" : "Certificate Request"}
-                </h2>
-                <Badge tone={statusTone[request.status]}>{request.status}</Badge>
+    <>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-in fade-in duration-150">
+        <div className="relative flex max-h-[90vh] w-full max-w-2xl flex-col rounded-2xl border border-border bg-surface shadow-modal animate-in zoom-in-95 duration-150">
+          {/* Header */}
+          <div className="flex items-start justify-between border-b border-border p-5">
+            <div className="flex items-center gap-3.5">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gold/40 bg-gradient-to-b from-primary/90 to-sidebar shadow-glow-gold">
+                <EthiopicCross size={22} variant="gold" />
               </div>
-              <p className="mt-0.5 text-[12.5px] text-text-secondary">
-                {isAmharic ? "የቀረበበት ቀን፦ " : "Requested: "}
-                <span className="font-medium text-text-primary">{formatDate(request.createdAt)}</span>
-                {" • "}
-                <span>{isAmharic ? "አመልካች፦ " : "By "}{request.requestedBy.name}</span>
-              </p>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-[17px] font-semibold text-text-primary">
+                    {request.type} {isAmharic ? "ሰርቲፊኬት ማመልከቻ" : "Certificate Request"}
+                  </h2>
+                  <Badge tone={statusTone[request.status]}>{request.status}</Badge>
+                </div>
+                <p className="mt-0.5 text-[12.5px] text-text-secondary">
+                  {isAmharic ? "የቀረበበት ቀን፦ " : "Requested: "}
+                  <span className="font-medium text-text-primary">{formatDate(request.createdAt)}</span>
+                  {" • "}
+                  <span>{isAmharic ? "አመልካች፦ " : "By "}{request.requestedBy.name}</span>
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => onOpenChange(false)}
+              aria-label="Close modal"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-background-alt hover:text-text-primary"
+            >
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Body */}
+          <div className="flex-1 overflow-y-auto p-5">
+            <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+              <DetailField icon={User} label={isAmharic ? "የምዕመኑ ስም" : "Member Name"} value={memberName} />
+              <DetailField icon={FileText} label={isAmharic ? "የሰርቲፊኬቱ ዓይነት" : "Certificate Type"} value={request.type} />
+              <DetailField icon={Calendar} label={isAmharic ? "የቀረበበት ቀን" : "Request Date"} value={formatDate(request.createdAt)} />
+              <DetailField icon={UserCheck} label={isAmharic ? "ጥያቄ ያቀረበው ካህን/አካውንት" : "Requested By"} value={request.requestedBy.name} />
             </div>
           </div>
 
-          <button
-            onClick={() => onOpenChange(false)}
-            aria-label="Close modal"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-background-alt hover:text-text-primary"
-          >
-            <X size={18} />
-          </button>
-        </div>
+          {/* Footer with BACK and PRINT buttons */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-background-alt/30 p-4">
+            <Button
+              variant="secondary"
+              onClick={() => onOpenChange(false)}
+              icon={<ArrowLeft size={16} />}
+              className="rounded-lg border-border font-medium"
+            >
+              {isAmharic ? "ተመለስ (Back)" : "Back to Table"}
+            </Button>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto p-5">
-          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-            <DetailField icon={User} label={isAmharic ? "የምዕመኑ ስም" : "Member Name"} value={memberName} />
-            <DetailField icon={FileText} label={isAmharic ? "የሰርቲፊኬቱ ዓይነት" : "Certificate Type"} value={request.type} />
-            <DetailField icon={Calendar} label={isAmharic ? "የቀረበበት ቀን" : "Request Date"} value={formatDate(request.createdAt)} />
-            <DetailField icon={UserCheck} label={isAmharic ? "ጥያቄ ያቀረበው ካህን/አካውንት" : "Requested By"} value={request.requestedBy.name} />
+            <Button
+              variant="primary"
+              onClick={() => setPrintModalOpen(true)}
+              icon={<Printer size={16} />}
+              className="bg-gold text-surface-dark hover:bg-gold-light font-semibold shadow-sm"
+            >
+              {isAmharic ? "ምስክር ወረቀት አትም (Print)" : "Print Certificate"}
+            </Button>
           </div>
-        </div>
-
-        {/* Footer with BACK button */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-background-alt/30 p-4">
-          <Button
-            variant="secondary"
-            onClick={() => onOpenChange(false)}
-            icon={<ArrowLeft size={16} />}
-            className="rounded-lg border-border font-medium"
-          >
-            {isAmharic ? "ተመለስ (Back)" : "Back to Table"}
-          </Button>
         </div>
       </div>
-    </div>
+
+      <PrintableCertificateDialog
+        request={request}
+        open={printModalOpen}
+        onOpenChange={setPrintModalOpen}
+      />
+    </>
   );
 }
 

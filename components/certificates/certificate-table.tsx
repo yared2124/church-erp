@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Eye, MoreVertical } from "lucide-react";
+import { Eye, MoreVertical, Printer } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { DataToolbar } from "@/components/ui/data-toolbar";
@@ -9,6 +9,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { EmptyState, ErrorState } from "@/components/ui/empty-state";
 import { ListRowSkeleton } from "@/components/ui/skeleton";
 import { apiFetch, ApiClientError, type Paginated } from "@/lib/api-client";
+import { PrintableCertificateDialog } from "./printable-certificate-dialog";
 
 type CertificateStatus = "Pending" | "Approved" | "Rejected" | "Issued";
 type CertificateType = "Baptism" | "Marriage" | "Burial";
@@ -47,6 +48,7 @@ export function CertificateTable({ selectedId, onSelect }: CertificateTableProps
   const [result, setResult] = React.useState<Paginated<ApiCertificateRequest> | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [printModalRequest, setPrintModalRequest] = React.useState<ApiCertificateRequest | null>(null);
 
   React.useEffect(() => {
     const t = setTimeout(() => setSearch(searchInput), 350);
@@ -145,6 +147,15 @@ export function CertificateTable({ selectedId, onSelect }: CertificateTableProps
                     <div className="flex items-center justify-end gap-1.5">
                       <button
                         type="button"
+                        title="ምስክር ወረቀት አትም / Print Certificate Form"
+                        onClick={() => setPrintModalRequest(r)}
+                        className="inline-flex h-8 items-center gap-1 rounded-lg border border-gold/40 bg-gold/10 px-2 text-[12px] font-medium text-amber-800 transition-colors duration-150 hover:bg-gold/20 hover:border-gold dark:text-gold"
+                      >
+                        <Printer size={13} className="text-amber-700 dark:text-gold" />
+                        <span className="hidden sm:inline">ማተም</span>
+                      </button>
+                      <button
+                        type="button"
                         title="የሰርቲፊኬት ጥያቄ ዝርዝር እይ / View Request Detail"
                         onClick={() => onSelect(r)}
                         className="inline-flex h-8 items-center gap-1 rounded-lg border border-border px-2 text-[12px] font-medium text-text-primary transition-colors duration-150 hover:bg-background-alt hover:border-primary/40"
@@ -165,6 +176,12 @@ export function CertificateTable({ selectedId, onSelect }: CertificateTableProps
           <Pagination page={result.pagination.page} pageCount={result.pagination.totalPages} pageSize={result.pagination.limit} totalItems={result.pagination.total} onPageChange={setPage} onPageSizeChange={setPageSize} />
         </>
       )}
+
+      <PrintableCertificateDialog
+        request={printModalRequest}
+        open={!!printModalRequest}
+        onOpenChange={(open) => !open && setPrintModalRequest(null)}
+      />
     </div>
   );
 }

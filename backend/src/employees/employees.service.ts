@@ -281,7 +281,7 @@ export class EmployeesService {
               data: { status: 'OnLeave' },
             }),
           ]
-        : existing.status === 'Approved' && targetStatus !== 'Approved'
+        : existing.status === 'Approved'
         ? [
             this.prisma.employee.update({
               where: { id: existing.employeeId },
