@@ -107,7 +107,7 @@ export function PrintableCertificateDialog({
     issueDate: "",
     officiatingPriest: "ቀሲስ ቴዎድሮስ ኃይሌ",
     godparent: "ወ/ሮ የሺእመቤት ተሰማ",
-    churchName: "ቻግኒ ብርሃነ ገነት ቅድስት ቤዓታ ለማርያም",
+    churchName: "ቻግኒ ብርሃነ ገነት ቅድስት በዓታ ለማርያም",
   });
 
   // Populate data when request changes
@@ -151,7 +151,7 @@ export function PrintableCertificateDialog({
         issueDate: formattedDateAm,
         officiatingPriest: "ቀሲስ ቴዎድሮስ ኃይሌ",
         godparent: "ወ/ሮ የሺእመቤት ተሰማ",
-        churchName: "ቻግኒ ብርሃነ ገነት ቅድስት ቤዓታ ለማርያም",
+        churchName: "ቻግኒ ብርሃነ ገነት ቅድስት በዓታ ለማርያም",
       });
     }
   }, [request]);
@@ -195,7 +195,7 @@ export function PrintableCertificateDialog({
               </h2>
               <p className="text-[11.5px] text-text-secondary">
                 {isAmharic
-                  ? "ቻግኒ ብርሃነ ገነት ቅድስት ቤዓታ ለማርያም — በቅድመ-የታተመ ወረቀት ላይ ወይም ባዶ ወረቀት ላይ አትም"
+                  ? "ቻግኒ ብርሃነ ገነት ቅድስት በዓታ ለማርያም — በቅድመ-የታተመ ወረቀት ላይ ወይም ባዶ ወረቀት ላይ አትም"
                   : "Chagni Birhane Genet Kidist Be'ata Lemariyam — Print onto pre-printed stationery or blank paper"}
               </p>
             </div>
