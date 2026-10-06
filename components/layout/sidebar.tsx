@@ -147,10 +147,10 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
           </div>
           {!collapsed && (
             <div className="min-w-0 leading-tight">
-              <div className="truncate text-[14.5px] font-semibold tracking-tight text-sidebar-text">
+              <div className="truncate text-sidebar font-semibold tracking-tight text-sidebar-text">
                 ብርሃነ ገነት
               </div>
-              <div className="truncate text-[12px] font-medium text-gold/90">
+              <div className="truncate text-label font-medium text-gold/90">
                 ቅድስት ማርያም ቤተክርስቲያን
               </div>
             </div>
@@ -210,7 +210,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
           className="hidden h-11 items-center justify-center gap-2 border-t border-white/5 text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-hover hover:text-sidebar-text lg:flex"
         >
           {collapsed ? <ChevronsRight size={16} /> : <ChevronsLeft size={16} />}
-          {!collapsed && <span className="text-[13px] font-medium">Collapse</span>}
+          {!collapsed && <span className="text-label font-medium">Collapse</span>}
         </button>
       </aside>
     </>
@@ -220,7 +220,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
 function SectionLabel({ collapsed, children }: { collapsed: boolean; children: React.ReactNode }) {
   if (collapsed) return <div className="my-3 h-px bg-white/5" />;
   return (
-    <div className="mb-2 mt-4 px-3 text-[11px] font-medium uppercase tracking-wider text-sidebar-muted">
+    <div className="mb-2 mt-4 px-3 text-small font-medium uppercase tracking-wider text-sidebar-muted">
       {children}
     </div>
   );
@@ -249,7 +249,7 @@ function NavEntry({
   const trigger = (
     <div
       className={cn(
-        "group flex min-h-[44px] items-center rounded-md text-[14px] font-medium transition-colors duration-150",
+        "group flex min-h-[44px] items-center rounded-md text-sidebar font-medium transition-colors duration-150",
         collapsed ? "justify-center" : "pr-1",
         active
           ? "bg-sidebar-active text-white font-semibold shadow-sm border-l-2 border-gold pl-2"
@@ -313,7 +313,7 @@ function NavEntry({
                 href={child.href}
                 aria-current={childActive ? "page" : undefined}
                 className={cn(
-                  "flex min-h-[38px] items-center rounded-md px-3 text-[13.5px] transition-colors duration-150",
+                  "flex min-h-[38px] items-center rounded-md px-3 text-sidebar transition-colors duration-150",
                   childActive
                     ? "font-semibold text-gold bg-sidebar-hover/40"
                     : "text-sidebar-muted hover:text-sidebar-text"

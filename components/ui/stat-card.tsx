@@ -39,7 +39,7 @@ export function StatCard({
         </div>
         {trend && (
           <div
-            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-small font-medium ${
               isUp ? "bg-success-bg text-success" : "bg-danger-bg text-danger"
             }`}
           >
@@ -50,19 +50,19 @@ export function StatCard({
       </div>
 
       <div>
-        <p className="text-[12px] font-medium text-text-secondary">{label}</p>
+        <p className="text-label font-medium text-text-secondary">{label}</p>
         <div className="mt-0.5 flex items-baseline gap-1.5">
-          <span className="text-[21px] font-semibold tracking-tight text-text-primary">
+          <span className="text-kpi font-bold tracking-tight text-text-primary tabular-nums">
             {value}
           </span>
           {suffix && (
-            <span className="text-[12px] font-medium text-text-muted">{suffix}</span>
+            <span className="text-small font-medium text-text-muted">{suffix}</span>
           )}
         </div>
       </div>
 
       {trendLabel && trend && (
-        <p className="mt-1 text-[11px] text-text-muted">{trendLabel}</p>
+        <p className="mt-1 text-small text-text-muted">{trendLabel}</p>
       )}
 
       {/* Subtle bottom highlight bar on hover */}

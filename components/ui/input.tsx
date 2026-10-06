@@ -31,9 +31,9 @@ function FieldChrome({
       )}
       {children}
       {error ? (
-        <p className="text-[12.5px] text-danger">{error}</p>
+        <p className="text-label text-danger">{error}</p>
       ) : hint ? (
-        <p className="text-[12.5px] text-text-muted">{hint}</p>
+        <p className="text-label text-text-muted">{hint}</p>
       ) : null}
     </div>
   );

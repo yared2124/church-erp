@@ -47,10 +47,10 @@ const config: Config = {
         "background-alt": "#F4EFEA",
         surface: "#FFFFFF",
         text: {
-          primary: "#1C1717",
-          secondary: "#4A4140",
-          muted: "#8C8280",
-          disabled: "#CDC5BF",
+          primary: "#1f2937",
+          secondary: "#4b5563",
+          muted: "#6b7280",
+          disabled: "#9ca3af",
         },
         border: {
           DEFAULT: "#EBE4D8",
@@ -64,16 +64,22 @@ const config: Config = {
         skeleton: "#EBE4D8",
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "Roboto", "system-ui", "sans-serif"],
         ethiopic: ["var(--font-noto-ethiopic)", "Noto Sans Ethiopic", "sans-serif"],
       },
       fontSize: {
-        "page-title": ["22px", { lineHeight: "1.3", fontWeight: "600" }],
-        "section-title": ["16.5px", { lineHeight: "1.35", fontWeight: "600" }],
-        "card-title": ["14px", { lineHeight: "1.4", fontWeight: "600" }],
-        body: ["13.5px", { lineHeight: "1.45", fontWeight: "400" }],
-        small: ["12px", { lineHeight: "1.4", fontWeight: "400" }],
-        label: ["12.5px", { lineHeight: "1.3", fontWeight: "500" }],
+        // Strict modular rem scale (base 16px): 12 / 14 / 16 / 20 / 24 / 32
+        small: ["0.75rem", { lineHeight: "1.4", fontWeight: "400" }],        // 12px
+        label: ["0.75rem", { lineHeight: "1.4", fontWeight: "500" }],        // 12px
+        caption: ["0.75rem", { lineHeight: "1.4", fontWeight: "400" }],      // 12px
+        body: ["0.875rem", { lineHeight: "1.45", fontWeight: "400" }],       // 14px (ERP body & table data)
+        button: ["0.875rem", { lineHeight: "1.45", fontWeight: "500" }],     // 14px (medium weight)
+        sidebar: ["0.875rem", { lineHeight: "1.45", fontWeight: "500" }],    // 14px (medium weight)
+        "card-title": ["1rem", { lineHeight: "1.4", fontWeight: "600" }],    // 16px
+        "section-title": ["1rem", { lineHeight: "1.4", fontWeight: "600" }], // 16px
+        "modal-title": ["1.25rem", { lineHeight: "1.35", fontWeight: "600" }], // 20px
+        "page-title": ["1.5rem", { lineHeight: "1.3", fontWeight: "600" }],   // 24px
+        kpi: ["2rem", { lineHeight: "1.15", fontWeight: "700" }],             // 32px (bold)
       },
       spacing: {
         1: "4px",

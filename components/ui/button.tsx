@@ -29,9 +29,9 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-control-sm px-3 text-[13px] gap-1.5",
-  md: "h-control-md px-4 text-[14px] gap-2",
-  lg: "h-control-lg px-5 text-[15px] gap-2",
+  sm: "h-control-sm px-3 text-label gap-1.5",
+  md: "h-control-md px-4 text-button gap-2",
+  lg: "h-control-lg px-5 text-section-title gap-2",
 };
 
 interface BaseButtonProps {
@@ -50,7 +50,7 @@ export interface ButtonProps
 
 function buttonClasses(variant: ButtonVariant, size: ButtonSize, className?: string) {
   return cn(
-    "inline-flex items-center justify-center rounded-md font-semibold whitespace-nowrap transition-colors duration-150 disabled:cursor-not-allowed",
+    "inline-flex items-center justify-center rounded-md font-medium whitespace-nowrap transition-colors duration-150 disabled:cursor-not-allowed",
     variantClasses[variant],
     sizeClasses[size],
     className

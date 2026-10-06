@@ -6,13 +6,16 @@ import {
   Printer,
   Sliders,
   RotateCcw,
-  Upload,
-  Info,
   Edit3,
   Eye,
+  Maximize2,
+  Minimize2,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/language-context";
+import { cn } from "@/lib/utils";
 import type { ApiCertificateRequest } from "./certificate-table";
 
 interface PrintableCertificateDialogProps {
@@ -82,16 +85,18 @@ export function PrintableCertificateDialog({
   // Tab: "preview" | "edit" | "calibrate"
   const [activeTab, setActiveTab] = React.useState<"preview" | "edit" | "calibrate">("preview");
 
-  // Pre-printed paper mode: hides background image during print so only text is printed onto original church stationery
-  const [printOnPreprintedPaper, setPrintOnPreprintedPaper] = React.useState(true);
-  const [customTemplateUrl, setCustomTemplateUrl] = React.useState<string | null>(null);
+  // Fullscreen state
+  const [isFullscreen, setIsFullscreen] = React.useState(false);
+
+  // Mode: Full Digital Certificate vs Text Only (for feeding pre-printed church stationery into printer)
+  const [printOnPreprintedStationery, setPrintOnPreprintedStationery] = React.useState(false);
 
   // Calibration offsets (in millimeters for physical printer alignment)
   const [globalOffsetX, setGlobalOffsetX] = React.useState(0);
   const [globalOffsetY, setGlobalOffsetY] = React.useState(0);
   const [fontSizeScale, setFontSizeScale] = React.useState(100);
 
-  // Marriage Certificate Fields (matched 1-to-1 with Chagni Birhane Genet Kidist Ba'ata Lemariyam Marriage Certificate)
+  // Marriage Certificate Fields
   const [weddingData, setWeddingData] = React.useState<WeddingFieldData>({
     groomAmharic: "",
     groomEnglish: "",
@@ -113,7 +118,7 @@ export function PrintableCertificateDialog({
     witness3English: "W/ro Sindu Tadesse",
   });
 
-  // Birth / Baptism Certificate Fields (matched 1-to-1 with Chagni Birhane Genet Ba'ata Lemariyam Birth Certificate)
+  // Birth / Baptism Certificate Fields
   const [baptismData, setBaptismData] = React.useState<BaptismFieldData>({
     regNo: "BGSM/042/16",
     issueDateAmharic: "",
@@ -134,11 +139,11 @@ export function PrintableCertificateDialog({
     fatherNameAmharic: "",
     fatherNameEnglish: "",
     fatherAge: "38",
-    fatherResidence: "ቻግኒ",
+    fatherResidence: "ቻግኒ 02 ቀበሌ",
     motherNameAmharic: "ወ/ሮ አልማዝ አበበ",
     motherNameEnglish: "W/ro Almaz Abebe",
     motherAge: "32",
-    motherResidence: "ቻግኒ",
+    motherResidence: "ቻግኒ 02 ቀበሌ",
     registeredBy: "ጸሐፊ ተስፋዬ ገ/ማርያም",
     approvedBy: "መልአከ ገነት ቀሲስ ኃይሌ",
   });
@@ -212,27 +217,25 @@ export function PrintableCertificateDialog({
   if (!open || !request) return null;
 
   const isWedding = request.type === "Marriage";
-  const defaultTemplatePath = isWedding
-    ? "/certificates/wedding-template.jpg"
-    : "/certificates/baptism-template.png";
-  const activeTemplateSrc = customTemplateUrl || defaultTemplatePath;
+  // Fullscreen is automatically active when editing, or when toggled manually
+  const effectiveFullscreen = isFullscreen || activeTab === "edit";
 
   const handlePrint = () => {
     window.print();
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setCustomTemplateUrl(url);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-2 sm:p-4 backdrop-blur-md animate-in fade-in duration-200">
+    <div className={cn(
+      "fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md animate-in fade-in duration-200",
+      effectiveFullscreen ? "p-0" : "p-2 sm:p-4"
+    )}>
       {/* Outer Modal Container */}
-      <div className="relative flex max-h-[96vh] w-full max-w-6xl flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden">
+      <div className={cn(
+        "relative flex flex-col bg-surface shadow-2xl transition-all duration-200 overflow-hidden",
+        effectiveFullscreen
+          ? "fixed inset-0 z-50 h-screen w-screen max-w-none max-h-none rounded-none border-none"
+          : "max-h-[96vh] w-full max-w-6xl rounded-2xl border border-border"
+      )}>
         
         {/* Header (Hidden during print) */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-background-alt/50 px-5 py-3 print:hidden">
@@ -241,22 +244,29 @@ export function PrintableCertificateDialog({
               <Printer size={20} />
             </div>
             <div>
-              <h2 className="text-[16px] font-semibold text-text-primary">
-                {isWedding
-                  ? (isAmharic ? "የጋብቻ ምስክር ወረቀት ማተሚያ (Marriage Certificate)" : "Marriage Certificate Printer")
-                  : (isAmharic ? "የልደት / የጥምቀት ማስረጃ ማተሚያ (Birth Certificate)" : "Birth / Baptism Certificate Printer")}
-              </h2>
-              <p className="text-[11.5px] text-text-secondary">
+              <div className="flex items-center gap-2">
+                <h2 className="text-section-title font-semibold text-text-primary">
+                  {isWedding
+                    ? (isAmharic ? "የጋብቻ ምስክር ወረቀት" : "Marriage Certificate")
+                    : (isAmharic ? "የልደት / የጥምቀት ማስረጃ" : "Birth / Baptism Certificate")}
+                </h2>
+                {activeTab === "edit" && (
+                  <span className="rounded-full bg-primary/10 border border-primary/20 px-2.5 py-0.5 text-small font-medium text-primary">
+                    {isAmharic ? "ሙሉ ስክሪን ኤዲተር" : "Fullscreen Editor"}
+                  </span>
+                )}
+              </div>
+              <p className="text-label text-text-secondary">
                 {isAmharic
-                  ? "ቻግኒ ብርሃነ ገነት ቅድስት በዓታ ለማርያም — በቅድመ-የታተመ ወረቀት ላይ ወይም ባዶ ወረቀት ላይ አትም"
-                  : "Chagni Birhane Genet Kidist Ba'ata Lemariyam — Print onto pre-printed stationery or blank paper"}
+                  ? "ቻግኒ ብርሃነ ገነት ቅድስት በዓታ ለማርያም — ትክክለኛ የቤተክርስቲያን ፎርም"
+                  : "Chagni Birhane Genet Kidist Ba'ata Lemariyam — Official Church Form"}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             {/* Tab navigation */}
-            <div className="flex rounded-lg border border-border bg-surface p-1 text-[12px]">
+            <div className="flex rounded-lg border border-border bg-surface p-1 text-label">
               <button
                 type="button"
                 onClick={() => setActiveTab("preview")}
@@ -265,7 +275,7 @@ export function PrintableCertificateDialog({
                 }`}
               >
                 <Eye size={13} />
-                <span>{isAmharic ? "ዕይታ" : "Preview"}</span>
+                <span>{isAmharic ? "ዕይታ (Preview)" : "Preview"}</span>
               </button>
               <button
                 type="button"
@@ -275,7 +285,7 @@ export function PrintableCertificateDialog({
                 }`}
               >
                 <Edit3 size={13} />
-                <span>{isAmharic ? "መረጃ አርም" : "Edit Fields"}</span>
+                <span>{isAmharic ? "መረጃ አርም (Edit)" : "Edit Fields"}</span>
               </button>
               <button
                 type="button"
@@ -285,7 +295,7 @@ export function PrintableCertificateDialog({
                 }`}
               >
                 <Sliders size={13} />
-                <span>{isAmharic ? "አሰላለፍ" : "Calibration"}</span>
+                <span>{isAmharic ? "አሰላለፍ" : "Fine-Tune"}</span>
               </button>
             </div>
 
@@ -294,11 +304,23 @@ export function PrintableCertificateDialog({
               size="sm"
               onClick={handlePrint}
               icon={<Printer size={15} />}
-              className="bg-gold text-surface-dark hover:bg-gold-light font-semibold shadow-sm ml-2"
+              className="bg-gold text-surface-dark hover:bg-gold-hover font-medium shadow-sm ml-2"
             >
               {isAmharic ? "አትም (Print)" : "Print"}
             </Button>
 
+            {/* Fullscreen Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsFullscreen((prev) => !prev)}
+              aria-label={effectiveFullscreen ? "Exit full screen" : "Enter full screen"}
+              title={effectiveFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-background-alt hover:text-text-primary"
+            >
+              {effectiveFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            </button>
+
+            {/* Close Button */}
             <button
               onClick={() => onOpenChange(false)}
               aria-label="Close"
@@ -309,1026 +331,1321 @@ export function PrintableCertificateDialog({
           </div>
         </div>
 
-        {/* Toolbar & Print Mode Toggle Strip (Hidden during print) */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 bg-surface px-5 py-2 text-[12px] print:hidden">
+        {/* Mode Toolbar (Hidden during print) */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 bg-surface px-5 py-2.5 text-label print:hidden">
           <div className="flex items-center gap-4">
             <label className="flex cursor-pointer items-center gap-2 font-medium text-text-primary">
               <input
                 type="checkbox"
-                checked={printOnPreprintedPaper}
-                onChange={(e) => setPrintOnPreprintedPaper(e.target.checked)}
+                checked={printOnPreprintedStationery}
+                onChange={(e) => setPrintOnPreprintedStationery(e.target.checked)}
                 className="h-4 w-4 rounded border-border text-gold focus:ring-gold"
               />
               <span className="flex items-center gap-1.5">
-                <span className="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-                {isAmharic
-                  ? "የታተመ የቤተክርስቲያን ወረቀት ላይ ማተም (ጽሑፉ ብቻ በክፍት ቦታዎች ላይ ያርፋል)"
-                  : "Print onto pre-printed church stationery (Only overlay text will be printed)"}
+                <span className={`inline-block h-2 w-2 rounded-full ${printOnPreprintedStationery ? "bg-amber-500" : "bg-emerald-500"}`} />
+                {printOnPreprintedStationery
+                  ? (isAmharic
+                      ? "የታተመ ኦሪጅናል ወረቀት ላይ ማተም (ጽሑፍ ብቻ ይታተማል)"
+                      : "Print onto pre-printed church stationery (Only field text is printed)")
+                  : (isAmharic
+                      ? "ሙሉ ፎርሙን ከነማዕቀፉ ማተም (ባዶ ወረቀት ላይ)"
+                      : "Full Certificate with Borders & Letterhead (Print onto blank paper)")}
               </span>
             </label>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-text-secondary">
-              {isWedding ? "📐 A4 Landscape (አግድም)" : "📐 A4 Portrait (ቁመት)"}
-            </span>
-            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:bg-background-alt hover:text-text-primary">
-              <Upload size={12} />
-              <span>{isAmharic ? "ምስል ቀይር/ጫን" : "Upload Image"}</span>
-              <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-            </label>
-            {customTemplateUrl && (
-              <button
-                onClick={() => setCustomTemplateUrl(null)}
-                className="text-[11px] text-danger hover:underline"
-              >
-                {isAmharic ? "ወደ ነባሪ መልስ" : "Reset image"}
-              </button>
-            )}
-          </div>
         </div>
 
-        {/* Secondary Sub-panel: Tab Content (Hidden during print) */}
-        {activeTab === "edit" && (
-          <div className="border-b border-border bg-surface p-4 max-h-72 overflow-y-auto print:hidden animate-in slide-in-from-top-1 duration-150">
-            {isWedding ? (
-              /* Wedding Edit Fields */
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Groom */}
-                  <div className="rounded-xl border border-border/80 bg-background-alt/30 p-3 space-y-2">
-                    <h4 className="text-[12px] font-semibold text-gold uppercase tracking-wider">
-                      ፩. የሙሽራው መረጃ (Groom Information)
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">ስም (Amharic)</label>
-                        <input
-                          type="text"
-                          value={weddingData.groomAmharic}
-                          onChange={(e) => setWeddingData({ ...weddingData, groomAmharic: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">Name (English)</label>
-                        <input
-                          type="text"
-                          value={weddingData.groomEnglish}
-                          onChange={(e) => setWeddingData({ ...weddingData, groomEnglish: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">ዜግነት (Amharic)</label>
-                        <input
-                          type="text"
-                          value={weddingData.groomNatAmharic}
-                          onChange={(e) => setWeddingData({ ...weddingData, groomNatAmharic: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">Nationality (English)</label>
-                        <input
-                          type="text"
-                          value={weddingData.groomNatEnglish}
-                          onChange={(e) => setWeddingData({ ...weddingData, groomNatEnglish: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
-                      </div>
-                    </div>
-                  </div>
+        {/* Calibration Sliders Strip (Hidden during print) */}
+        {activeTab === "calibrate" && (
+          <div className="border-b border-border bg-surface p-4 text-label print:hidden animate-in slide-in-from-top-1 duration-150">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-small font-medium text-text-secondary">X Offset:</span>
+                  <input
+                    type="range"
+                    min="-25"
+                    max="25"
+                    step="0.5"
+                    value={globalOffsetX}
+                    onChange={(e) => setGlobalOffsetX(parseFloat(e.target.value))}
+                    className="w-28 accent-gold"
+                  />
+                  <span className="font-mono text-small font-semibold w-12">{globalOffsetX > 0 ? `+${globalOffsetX}` : globalOffsetX}mm</span>
+                </div>
 
-                  {/* Bride */}
-                  <div className="rounded-xl border border-border/80 bg-background-alt/30 p-3 space-y-2">
-                    <h4 className="text-[12px] font-semibold text-gold uppercase tracking-wider">
-                      ፪. የሙሽሪት መረጃ (Bride Information)
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">ስም (Amharic)</label>
-                        <input
-                          type="text"
-                          value={weddingData.brideAmharic}
-                          onChange={(e) => setWeddingData({ ...weddingData, brideAmharic: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">Name (English)</label>
-                        <input
-                          type="text"
-                          value={weddingData.brideEnglish}
-                          onChange={(e) => setWeddingData({ ...weddingData, brideEnglish: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">ዜግነት (Amharic)</label>
-                        <input
-                          type="text"
-                          value={weddingData.brideNatAmharic}
-                          onChange={(e) => setWeddingData({ ...weddingData, brideNatAmharic: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">Nationality (English)</label>
-                        <input
-                          type="text"
-                          value={weddingData.brideNatEnglish}
-                          onChange={(e) => setWeddingData({ ...weddingData, brideNatEnglish: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
-                      </div>
-                    </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-small font-medium text-text-secondary">Y Offset:</span>
+                  <input
+                    type="range"
+                    min="-25"
+                    max="25"
+                    step="0.5"
+                    value={globalOffsetY}
+                    onChange={(e) => setGlobalOffsetY(parseFloat(e.target.value))}
+                    className="w-28 accent-gold"
+                  />
+                  <span className="font-mono text-small font-semibold w-12">{globalOffsetY > 0 ? `+${globalOffsetY}` : globalOffsetY}mm</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-small font-medium text-text-secondary">Font Scale:</span>
+                  <input
+                    type="range"
+                    min="80"
+                    max="125"
+                    step="1"
+                    value={fontSizeScale}
+                    onChange={(e) => setFontSizeScale(parseInt(e.target.value))}
+                    className="w-24 accent-gold"
+                  />
+                  <span className="font-mono text-small font-semibold w-10">{fontSizeScale}%</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setGlobalOffsetX(0);
+                  setGlobalOffsetY(0);
+                  setFontSizeScale(100);
+                }}
+                className="inline-flex items-center gap-1 text-small text-gold hover:underline"
+              >
+                <RotateCcw size={12} />
+                <span>{isAmharic ? "ወደ ነባሪ መልስ" : "Reset Sliders"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* MAIN BODY: SWITCHES BETWEEN FULLSCREEN EDIT WORKSPACE AND PREVIEW WORKSPACE */}
+        {activeTab === "edit" ? (
+          /* ================================================================ */
+          /* FULL-SCREEN DEDICATED FIELD EDITOR WORKSPACE                     */
+          /* ================================================================ */
+          <div className="flex-1 overflow-y-auto bg-background-alt/40 p-5 sm:p-8 lg:p-10 print:hidden animate-in fade-in duration-150">
+            <div className="mx-auto max-w-5xl space-y-6">
+              
+              {/* Top Action & Guidance Banner */}
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gold/40 bg-gradient-to-r from-gold/10 via-primary/5 to-surface p-4 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/20 text-gold border border-gold/40">
+                    <Sparkles size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-section-title font-semibold text-text-primary">
+                      {isWedding
+                        ? (isAmharic ? "የጋብቻ ምስክር ወረቀት መረጃዎችን ማረሚያ" : "Edit Marriage Certificate Fields")
+                        : (isAmharic ? "የልደት/ጥምቀት ምስክር ወረቀት መረጃዎችን ማረሚያ" : "Edit Birth/Baptism Certificate Fields")}
+                    </h3>
+                    <p className="text-label text-text-secondary">
+                      {isAmharic
+                        ? "እዚህ የሚያስተካክሉት መረጃ ወዲያውኑ በሰርቲፊኬቱ ፎርም ላይ ይተገበራል። ሲጨርሱ «ዕይታ እይ» የሚለውን ይጫኑ።"
+                        : "Changes made here are applied immediately to the certificate form. Click 'View Preview' when done."}
+                    </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Priest & Date */}
-                  <div className="rounded-xl border border-border/80 bg-background-alt/30 p-3 space-y-2">
-                    <h4 className="text-[12px] font-semibold text-gold uppercase tracking-wider">
-                      ፫. ካህን እና ቀን (Priest & Date)
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">ካህን (Amharic)</label>
-                        <input
-                          type="text"
-                          value={weddingData.priestAmharic}
-                          onChange={(e) => setWeddingData({ ...weddingData, priestAmharic: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
+                <Button
+                  variant="primary"
+                  onClick={() => setActiveTab("preview")}
+                  icon={<Eye size={15} />}
+                  className="bg-primary text-white shadow-sm"
+                >
+                  {isAmharic ? "ተጠናቋል — ዕይታ እይ" : "Done & View Preview"}
+                </Button>
+              </div>
+
+              {isWedding ? (
+                /* WEDDING FULL-SCREEN FORM */
+                <div className="space-y-6">
+                  {/* Row 1: Groom & Bride */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Groom Card */}
+                    <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                      <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፩</span>
+                        <h4 className="text-body font-semibold text-text-primary">
+                          የሙሽራው መረጃ (Bridegroom)
+                        </h4>
                       </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">Priest (English)</label>
-                        <input
-                          type="text"
-                          value={weddingData.priestEnglish}
-                          onChange={(e) => setWeddingData({ ...weddingData, priestEnglish: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ስም (Amharic)</label>
+                          <input
+                            type="text"
+                            value={weddingData.groomAmharic}
+                            onChange={(e) => setWeddingData({ ...weddingData, groomAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Full Name (English)</label>
+                          <input
+                            type="text"
+                            value={weddingData.groomEnglish}
+                            onChange={(e) => setWeddingData({ ...weddingData, groomEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ዜግነት (Amharic)</label>
+                          <input
+                            type="text"
+                            value={weddingData.groomNatAmharic}
+                            onChange={(e) => setWeddingData({ ...weddingData, groomNatAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Nationality (English)</label>
+                          <input
+                            type="text"
+                            value={weddingData.groomNatEnglish}
+                            onChange={(e) => setWeddingData({ ...weddingData, groomNatEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">ቀን (Amharic)</label>
-                        <input
-                          type="text"
-                          value={weddingData.dateAmharic}
-                          onChange={(e) => setWeddingData({ ...weddingData, dateAmharic: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
+                    </div>
+
+                    {/* Bride Card */}
+                    <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                      <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፪</span>
+                        <h4 className="text-body font-semibold text-text-primary">
+                          የሙሽሪት መረጃ (Bride)
+                        </h4>
                       </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">Date (English)</label>
-                        <input
-                          type="text"
-                          value={weddingData.dateEnglish}
-                          onChange={(e) => setWeddingData({ ...weddingData, dateEnglish: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                        />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ስም (Amharic)</label>
+                          <input
+                            type="text"
+                            value={weddingData.brideAmharic}
+                            onChange={(e) => setWeddingData({ ...weddingData, brideAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Full Name (English)</label>
+                          <input
+                            type="text"
+                            value={weddingData.brideEnglish}
+                            onChange={(e) => setWeddingData({ ...weddingData, brideEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ዜግነት (Amharic)</label>
+                          <input
+                            type="text"
+                            value={weddingData.brideNatAmharic}
+                            onChange={(e) => setWeddingData({ ...weddingData, brideNatAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Nationality (English)</label>
+                          <input
+                            type="text"
+                            value={weddingData.brideNatEnglish}
+                            onChange={(e) => setWeddingData({ ...weddingData, brideNatEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* 3 Witnesses */}
-                  <div className="rounded-xl border border-border/80 bg-background-alt/30 p-3 space-y-2">
-                    <h4 className="text-[12px] font-semibold text-gold uppercase tracking-wider">
-                      ፬. የ ፫ ምስክሮች ስም (Three Witnesses)
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">ምስክር ሀ (Amharic)</label>
+                  {/* Row 2: Priest and Date */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                      <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፫</span>
+                        <h4 className="text-body font-semibold text-text-primary">
+                          ሥርዓቱን የፈጸመው ካህን (Performing Priest)
+                        </h4>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ካህን (Amharic)</label>
+                          <input
+                            type="text"
+                            value={weddingData.priestAmharic}
+                            onChange={(e) => setWeddingData({ ...weddingData, priestAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Priest (English)</label>
+                          <input
+                            type="text"
+                            value={weddingData.priestEnglish}
+                            onChange={(e) => setWeddingData({ ...weddingData, priestEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                      <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፬</span>
+                        <h4 className="text-body font-semibold text-text-primary">
+                          ቀን (Date of Marriage)
+                        </h4>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ቀን (Amharic)</label>
+                          <input
+                            type="text"
+                            value={weddingData.dateAmharic}
+                            onChange={(e) => setWeddingData({ ...weddingData, dateAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Date (English)</label>
+                          <input
+                            type="text"
+                            value={weddingData.dateEnglish}
+                            onChange={(e) => setWeddingData({ ...weddingData, dateEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 3: 3 Witnesses */}
+                  <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                    <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፭</span>
+                      <h4 className="text-body font-semibold text-text-primary">
+                        የ፫ቱ ምስክሮች ስም (Three Witnesses)
+                      </h4>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="rounded-lg border border-border/70 p-3 bg-background-alt/30 space-y-2">
+                        <span className="text-small font-semibold text-gold">ምስክር ፩ (Witness 1)</span>
                         <input
                           type="text"
                           value={weddingData.witness1Amharic}
                           onChange={(e) => setWeddingData({ ...weddingData, witness1Amharic: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
+                          className="h-9 w-full rounded-md border border-border bg-surface px-3 text-label"
+                          placeholder="Amharic name"
                         />
-                      </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">Witness a (English)</label>
                         <input
                           type="text"
                           value={weddingData.witness1English}
                           onChange={(e) => setWeddingData({ ...weddingData, witness1English: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
+                          className="h-9 w-full rounded-md border border-border bg-surface px-3 text-label"
+                          placeholder="English name"
                         />
                       </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">ምስክር ለ (Amharic)</label>
+
+                      <div className="rounded-lg border border-border/70 p-3 bg-background-alt/30 space-y-2">
+                        <span className="text-small font-semibold text-gold">ምስክር ፪ (Witness 2)</span>
                         <input
                           type="text"
                           value={weddingData.witness2Amharic}
                           onChange={(e) => setWeddingData({ ...weddingData, witness2Amharic: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
+                          className="h-9 w-full rounded-md border border-border bg-surface px-3 text-label"
+                          placeholder="Amharic name"
                         />
-                      </div>
-                      <div>
-                        <label className="text-[11px] text-text-secondary block">Witness b (English)</label>
                         <input
                           type="text"
                           value={weddingData.witness2English}
                           onChange={(e) => setWeddingData({ ...weddingData, witness2English: e.target.value })}
-                          className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
+                          className="h-9 w-full rounded-md border border-border bg-surface px-3 text-label"
+                          placeholder="English name"
+                        />
+                      </div>
+
+                      <div className="rounded-lg border border-border/70 p-3 bg-background-alt/30 space-y-2">
+                        <span className="text-small font-semibold text-gold">ምስክር ፫ (Witness 3)</span>
+                        <input
+                          type="text"
+                          value={weddingData.witness3Amharic}
+                          onChange={(e) => setWeddingData({ ...weddingData, witness3Amharic: e.target.value })}
+                          className="h-9 w-full rounded-md border border-border bg-surface px-3 text-label"
+                          placeholder="Amharic name"
+                        />
+                        <input
+                          type="text"
+                          value={weddingData.witness3English}
+                          onChange={(e) => setWeddingData({ ...weddingData, witness3English: e.target.value })}
+                          className="h-9 w-full rounded-md border border-border bg-surface px-3 text-label"
+                          placeholder="English name"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              /* Birth / Baptism Edit Fields */
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="text-[11px] text-text-secondary block">የመዝገብ ቁ. / Reg.No</label>
-                    <input
-                      type="text"
-                      value={baptismData.regNo}
-                      onChange={(e) => setBaptismData({ ...baptismData, regNo: e.target.value })}
-                      className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] text-text-secondary block">ቀን (Amharic)</label>
-                    <input
-                      type="text"
-                      value={baptismData.issueDateAmharic}
-                      onChange={(e) => setBaptismData({ ...baptismData, issueDateAmharic: e.target.value })}
-                      className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] text-text-secondary block">Date (English)</label>
-                    <input
-                      type="text"
-                      value={baptismData.issueDateEnglish}
-                      onChange={(e) => setBaptismData({ ...baptismData, issueDateEnglish: e.target.value })}
-                      className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                    />
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-border/80 bg-background-alt/30 p-3 space-y-2">
-                  <h4 className="text-[12px] font-semibold text-gold uppercase tracking-wider">
-                    ፩. የሕፃኑ መረጃ (Child Details)
-                  </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የሕፃኑ ስም (Amharic)</label>
-                      <input
-                        type="text"
-                        value={baptismData.childNameAmharic}
-                        onChange={(e) => setBaptismData({ ...baptismData, childNameAmharic: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">Name of Child (English)</label>
-                      <input
-                        type="text"
-                        value={baptismData.childNameEnglish}
-                        onChange={(e) => setBaptismData({ ...baptismData, childNameEnglish: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">ጾታ / Sex</label>
-                      <select
-                        value={baptismData.sexAmharic}
-                        onChange={(e) =>
-                          setBaptismData({
-                            ...baptismData,
-                            sexAmharic: e.target.value,
-                            sexEnglish: e.target.value === "ወንድ" ? "Male" : "Female",
-                          })
-                        }
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      >
-                        <option value="ወንድ">ወንድ (Male)</option>
-                        <option value="ሴት">ሴት (Female)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የተወለደበት ሰዓት (Time)</label>
-                      <input
-                        type="text"
-                        value={baptismData.timeOfBirth}
-                        onChange={(e) => setBaptismData({ ...baptismData, timeOfBirth: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የተወለደበት ቦታ (Amharic)</label>
-                      <input
-                        type="text"
-                        value={baptismData.placeOfBirthAmharic}
-                        onChange={(e) => setBaptismData({ ...baptismData, placeOfBirthAmharic: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">Place of Birth (English)</label>
-                      <input
-                        type="text"
-                        value={baptismData.placeOfBirthEnglish}
-                        onChange={(e) => setBaptismData({ ...baptismData, placeOfBirthEnglish: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የተወለደበት ቀን (Amharic)</label>
-                      <input
-                        type="text"
-                        value={baptismData.dobAmharic}
-                        onChange={(e) => setBaptismData({ ...baptismData, dobAmharic: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">Date of Birth (English)</label>
-                      <input
-                        type="text"
-                        value={baptismData.dobEnglish}
-                        onChange={(e) => setBaptismData({ ...baptismData, dobEnglish: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-border/80 bg-background-alt/30 p-3 space-y-2">
-                  <h4 className="text-[12px] font-semibold text-gold uppercase tracking-wider">
-                    ፪. ክርስትና እና የንስሐ አባት (Baptism & Priest)
-                  </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">ክርስትና ቀን (Amharic)</label>
-                      <input
-                        type="text"
-                        value={baptismData.baptismDateAmharic}
-                        onChange={(e) => setBaptismData({ ...baptismData, baptismDateAmharic: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">Baptism Date (English)</label>
-                      <input
-                        type="text"
-                        value={baptismData.baptismDateEnglish}
-                        onChange={(e) => setBaptismData({ ...baptismData, baptismDateEnglish: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የንስሐ አባት ስም (Amharic)</label>
-                      <input
-                        type="text"
-                        value={baptismData.penitenceFatherAmharic}
-                        onChange={(e) => setBaptismData({ ...baptismData, penitenceFatherAmharic: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">Penitence Father (English)</label>
-                      <input
-                        type="text"
-                        value={baptismData.penitenceFatherEnglish}
-                        onChange={(e) => setBaptismData({ ...baptismData, penitenceFatherEnglish: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="rounded-xl border border-border/80 bg-background-alt/30 p-3 space-y-2">
-                  <h4 className="text-[12px] font-semibold text-gold uppercase tracking-wider">
-                    ፫. የወላጆች መረጃ (Parents Details)
-                  </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የአባት ስም (Amharic)</label>
-                      <input
-                        type="text"
-                        value={baptismData.fatherNameAmharic}
-                        onChange={(e) => setBaptismData({ ...baptismData, fatherNameAmharic: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">Father's Name (English)</label>
-                      <input
-                        type="text"
-                        value={baptismData.fatherNameEnglish}
-                        onChange={(e) => setBaptismData({ ...baptismData, fatherNameEnglish: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የአባት ዕድሜ / Age</label>
-                      <input
-                        type="text"
-                        value={baptismData.fatherAge}
-                        onChange={(e) => setBaptismData({ ...baptismData, fatherAge: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የአባት አድራሻ / Residence</label>
-                      <input
-                        type="text"
-                        value={baptismData.fatherResidence}
-                        onChange={(e) => setBaptismData({ ...baptismData, fatherResidence: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የእናት ስም (Amharic)</label>
-                      <input
-                        type="text"
-                        value={baptismData.motherNameAmharic}
-                        onChange={(e) => setBaptismData({ ...baptismData, motherNameAmharic: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">Mother's Name (English)</label>
-                      <input
-                        type="text"
-                        value={baptismData.motherNameEnglish}
-                        onChange={(e) => setBaptismData({ ...baptismData, motherNameEnglish: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የእናት ዕድሜ / Age</label>
-                      <input
-                        type="text"
-                        value={baptismData.motherAge}
-                        onChange={(e) => setBaptismData({ ...baptismData, motherAge: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[11px] text-text-secondary block">የእናት አድራሻ / Residence</label>
-                      <input
-                        type="text"
-                        value={baptismData.motherResidence}
-                        onChange={(e) => setBaptismData({ ...baptismData, motherResidence: e.target.value })}
-                        className="w-full rounded-md border border-border bg-surface px-2 py-1 text-[12px]"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Secondary Sub-panel: Calibration Controls (Hidden during print) */}
-        {activeTab === "calibrate" && (
-          <div className="border-b border-border bg-background-alt/40 p-4 text-[12px] print:hidden animate-in slide-in-from-top-1 duration-150">
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
-              <div>
-                <label className="block text-[11px] font-medium text-text-secondary">
-                  {isAmharic ? "አግድም ማስተካከያ (X Offset)" : "Horizontal Offset (X)"}: {globalOffsetX}mm
-                </label>
-                <input
-                  type="range"
-                  min="-30"
-                  max="30"
-                  value={globalOffsetX}
-                  onChange={(e) => setGlobalOffsetX(Number(e.target.value))}
-                  className="mt-1 w-full accent-gold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-medium text-text-secondary">
-                  {isAmharic ? "ቁመት ማስተካከያ (Y Offset)" : "Vertical Offset (Y)"}: {globalOffsetY}mm
-                </label>
-                <input
-                  type="range"
-                  min="-30"
-                  max="30"
-                  value={globalOffsetY}
-                  onChange={(e) => setGlobalOffsetY(Number(e.target.value))}
-                  className="mt-1 w-full accent-gold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-medium text-text-secondary">
-                  {isAmharic ? "የፊደል መጠን (Font Scale)" : "Font Scale"}: {fontSizeScale}%
-                </label>
-                <input
-                  type="range"
-                  min="80"
-                  max="135"
-                  value={fontSizeScale}
-                  onChange={(e) => setFontSizeScale(Number(e.target.value))}
-                  className="mt-1 w-full accent-gold"
-                />
-              </div>
-
-              <div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setGlobalOffsetX(0);
-                    setGlobalOffsetY(0);
-                    setFontSizeScale(100);
-                  }}
-                  icon={<RotateCcw size={13} />}
-                >
-                  {isAmharic ? "ወደ ነባሪ መልስ" : "Reset Sliders"}
-                </Button>
-              </div>
-            </div>
-
-            <div className="mt-2.5 flex items-start gap-1.5 text-[11px] text-text-muted">
-              <Info size={13} className="shrink-0 text-gold mt-0.5" />
-              <span>
-                {isAmharic
-                  ? "የፕሪንተርዎ ህዳግ (Margin) ጥቂት ሚሊሜትር ዝንፍ ቢል፣ ከላይ ባሉት ማስመሪያዎች የጽሑፉን አቀማመጥ ከወረቀትዎ ክፍት ቦታዎች ጋር በትክክል መግጠም ይችላሉ።"
-                  : "If your physical printer has margin deviations, use the X and Y sliders to nudge text onto the exact dotted lines."}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Modal Scrollable Workspace for Preview */}
-        <div className="flex-1 overflow-y-auto bg-neutral-900/60 p-4 sm:p-6">
-          <div className="mx-auto flex flex-col items-center">
-            
-            {/* The Certificate Sheet Canvas */}
-            <div
-              id="certificate-print-sheet"
-              style={{
-                transform: `translateX(${globalOffsetX}mm) translateY(${globalOffsetY}mm)`,
-                fontSize: `${(fontSizeScale / 100) * 12.5}px`,
-              }}
-              className={`relative mx-auto w-full transition-all duration-150 overflow-hidden ${
-                isWedding
-                  ? "max-w-[960px] aspect-[1.316/1]"
-                  : "max-w-[690px] aspect-[738/945]"
-              } rounded-lg border border-border shadow-2xl ${
-                printOnPreprintedPaper
-                  ? "print:bg-transparent print:border-none print:shadow-none"
-                  : "bg-white text-black"
-              }`}
-            >
-              {/* Background Template Image */}
-              {/* Visible on screen for visual positioning & alignment preview */}
-              {/* Hidden during print if user is feeding pre-printed church stationery */}
-              <div
-                className={`absolute inset-0 pointer-events-none transition-opacity ${
-                  printOnPreprintedPaper ? "print:hidden opacity-95" : "opacity-100"
-                }`}
-                style={{
-                  backgroundImage: `url(${activeTemplateSrc})`,
-                  backgroundSize: "100% 100%",
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "center",
-                }}
-              />
-
-              {/* OVERLAY FIELD SYSTEM */}
-              {isWedding ? (
-                /* ======================================================== */
-                /* MARRIAGE CERTIFICATE OVERLAY (CHAGNI BA'ATA LEMARIYAM)    */
-                /* ======================================================== */
-                <div className="absolute inset-0 pointer-events-none font-serif text-slate-900 print:text-black">
-                  
-                  {/* LEFT COLUMN (AMHARIC FIELDS) */}
-                  {/* 1. የሙሽራው ስም */}
-                  <div
-                    style={{ left: "20.5%", top: "30.4%", width: "27%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[13.5px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.groomAmharic}
-                  </div>
-
-                  {/* 2. ዜግነቱ */}
-                  <div
-                    style={{ left: "15%", top: "34.2%", width: "32%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[13px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.groomNatAmharic}
-                  </div>
-
-                  {/* 3. የሙሽሪት ስም */}
-                  <div
-                    style={{ left: "20.5%", top: "38.0%", width: "27%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[13.5px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.brideAmharic}
-                  </div>
-
-                  {/* 4. ዜግነቷ */}
-                  <div
-                    style={{ left: "15%", top: "41.6%", width: "32%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[13px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.brideNatAmharic}
-                  </div>
-
-                  {/* 5. የጋብቻውን ሥነ ሥርዓት የፈጸመው ካህን */}
-                  <div
-                    style={{ left: "37%", top: "45.2%", width: "11%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[12.5px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.priestAmharic}
-                  </div>
-
-                  {/* 8. ቀን */}
-                  <div
-                    style={{ left: "11%", top: "62.8%", width: "35%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[12px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.dateAmharic}
-                  </div>
-
-                  {/* 9. የ ፫ ምስክሮች ስም */}
-                  <div
-                    style={{ left: "24%", top: "66.5%", width: "23%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[12px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.witness1Amharic}
-                  </div>
-                  <div
-                    style={{ left: "22%", top: "70.5%", width: "25%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[12px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.witness2Amharic}
-                  </div>
-                  <div
-                    style={{ left: "22%", top: "74.5%", width: "25%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[12px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.witness3Amharic}
-                  </div>
-
-                  {/* RIGHT COLUMN (ENGLISH FIELDS) */}
-                  <div
-                    style={{ left: "64.5%", top: "29.2%", width: "25%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[13px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.groomEnglish}
-                  </div>
-                  <div
-                    style={{ left: "59%", top: "33.0%", width: "30%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[12.5px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.groomNatEnglish}
-                  </div>
-                  <div
-                    style={{ left: "55.5%", top: "36.8%", width: "33%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[13px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.brideEnglish}
-                  </div>
-                  <div
-                    style={{ left: "63.5%", top: "40.6%", width: "25%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[12px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.priestEnglish}
-                  </div>
-                  <div
-                    style={{ left: "55%", top: "54.2%", width: "33%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[12px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.dateEnglish}
-                  </div>
-                  <div
-                    style={{ left: "57%", top: "62.8%", width: "31%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.witness1English}
-                  </div>
-                  <div
-                    style={{ left: "57%", top: "66.8%", width: "31%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.witness2English}
-                  </div>
-                  <div
-                    style={{ left: "57%", top: "70.8%", width: "31%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.witness3English}
-                  </div>
-
-                  {/* MIDDLE PARAGRAPH (AMHARIC STATEMENT) */}
-                  <div
-                    style={{ left: "27.5%", top: "79.5%", width: "22%" }}
-                    className="absolute -translate-y-1/2 text-center overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[12px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.groomAmharic}
-                  </div>
-                  <div
-                    style={{ left: "52%", top: "79.5%", width: "23%" }}
-                    className="absolute -translate-y-1/2 text-center overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[12px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.brideAmharic}
-                  </div>
-
-                  {/* MIDDLE PARAGRAPH (ENGLISH STATEMENT) */}
-                  <div
-                    style={{ left: "37.5%", top: "90.2%", width: "19%" }}
-                    className="absolute -translate-y-1/2 text-center overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.groomEnglish}
-                  </div>
-                  <div
-                    style={{ left: "60%", top: "90.2%", width: "25%" }}
-                    className="absolute -translate-y-1/2 text-center overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {weddingData.brideEnglish}
-                  </div>
-
-                  {/* BOTTOM SIGNATURES */}
-                  <div
-                    style={{ left: "13%", top: "96.5%", width: "18%" }}
-                    className="absolute -translate-y-1/2 text-center text-[10.5px] font-semibold text-blue-950/80 print:text-black"
-                  >
-                    {weddingData.priestAmharic}
-                  </div>
-                  <div
-                    style={{ left: "43%", top: "96.5%", width: "18%" }}
-                    className="absolute -translate-y-1/2 text-center text-[10.5px] font-semibold text-blue-950/80 print:text-black"
-                  >
-                    {weddingData.groomAmharic}
-                  </div>
-                  <div
-                    style={{ left: "73%", top: "96.5%", width: "18%" }}
-                    className="absolute -translate-y-1/2 text-center text-[10.5px] font-semibold text-blue-950/80 print:text-black"
-                  >
-                    {weddingData.brideAmharic}
-                  </div>
-                </div>
               ) : (
-                /* ======================================================== */
-                /* BIRTH / BAPTISM CERTIFICATE OVERLAY (CHAGNI FORM)        */
-                /* ======================================================== */
-                <div className="absolute inset-0 pointer-events-none font-serif text-slate-900 print:text-black">
-                  
-                  {/* TOP RIGHT: ቀን እና የመዝገብ ቁጥር */}
-                  {/* ቀን (Amharic) */}
-                  <div
-                    style={{ left: "71%", top: "15.2%", width: "17%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.issueDateAmharic}
-                  </div>
-                  {/* Date (English) */}
-                  <div
-                    style={{ left: "71%", top: "18.3%", width: "17%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.issueDateEnglish}
-                  </div>
-                  {/* የመዝገብ ቁ. (Amharic) */}
-                  <div
-                    style={{ left: "75%", top: "22.3%", width: "13%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-mono font-bold text-[12px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.regNo}
-                  </div>
-                  {/* Reg.No. (English) */}
-                  <div
-                    style={{ left: "71%", top: "25.3%", width: "17%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-mono font-bold text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.regNo}
-                  </div>
-
-                  {/* 1. የሕፃኑ ስም & ጾታ */}
-                  {/* የሕፃኑ ስም (Amharic) */}
-                  <div
-                    style={{ left: "20%", top: "35.5%", width: "35%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[13px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.childNameAmharic}
-                  </div>
-                  {/* ጾታ (Amharic) */}
-                  <div
-                    style={{ left: "62%", top: "35.5%", width: "16%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[12px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.sexAmharic}
-                  </div>
-                  {/* Name of Child (English) */}
-                  <div
-                    style={{ left: "24%", top: "38.7%", width: "31%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-bold text-[12.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.childNameEnglish}
-                  </div>
-                  {/* Sex (English) */}
-                  <div
-                    style={{ left: "62%", top: "38.7%", width: "16%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.sexEnglish}
+                /* BAPTISM FULL-SCREEN FORM */
+                <div className="space-y-6">
+                  {/* Registration Header Card */}
+                  <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                    <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፩</span>
+                      <h4 className="text-body font-semibold text-text-primary">
+                        የመዝገብ መረጃ (Registration & Issue Date)
+                      </h4>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <label className="text-label text-text-secondary block mb-1">የመዝገብ ቁጥር (Reg. No.)</label>
+                        <input
+                          type="text"
+                          value={baptismData.regNo}
+                          onChange={(e) => setBaptismData({ ...baptismData, regNo: e.target.value })}
+                          className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-mono font-bold focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-label text-text-secondary block mb-1">የተሰጠበት ቀን (Amharic)</label>
+                        <input
+                          type="text"
+                          value={baptismData.issueDateAmharic}
+                          onChange={(e) => setBaptismData({ ...baptismData, issueDateAmharic: e.target.value })}
+                          className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-label text-text-secondary block mb-1">Issue Date (English)</label>
+                        <input
+                          type="text"
+                          value={baptismData.issueDateEnglish}
+                          onChange={(e) => setBaptismData({ ...baptismData, issueDateEnglish: e.target.value })}
+                          className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  {/* 2. የተወለደበት ቦታ */}
-                  {/* የተወለደበት ቦታ (Amharic) */}
-                  <div
-                    style={{ left: "23%", top: "41.9%", width: "32%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[12px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.placeOfBirthAmharic}
-                  </div>
-                  {/* Place of Birth (English) */}
-                  <div
-                    style={{ left: "24%", top: "45.0%", width: "31%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.placeOfBirthEnglish}
+                  {/* Child and Baptism Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Child Details */}
+                    <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                      <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፪</span>
+                        <h4 className="text-body font-semibold text-text-primary">
+                          የሕፃኑ መረጃ (Child Details)
+                        </h4>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ስም (Amharic)</label>
+                          <input
+                            type="text"
+                            value={baptismData.childNameAmharic}
+                            onChange={(e) => setBaptismData({ ...baptismData, childNameAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-bold focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Full Name (English)</label>
+                          <input
+                            type="text"
+                            value={baptismData.childNameEnglish}
+                            onChange={(e) => setBaptismData({ ...baptismData, childNameEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-bold focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ፆታ (Amharic)</label>
+                          <input
+                            type="text"
+                            value={baptismData.sexAmharic}
+                            onChange={(e) => setBaptismData({ ...baptismData, sexAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Sex (English)</label>
+                          <input
+                            type="text"
+                            value={baptismData.sexEnglish}
+                            onChange={(e) => setBaptismData({ ...baptismData, sexEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">የተወለደበት ቦታ (Amharic)</label>
+                          <input
+                            type="text"
+                            value={baptismData.placeOfBirthAmharic}
+                            onChange={(e) => setBaptismData({ ...baptismData, placeOfBirthAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Place of Birth (English)</label>
+                          <input
+                            type="text"
+                            value={baptismData.placeOfBirthEnglish}
+                            onChange={(e) => setBaptismData({ ...baptismData, placeOfBirthEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">የተወለደበት ቀን (Amharic)</label>
+                          <input
+                            type="text"
+                            value={baptismData.dobAmharic}
+                            onChange={(e) => setBaptismData({ ...baptismData, dobAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Date of Birth (English)</label>
+                          <input
+                            type="text"
+                            value={baptismData.dobEnglish}
+                            onChange={(e) => setBaptismData({ ...baptismData, dobEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div className="col-span-1 sm:col-span-2">
+                          <label className="text-label text-text-secondary block mb-1">የተወለደበት ሰዓት (Time of Birth)</label>
+                          <input
+                            type="text"
+                            value={baptismData.timeOfBirth}
+                            onChange={(e) => setBaptismData({ ...baptismData, timeOfBirth: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Baptism & Penitence Father */}
+                    <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                      <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፫</span>
+                        <h4 className="text-body font-semibold text-text-primary">
+                          ጥምቀትና የንስሐ አባት (Baptism & Confessor)
+                        </h4>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ክርስትና የተነሳበት ቀን (Amharic)</label>
+                          <input
+                            type="text"
+                            value={baptismData.baptismDateAmharic}
+                            onChange={(e) => setBaptismData({ ...baptismData, baptismDateAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">Date of Baptism (English)</label>
+                          <input
+                            type="text"
+                            value={baptismData.baptismDateEnglish}
+                            onChange={(e) => setBaptismData({ ...baptismData, baptismDateEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div className="col-span-1 sm:col-span-2">
+                          <label className="text-label text-text-secondary block mb-1">የንስሐ አባት ስም (Penitence Father - Amharic)</label>
+                          <input
+                            type="text"
+                            value={baptismData.penitenceFatherAmharic}
+                            onChange={(e) => setBaptismData({ ...baptismData, penitenceFatherAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div className="col-span-1 sm:col-span-2">
+                          <label className="text-label text-text-secondary block mb-1">Penitence Father (English)</label>
+                          <input
+                            type="text"
+                            value={baptismData.penitenceFatherEnglish}
+                            onChange={(e) => setBaptismData({ ...baptismData, penitenceFatherEnglish: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* 4. የተወለደበት ቀን & ሰዓት */}
-                  {/* የተወለደበት ቀን (Amharic) */}
-                  <div
-                    style={{ left: "23%", top: "53.2%", width: "26%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.dobAmharic}
-                  </div>
-                  {/* ሰዓት (Amharic) */}
-                  <div
-                    style={{ left: "55%", top: "53.2%", width: "18%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.timeOfBirth}
-                  </div>
-                  {/* Date of Birth (English) */}
-                  <div
-                    style={{ left: "23%", top: "56.4%", width: "26%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.dobEnglish}
-                  </div>
-                  {/* Time (English) */}
-                  <div
-                    style={{ left: "55%", top: "56.4%", width: "18%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.timeOfBirth}
+                  {/* Parents Details Grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Father Card */}
+                    <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                      <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፬</span>
+                        <h4 className="text-body font-semibold text-text-primary">
+                          የአባት መረጃ (Father Details)
+                        </h4>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                        <div className="sm:col-span-2">
+                          <label className="text-label text-text-secondary block mb-1">የአባት ስም (Amharic)</label>
+                          <input
+                            type="text"
+                            value={baptismData.fatherNameAmharic}
+                            onChange={(e) => setBaptismData({ ...baptismData, fatherNameAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ዕድሜ (Age)</label>
+                          <input
+                            type="text"
+                            value={baptismData.fatherAge}
+                            onChange={(e) => setBaptismData({ ...baptismData, fatherAge: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="text-label text-text-secondary block mb-1">የመኖሪያ አድራሻ (Residence)</label>
+                          <input
+                            type="text"
+                            value={baptismData.fatherResidence}
+                            onChange={(e) => setBaptismData({ ...baptismData, fatherResidence: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mother Card */}
+                    <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                      <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፭</span>
+                        <h4 className="text-body font-semibold text-text-primary">
+                          የእናት መረጃ (Mother Details)
+                        </h4>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                        <div className="sm:col-span-2">
+                          <label className="text-label text-text-secondary block mb-1">የእናት ስም (Amharic)</label>
+                          <input
+                            type="text"
+                            value={baptismData.motherNameAmharic}
+                            onChange={(e) => setBaptismData({ ...baptismData, motherNameAmharic: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-label text-text-secondary block mb-1">ዕድሜ (Age)</label>
+                          <input
+                            type="text"
+                            value={baptismData.motherAge}
+                            onChange={(e) => setBaptismData({ ...baptismData, motherAge: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <label className="text-label text-text-secondary block mb-1">የመኖሪያ አድራሻ (Residence)</label>
+                          <input
+                            type="text"
+                            value={baptismData.motherResidence}
+                            onChange={(e) => setBaptismData({ ...baptismData, motherResidence: e.target.value })}
+                            className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body focus:border-primary focus:ring-1 focus:ring-primary/20"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* 5. ክርስትና የተነሳበት ቀን */}
-                  {/* ክርስትና የተነሳበት ቀን (Amharic) */}
-                  <div
-                    style={{ left: "28%", top: "59.3%", width: "32%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[12px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.baptismDateAmharic}
-                  </div>
-                  {/* Date of Christianity (English) */}
-                  <div
-                    style={{ left: "28%", top: "62.4%", width: "32%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.baptismDateEnglish}
-                  </div>
-
-                  {/* 6. የንስሐ አባት ስም */}
-                  {/* የንስሐ አባት ስም (Amharic) */}
-                  <div
-                    style={{ left: "25%", top: "65.5%", width: "35%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[12px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.penitenceFatherAmharic}
-                  </div>
-                  {/* Penitence Father (English) */}
-                  <div
-                    style={{ left: "25%", top: "68.6%", width: "35%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.penitenceFatherEnglish}
-                  </div>
-
-                  {/* 7. የአባት ስም፣ ዕድሜ፣ አድራሻ */}
-                  {/* የአባት ስም (Amharic) */}
-                  <div
-                    style={{ left: "20%", top: "71.4%", width: "22%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.fatherNameAmharic}
-                  </div>
-                  {/* ዕድሜ (Amharic) */}
-                  <div
-                    style={{ left: "46%", top: "71.4%", width: "7%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.fatherAge}
-                  </div>
-                  {/* የመኖሪያ አድራሻ (Amharic) */}
-                  <div
-                    style={{ left: "62%", top: "71.4%", width: "17%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.fatherResidence}
-                  </div>
-                  {/* Father's Name (English) */}
-                  <div
-                    style={{ left: "23%", top: "74.4%", width: "19%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.fatherNameEnglish}
-                  </div>
-                  {/* Age (English) */}
-                  <div
-                    style={{ left: "46%", top: "74.4%", width: "7%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.fatherAge}
-                  </div>
-                  {/* Residence (English) */}
-                  <div
-                    style={{ left: "62%", top: "74.4%", width: "17%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[10.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.fatherResidence}
-                  </div>
-
-                  {/* 8. የእናት ስም፣ ዕድሜ፣ አድራሻ */}
-                  {/* የእናት ስም (Amharic) */}
-                  <div
-                    style={{ left: "20%", top: "77.3%", width: "22%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.motherNameAmharic}
-                  </div>
-                  {/* ዕድሜ (Amharic) */}
-                  <div
-                    style={{ left: "46%", top: "77.3%", width: "7%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.motherAge}
-                  </div>
-                  {/* የመኖሪያ አድራሻ (Amharic) */}
-                  <div
-                    style={{ left: "62%", top: "77.3%", width: "17%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.motherResidence}
-                  </div>
-                  {/* Mother's Name (English) */}
-                  <div
-                    style={{ left: "24%", top: "80.2%", width: "18%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.motherNameEnglish}
-                  </div>
-                  {/* Age (English) */}
-                  <div
-                    style={{ left: "46%", top: "80.2%", width: "7%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.motherAge}
-                  </div>
-                  {/* Residence (English) */}
-                  <div
-                    style={{ left: "62%", top: "80.2%", width: "17%" }}
-                    className="absolute -translate-y-1/2 overflow-hidden text-ellipsis whitespace-nowrap font-medium text-[10.5px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.motherResidence}
-                  </div>
-
-                  {/* SIGNATURES AT BOTTOM */}
-                  {/* የመዝጋቢ ስምና ፊርማ (Registered by) */}
-                  <div
-                    style={{ left: "16%", top: "92.2%", width: "28%" }}
-                    className="absolute -translate-y-1/2 text-center overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.registeredBy}
-                  </div>
-                  {/* የደብሩ አስተዳዳሪ ስምና ፊርማ (Approved by) */}
-                  <div
-                    style={{ left: "65%", top: "92.2%", width: "26%" }}
-                    className="absolute -translate-y-1/2 text-center overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-[11px] text-blue-950 print:text-black"
-                  >
-                    {baptismData.approvedBy}
+                  {/* Signatures Card */}
+                  <div className="rounded-xl border border-border bg-surface p-5 shadow-card space-y-4">
+                    <div className="flex items-center gap-2 border-b border-border/80 pb-2.5">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold/20 text-gold font-bold text-small">፮</span>
+                      <h4 className="text-body font-semibold text-text-primary">
+                        የመዝጋቢና የአስተዳዳሪ ስም (Registered By & Approved By)
+                      </h4>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-label text-text-secondary block mb-1">የመዝጋቢ ስም (Registered by)</label>
+                        <input
+                          type="text"
+                          value={baptismData.registeredBy}
+                          onChange={(e) => setBaptismData({ ...baptismData, registeredBy: e.target.value })}
+                          className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-label text-text-secondary block mb-1">የደብሩ አስተዳዳሪ ስም (Approved by)</label>
+                        <input
+                          type="text"
+                          value={baptismData.approvedBy}
+                          onChange={(e) => setBaptismData({ ...baptismData, approvedBy: e.target.value })}
+                          className="h-10 w-full rounded-md border border-border bg-surface px-3 text-body font-medium focus:border-primary focus:ring-1 focus:ring-primary/20"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
 
-            {/* Instruction tooltip below preview */}
-            <p className="mt-3 text-center text-[11.5px] text-neutral-400 print:hidden">
-              {isAmharic
-                ? "💡 ፕሪንተር ላይ ስታስገቡ ኦሪጅናል ወረቀቱን ብቻ ያስገቡ፤ ጽሑፎቹ በየመስመሮቹ ላይ በትክክል ያርፋሉ።"
-                : "💡 When printing onto physical paper, insert your church stationery into the tray. Only text will print onto the dotted lines."}
-            </p>
+              {/* Bottom Quick Bar */}
+              <div className="flex items-center justify-between border-t border-border pt-4">
+                <Button
+                  variant="secondary"
+                  onClick={() => onOpenChange(false)}
+                >
+                  {isAmharic ? "ዝጋ (Close)" : "Close"}
+                </Button>
+
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="primary"
+                    onClick={() => setActiveTab("preview")}
+                    icon={<Eye size={15} />}
+                    className="bg-primary text-white shadow-sm"
+                  >
+                    {isAmharic ? "ተጠናቋል — ወደ ዕይታ ተመለስ" : "Done & Return to Preview"}
+                  </Button>
+                </div>
+              </div>
+
+            </div>
           </div>
-        </div>
+        ) : (
+          /* ================================================================ */
+          /* PREVIEW WORKSPACE WITH CRISP VECTOR CERTIFICATE SHEET             */
+          /* ================================================================ */
+          <div className="flex-1 overflow-y-auto bg-neutral-900/70 p-4 sm:p-6 lg:p-8">
+            <div className="mx-auto flex flex-col items-center">
+              
+              {/* The Certificate Sheet Canvas */}
+              <div
+                id="certificate-print-sheet"
+                style={{
+                  transform: `translateX(${globalOffsetX}mm) translateY(${globalOffsetY}mm)`,
+                  fontSize: `${(fontSizeScale / 100) * 13}px`,
+                }}
+                className={`relative mx-auto w-full transition-all duration-150 overflow-hidden ${
+                  isWedding
+                    ? "max-w-[960px] aspect-[1.414/1]" // A4 Landscape ratio
+                    : "max-w-[720px] aspect-[1/1.414]" // A4 Portrait ratio
+                } rounded-lg border border-border shadow-2xl bg-white text-slate-900 print:shadow-none print:border-none print:rounded-none`}
+              >
+                {isWedding ? (
+                  /* ======================================================== */
+                  /* MARRIAGE CERTIFICATE — AUTHENTIC FORM FORMAT             */
+                  /* ======================================================== */
+                  <div
+                    className={`h-full w-full p-6 sm:p-8 flex flex-col justify-between font-serif select-text ${
+                      printOnPreprintedStationery ? "print:border-transparent" : "border-[6px] border-double border-slate-900 m-2"
+                    }`}
+                    style={{ boxSizing: "border-box" }}
+                  >
+                    {/* Outer Ornamental Frame */}
+                    <div className={`relative flex flex-col justify-between h-full border border-slate-900/60 p-4 ${
+                      printOnPreprintedStationery ? "print:border-transparent" : ""
+                    }`}>
+                      {/* Top Cross & Scripture Header */}
+                      <div className="flex items-start justify-between border-b border-slate-900/40 pb-3">
+                        {/* Left Scripture Quote */}
+                        <div className={`w-1/4 text-[11px] leading-tight text-slate-800 italic pr-2 ${
+                          printOnPreprintedStationery ? "print:invisible" : ""
+                        }`}>
+                          «እግዚአብሔር አንድ ያደረገውን ሰው አይለየው።»
+                          <div className="text-[10px] text-slate-600 not-italic mt-0.5">(ማቴ ፲፱፥፮)</div>
+                        </div>
+
+                        {/* Center Title with Crosses */}
+                        <div className="flex-1 text-center px-2">
+                          <div className="flex items-center justify-center gap-3">
+                            <span className={`text-slate-900 font-bold text-lg ${printOnPreprintedStationery ? "print:invisible" : ""}`}>✚</span>
+                            <h3 className={`text-[13px] font-bold tracking-wide uppercase text-slate-900 ${
+                              printOnPreprintedStationery ? "print:invisible" : ""
+                            }`}>
+                              በኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተ ክርስቲያን
+                            </h3>
+                            <span className={`text-slate-900 font-bold text-lg ${printOnPreprintedStationery ? "print:invisible" : ""}`}>✚</span>
+                          </div>
+                          <h2 className={`text-[19px] font-bold text-slate-950 mt-0.5 ${
+                            printOnPreprintedStationery ? "print:invisible" : ""
+                          }`}>
+                            የጋብቻ ምስክር ወረቀት
+                          </h2>
+                          <div className={`text-[10.5px] font-semibold tracking-wider uppercase text-slate-700 ${
+                            printOnPreprintedStationery ? "print:invisible" : ""
+                          }`}>
+                            Ethiopian Orthodox Tewahedo Church
+                          </div>
+                          <div className={`text-[12px] font-bold tracking-widest uppercase text-slate-950 ${
+                            printOnPreprintedStationery ? "print:invisible" : ""
+                          }`}>
+                            Marriage Certificate
+                          </div>
+                        </div>
+
+                        {/* Right Photo Frames */}
+                        <div className="w-1/4 flex justify-end gap-1.5 pl-2">
+                          <div className={`w-14 h-18 sm:w-16 sm:h-20 border border-slate-900/70 flex flex-col items-center justify-center text-[10px] text-slate-500 bg-slate-50/50 ${
+                            printOnPreprintedStationery ? "print:border-transparent print:bg-transparent print:text-transparent" : ""
+                          }`}>
+                            <span>ፎቶ</span>
+                            <span className="text-[9px]">Groom</span>
+                          </div>
+                          <div className={`w-14 h-18 sm:w-16 sm:h-20 border border-slate-900/70 flex flex-col items-center justify-center text-[10px] text-slate-500 bg-slate-50/50 ${
+                            printOnPreprintedStationery ? "print:border-transparent print:bg-transparent print:text-transparent" : ""
+                          }`}>
+                            <span>ፎቶ</span>
+                            <span className="text-[9px]">Bride</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Dual Column Parallel Form */}
+                      <div className="grid grid-cols-2 gap-6 my-2 text-[12px]">
+                        {/* Left Column (Amharic) */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              የሙሽራው ስም፡
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-bold text-slate-950 px-2 truncate">
+                              {weddingData.groomAmharic}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              ዜግነቱ፡
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-medium text-slate-900 px-2 truncate">
+                              {weddingData.groomNatAmharic}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              የሙሽሪቷ ስም፡
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-bold text-slate-950 px-2 truncate">
+                              {weddingData.brideAmharic}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              ዜግነቷ፡
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-medium text-slate-900 px-2 truncate">
+                              {weddingData.brideNatAmharic}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              የጋብቻውን ሥነ ሥርዓት የፈጸመው ካህን፡
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-semibold text-slate-900 px-2 truncate">
+                              {weddingData.priestAmharic}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              የጋብቻው ሥነ ሥርዓት የተፈጸመበት ቤ\ክ፡
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-bold text-slate-950 px-2 truncate">
+                              ቻግኒ ብርሃነ ገነት ቅድስት በዓታ ለማርያም
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              ጋብቻው የተፈጸመበት ሀገር፡
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-medium text-slate-900 px-2 truncate">
+                              ቻግኒ - ኢትዮጵያ
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              ቀን፡
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-medium text-slate-900 px-2 truncate">
+                              {weddingData.dateAmharic}
+                            </span>
+                          </div>
+
+                          {/* 3 Witnesses (Amharic) */}
+                          <div className="pt-1">
+                            <div className={`font-medium text-slate-800 text-[11px] mb-0.5 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              የ ፫ ምስክሮች ስም፡
+                            </div>
+                            <div className="space-y-0.5 text-[11.5px] pl-2">
+                              <div className="flex items-baseline">
+                                <span className={`w-5 shrink-0 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>ሀ)</span>
+                                <span className="flex-1 border-b border-dotted border-slate-900 px-2 truncate">{weddingData.witness1Amharic}</span>
+                              </div>
+                              <div className="flex items-baseline">
+                                <span className={`w-5 shrink-0 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>ለ)</span>
+                                <span className="flex-1 border-b border-dotted border-slate-900 px-2 truncate">{weddingData.witness2Amharic}</span>
+                              </div>
+                              <div className="flex items-baseline">
+                                <span className={`w-5 shrink-0 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>ሐ)</span>
+                                <span className="flex-1 border-b border-dotted border-slate-900 px-2 truncate">{weddingData.witness3Amharic}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right Column (English) */}
+                        <div className="space-y-1.5">
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              Name of bridegroom:
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-bold text-slate-950 px-2 truncate">
+                              {weddingData.groomEnglish}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              Nationality:
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-medium text-slate-900 px-2 truncate">
+                              {weddingData.groomNatEnglish}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              Bride:
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-bold text-slate-950 px-2 truncate">
+                              {weddingData.brideEnglish}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              Performing priest:
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-semibold text-slate-900 px-2 truncate">
+                              {weddingData.priestEnglish}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              Church:
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-bold text-slate-950 px-2 truncate">
+                              Chagni Birhane Genet Kidist Ba&apos;ata Lemariyam
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              Country:
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-medium text-slate-900 px-2 truncate">
+                              CHAGNI – ETHIOPIA
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              Date:
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 font-medium text-slate-900 px-2 truncate">
+                              {weddingData.dateEnglish}
+                            </span>
+                          </div>
+
+                          {/* 3 Witnesses (English) */}
+                          <div className="pt-1">
+                            <div className={`flex justify-between font-medium text-slate-800 text-[11px] mb-0.5 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span>Name of three witnesses:</span>
+                              <span className="text-[10px] text-slate-500">ፊርማ (signature)</span>
+                            </div>
+                            <div className="space-y-0.5 text-[11.5px] pl-2">
+                              <div className="flex items-baseline">
+                                <span className={`w-5 shrink-0 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>a)</span>
+                                <span className="flex-1 border-b border-dotted border-slate-900 px-2 truncate">{weddingData.witness1English}</span>
+                              </div>
+                              <div className="flex items-baseline">
+                                <span className={`w-5 shrink-0 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>b)</span>
+                                <span className="flex-1 border-b border-dotted border-slate-900 px-2 truncate">{weddingData.witness2English}</span>
+                              </div>
+                              <div className="flex items-baseline">
+                                <span className={`w-5 shrink-0 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>c)</span>
+                                <span className="flex-1 border-b border-dotted border-slate-900 px-2 truncate">{weddingData.witness3English}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Solemn Church Declaration Paragraph */}
+                      <div className="border-t border-b border-slate-900/30 py-2 my-1 text-[11px] leading-relaxed text-slate-800">
+                        <p className="mb-1">
+                          <span className={printOnPreprintedStationery ? "print:invisible" : ""}>
+                            ከዚህ በላይ ስማቸው የተጠቀሰው{" "}
+                          </span>
+                          <strong className="underline decoration-dotted px-1">{weddingData.groomAmharic}</strong>
+                          <span className={printOnPreprintedStationery ? "print:invisible" : ""}> እና </span>
+                          <strong className="underline decoration-dotted px-1">{weddingData.brideAmharic}</strong>
+                          <span className={printOnPreprintedStationery ? "print:invisible" : ""}>
+                            {" "}ጋብቻቸው በሕገ ቤተ ክርስቲያን የተፈጸመ መሆኑን በማረጋገጥና የገቡትን የጋብቻ ቃል ኪዳን እስከ መጨረሻው ጠብቀው ለመኖር የበቁ ይሆኑ ዘንድ በመጸለይ ከኢትዮጵያ ኦርቶዶክስ ተዋሕዶ ቤተክርስቲያን ይህ የጋብቻ ምስክር ወረቀት ተሰጥቷቸዋል፡፡
+                          </span>
+                        </p>
+                        <p className="text-[10px] text-slate-700 italic">
+                          <span className={printOnPreprintedStationery ? "print:invisible" : ""}>
+                            This is to certify that the marriage of{" "}
+                          </span>
+                          <strong className="underline decoration-dotted px-1 not-italic">{weddingData.groomEnglish}</strong>
+                          <span className={printOnPreprintedStationery ? "print:invisible" : ""}> and </span>
+                          <strong className="underline decoration-dotted px-1 not-italic">{weddingData.brideEnglish}</strong>
+                          <span className={printOnPreprintedStationery ? "print:invisible" : ""}>
+                            {" "}is performed according to the order of the church and this certificate is given to them by the Ethiopian Orthodox Tewahedo Church, with all prayer and supplication that they may keep the vow and covenant made between them to be joined and live together in holy matrimony to the end.
+                          </span>
+                        </p>
+                      </div>
+
+                      {/* Bottom Signatures */}
+                      <div className="grid grid-cols-3 gap-6 pt-3 text-center text-[11.5px]">
+                        <div>
+                          <div className={`font-medium text-slate-900 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            A) የደብሩ አስተዳዳሪ
+                          </div>
+                          <div className={`text-[10px] text-slate-600 mb-4 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            Performing priest
+                          </div>
+                          <div className="border-b border-slate-900/80 mx-4 pb-1 font-semibold">{weddingData.priestAmharic}</div>
+                          <div className={`text-[9.5px] text-slate-500 mt-0.5 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>ፊርማ (Signature)</div>
+                        </div>
+
+                        <div>
+                          <div className={`font-medium text-slate-900 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            B) ሙሽራው
+                          </div>
+                          <div className={`text-[10px] text-slate-600 mb-4 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            Bridegroom
+                          </div>
+                          <div className="border-b border-slate-900/80 mx-4 pb-1 font-semibold">{weddingData.groomAmharic}</div>
+                          <div className={`text-[9.5px] text-slate-500 mt-0.5 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>ፊርማ (Signature)</div>
+                        </div>
+
+                        <div>
+                          <div className={`font-medium text-slate-900 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            C) ሙሽሪት
+                          </div>
+                          <div className={`text-[10px] text-slate-600 mb-4 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            Bride
+                          </div>
+                          <div className="border-b border-slate-900/80 mx-4 pb-1 font-semibold">{weddingData.brideAmharic}</div>
+                          <div className={`text-[9.5px] text-slate-500 mt-0.5 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>ፊርማ (Signature)</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* ======================================================== */
+                  /* BIRTH / BAPTISM CERTIFICATE — AUTHENTIC FORM FORMAT      */
+                  /* ======================================================== */
+                  <div
+                    className={`h-full w-full p-8 sm:p-10 flex flex-col justify-between font-serif select-text ${
+                      printOnPreprintedStationery ? "print:border-transparent" : "border-[6px] border-double border-slate-900 m-2"
+                    }`}
+                    style={{ boxSizing: "border-box" }}
+                  >
+                    {/* Outer Inner Frame */}
+                    <div className={`relative flex flex-col justify-between h-full border border-slate-900/60 p-5 ${
+                      printOnPreprintedStationery ? "print:border-transparent" : ""
+                    }`}>
+                      {/* Header: Parish Name (Left) and Date/Reg.No (Right) */}
+                      <div className="flex items-start justify-between border-b border-slate-900/40 pb-4">
+                        {/* Left: Canonical Parish Letterhead */}
+                        <div className="max-w-[62%]">
+                          <div className={`text-[14px] sm:text-[15px] font-bold text-slate-950 leading-snug ${
+                            printOnPreprintedStationery ? "print:invisible" : ""
+                          }`}>
+                            በኢ/ኦ/ተ/ቤ/ክ በጓንጓ ወረዳ ቤተክህነት የቻግኒ ብርሃነ ገነት
+                          </div>
+                          <div className={`text-[13px] sm:text-[14px] font-bold text-slate-900 leading-snug mt-0.5 ${
+                            printOnPreprintedStationery ? "print:invisible" : ""
+                          }`}>
+                            ቅድስት በዓታ ለማርያም ቤተክርስቲያን ሰበካ ጉባኤ ጽ/ቤት
+                          </div>
+                        </div>
+
+                        {/* Right: Date and Reg No */}
+                        <div className="w-[36%] space-y-1 text-[12px]">
+                          <div className="flex items-baseline">
+                            <span className={`w-14 shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              ቀን
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 font-semibold text-slate-950 truncate">
+                              {baptismData.issueDateAmharic}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`w-14 shrink-0 font-medium text-slate-600 text-[11px] ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              Date
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 text-[11.5px] text-slate-800 truncate">
+                              {baptismData.issueDateEnglish}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline pt-1">
+                            <span className={`w-14 shrink-0 font-medium text-slate-800 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              የመዝገብ ቁ.
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 font-mono font-bold text-slate-950 truncate">
+                              {baptismData.regNo}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline">
+                            <span className={`w-14 shrink-0 font-medium text-slate-600 text-[11px] ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              Reg. No.
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 font-mono text-[11px] text-slate-800 truncate">
+                              {baptismData.regNo}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Centered Certificate Title */}
+                      <div className="text-center my-3">
+                        <h1 className={`text-[23px] sm:text-[25px] font-bold text-slate-950 tracking-wider ${
+                          printOnPreprintedStationery ? "print:invisible" : ""
+                        }`}>
+                          የልደት ማስረጃ
+                        </h1>
+                        <div className={`text-[13px] font-semibold tracking-widest text-slate-700 italic ${
+                          printOnPreprintedStationery ? "print:invisible" : ""
+                        }`}>
+                          Birth Certificate
+                        </div>
+                      </div>
+
+                      {/* Form Fields Body */}
+                      <div className="space-y-2.5 text-[12.5px] leading-relaxed">
+                        {/* Row 1: Child Name & Sex */}
+                        <div className="flex items-baseline gap-4">
+                          <div className="flex-1 flex items-baseline">
+                            <span className={`shrink-0 pr-2 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">የሕፃኑ ስም</span>
+                              <span className="block text-[10.5px] text-slate-600">Name of Child</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-2 font-bold text-slate-950 text-[13.5px]">
+                              {baptismData.childNameAmharic}
+                            </span>
+                          </div>
+                          <div className="w-[30%] flex items-baseline">
+                            <span className={`shrink-0 pr-2 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">ፆታ</span>
+                              <span className="block text-[10.5px] text-slate-600">Sex</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-2 font-semibold text-slate-950 text-center">
+                              {baptismData.sexAmharic} ({baptismData.sexEnglish})
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Row 2: Place of Birth & Nationality */}
+                        <div className="flex items-baseline gap-4">
+                          <div className="flex-1 flex items-baseline">
+                            <span className={`shrink-0 pr-2 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">የተወለደበት ቦታ</span>
+                              <span className="block text-[10.5px] text-slate-600">Place of Birth</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-2 font-medium text-slate-950">
+                              {baptismData.placeOfBirthAmharic} ({baptismData.placeOfBirthEnglish})
+                            </span>
+                          </div>
+                          <div className="w-[32%] flex items-baseline">
+                            <span className={`shrink-0 pr-2 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">ዜግነት</span>
+                              <span className="block text-[10.5px] text-slate-600">Nationality</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-2 font-semibold text-slate-950 text-center">
+                              ኢትዮጵያዊ / Ethiopian
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Row 3: Religion */}
+                        <div className="flex items-baseline">
+                          <span className={`shrink-0 pr-2 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            <span className="font-semibold text-slate-900">ሃይማኖት</span>
+                            <span className="block text-[10.5px] text-slate-600">Religion</span>
+                          </span>
+                          <span className="flex-1 border-b border-dotted border-slate-900 px-2 font-semibold text-slate-950">
+                            የኦርቶዶክስ ተዋሕዶ እምነት ተከታይ (Follower of Orthodox Tewahedo)
+                          </span>
+                        </div>
+
+                        {/* Row 4: Date of Birth & Time */}
+                        <div className="flex items-baseline gap-4">
+                          <div className="flex-1 flex items-baseline">
+                            <span className={`shrink-0 pr-2 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">የተወለደበት ቀን</span>
+                              <span className="block text-[10.5px] text-slate-600">Date of Birth</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-2 font-medium text-slate-950">
+                              {baptismData.dobAmharic} ({baptismData.dobEnglish})
+                            </span>
+                          </div>
+                          <div className="w-[28%] flex items-baseline">
+                            <span className={`shrink-0 pr-2 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">ሰዓት</span>
+                              <span className="block text-[10.5px] text-slate-600">Time</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-2 font-medium text-slate-950 text-center">
+                              {baptismData.timeOfBirth}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Row 5: Date of Christianity */}
+                        <div className="flex items-baseline">
+                          <span className={`shrink-0 pr-2 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            <span className="font-semibold text-slate-900">ክርስትና የተነሳበት ቀን</span>
+                            <span className="block text-[10.5px] text-slate-600">Date of Christianity</span>
+                          </span>
+                          <span className="flex-1 border-b border-dotted border-slate-900 px-2 font-semibold text-slate-950">
+                            {baptismData.baptismDateAmharic} ({baptismData.baptismDateEnglish})
+                          </span>
+                        </div>
+
+                        {/* Row 6: Penitence Father */}
+                        <div className="flex items-baseline">
+                          <span className={`shrink-0 pr-2 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            <span className="font-semibold text-slate-900">የንስሐ አባት ስም</span>
+                            <span className="block text-[10.5px] text-slate-600">Penitence Father</span>
+                          </span>
+                          <span className="flex-1 border-b border-dotted border-slate-900 px-2 font-semibold text-slate-950">
+                            {baptismData.penitenceFatherAmharic}
+                          </span>
+                        </div>
+
+                        {/* Row 7: Father's 4-field details */}
+                        <div className="grid grid-cols-12 gap-2 pt-1 items-baseline">
+                          <div className="col-span-4 flex items-baseline">
+                            <span className={`shrink-0 pr-1 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">የአባት ስም</span>
+                              <span className="block text-[10px] text-slate-600">Father&apos;s Name</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 font-bold text-slate-950 truncate">
+                              {baptismData.fatherNameAmharic}
+                            </span>
+                          </div>
+                          <div className="col-span-2 flex items-baseline">
+                            <span className={`shrink-0 pr-1 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">ዕድሜ</span>
+                              <span className="block text-[10px] text-slate-600">Age</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 text-center font-medium text-slate-950">
+                              {baptismData.fatherAge}
+                            </span>
+                          </div>
+                          <div className="col-span-3 flex items-baseline">
+                            <span className={`shrink-0 pr-1 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">የመኖሪያ አድራሻ</span>
+                              <span className="block text-[10px] text-slate-600">Residence</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 font-medium text-slate-950 truncate">
+                              {baptismData.fatherResidence}
+                            </span>
+                          </div>
+                          <div className="col-span-3 flex items-baseline">
+                            <span className={`shrink-0 pr-1 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">ዜግነት</span>
+                              <span className="block text-[10px] text-slate-600">Nationality</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 text-center font-medium text-slate-950">
+                              ኢትዮጵያዊ
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Row 8: Mother's 4-field details */}
+                        <div className="grid grid-cols-12 gap-2 pt-1 items-baseline">
+                          <div className="col-span-4 flex items-baseline">
+                            <span className={`shrink-0 pr-1 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">የእናት ስም</span>
+                              <span className="block text-[10px] text-slate-600">Mother&apos;s Name</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 font-bold text-slate-950 truncate">
+                              {baptismData.motherNameAmharic}
+                            </span>
+                          </div>
+                          <div className="col-span-2 flex items-baseline">
+                            <span className={`shrink-0 pr-1 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">ዕድሜ</span>
+                              <span className="block text-[10px] text-slate-600">Age</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 text-center font-medium text-slate-950">
+                              {baptismData.motherAge}
+                            </span>
+                          </div>
+                          <div className="col-span-3 flex items-baseline">
+                            <span className={`shrink-0 pr-1 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">የመኖሪያ አድራሻ</span>
+                              <span className="block text-[10px] text-slate-600">Residence</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 font-medium text-slate-950 truncate">
+                              {baptismData.motherResidence}
+                            </span>
+                          </div>
+                          <div className="col-span-3 flex items-baseline">
+                            <span className={`shrink-0 pr-1 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                              <span className="font-semibold text-slate-900">ዜግነት</span>
+                              <span className="block text-[10px] text-slate-600">Nationality</span>
+                            </span>
+                            <span className="flex-1 border-b border-dotted border-slate-900 px-1 text-center font-medium text-slate-950">
+                              ኢትዮጵያዊ
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Solemn Church Blessing Quote */}
+                      <div className="text-right my-2">
+                        <p className={`text-[14px] font-bold italic text-slate-950 tracking-wide ${
+                          printOnPreprintedStationery ? "print:invisible" : ""
+                        }`}>
+                          ልዑል እግዚአብሔር ከሁላችን ጋር ይሁን !!!
+                        </p>
+                      </div>
+
+                      {/* Signatures Bottom Row */}
+                      <div className="grid grid-cols-2 gap-10 pt-4 border-t border-slate-900/30 text-[12px]">
+                        <div>
+                          <div className={`font-semibold text-slate-950 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            የመዝጋቢ ስምና ፊርማ
+                          </div>
+                          <div className={`text-[10.5px] text-slate-600 mb-6 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            Registered by
+                          </div>
+                          <div className="border-b border-slate-900 pb-1 font-medium text-slate-900">
+                            {baptismData.registeredBy}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className={`font-semibold text-slate-950 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            የደብሩ አስተዳዳሪ ስምና ፊርማ
+                          </div>
+                          <div className={`text-[10.5px] text-slate-600 mb-6 ${printOnPreprintedStationery ? "print:invisible" : ""}`}>
+                            Approved by
+                          </div>
+                          <div className="border-b border-slate-900 pb-1 font-medium text-slate-900">
+                            {baptismData.approvedBy}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Instruction tooltip below preview */}
+              <p className="mt-3 text-center text-label text-neutral-400 print:hidden">
+                {isAmharic
+                  ? "💡 ፎርሙን በባዶ A4 ወረቀት ላይ ወይም በቤተክርስቲያኑ ኦሪጅናል ማተሚያ ወረቀት ላይ ማተም ይችላሉ።"
+                  : "💡 Form renders directly in vector quality. Prints onto standard A4 paper or pre-printed church stationery."}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Footer with action buttons (Hidden during print) */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border bg-surface px-5 py-3 print:hidden">
@@ -1340,15 +1657,15 @@ export function PrintableCertificateDialog({
             <Button
               variant="outline"
               onClick={() => setActiveTab(activeTab === "edit" ? "preview" : "edit")}
-              icon={<Edit3 size={14} />}
+              icon={activeTab === "edit" ? <Eye size={14} /> : <Edit3 size={14} />}
             >
-              {activeTab === "edit" ? (isAmharic ? "ዕይታ እይ" : "View Preview") : (isAmharic ? "መረጃዎችን አርም" : "Edit Fields")}
+              {activeTab === "edit" ? (isAmharic ? "ዕይታ እይ (View Preview)" : "View Preview") : (isAmharic ? "መረጃዎችን አርም (Edit Fields)" : "Edit Fields")}
             </Button>
             <Button
               variant="primary"
               onClick={handlePrint}
               icon={<Printer size={16} />}
-              className="bg-gold text-surface-dark hover:bg-gold-light font-semibold shadow-sm"
+              className="bg-gold text-surface-dark hover:bg-gold-hover font-medium shadow-sm"
             >
               {isAmharic ? "አሁን አትም (Print Now)" : "Print Now"}
             </Button>

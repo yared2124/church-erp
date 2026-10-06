@@ -31,7 +31,7 @@ const EMPLOYEE_INCLUDE = {
 export class EmployeesService {
   private readonly logger = new Logger(EmployeesService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   // ==========================================
   // Employees CRUD
@@ -276,19 +276,19 @@ export class EmployeesService {
       }),
       ...(targetStatus === 'Approved'
         ? [
-            this.prisma.employee.update({
-              where: { id: existing.employeeId },
-              data: { status: 'OnLeave' },
-            }),
-          ]
+          this.prisma.employee.update({
+            where: { id: existing.employeeId },
+            data: { status: 'OnLeave' },
+          }),
+        ]
         : existing.status === 'Approved'
-        ? [
+          ? [
             this.prisma.employee.update({
               where: { id: existing.employeeId },
               data: { status: 'Active' },
             }),
           ]
-        : []),
+          : []),
     ]);
 
     await this.recordAudit({

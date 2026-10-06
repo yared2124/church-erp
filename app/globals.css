@@ -5,15 +5,24 @@
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   body {
     @apply bg-background text-text-primary font-sans text-body;
+    line-height: 1.45;
   }
   *:focus-visible {
     @apply outline outline-2 outline-offset-2 outline-primary;
   }
   [lang="am"] {
     @apply font-ethiopic;
+  }
+  /* Enforce tabular numerals for tables, metrics, and currency/amounts */
+  table,
+  .tabular-nums,
+  [data-numeric="true"],
+  .kpi-value {
+    font-variant-numeric: tabular-nums;
   }
 }
 

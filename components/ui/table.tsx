@@ -34,11 +34,16 @@ export function TableRow({
   );
 }
 
-export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) {
+export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
+  numeric?: boolean;
+}
+
+export function TableHead({ className, numeric, ...props }: TableHeadProps) {
   return (
     <th
       className={cn(
-        "px-4 py-3 text-left text-label text-text-secondary first:rounded-l-md last:rounded-r-md",
+        "h-10 px-4 py-2 text-label font-medium text-text-secondary first:rounded-l-md last:rounded-r-md",
+        numeric ? "text-right" : "text-left",
         className
       )}
       {...props}
@@ -46,6 +51,19 @@ export function TableHead({ className, ...props }: React.ThHTMLAttributes<HTMLTa
   );
 }
 
-export function TableCell({ className, ...props }: React.TdHTMLAttributes<HTMLTableCellElement>) {
-  return <td className={cn("px-4 py-3 text-text-primary", className)} {...props} />;
+export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  numeric?: boolean;
+}
+
+export function TableCell({ className, numeric, ...props }: TableCellProps) {
+  return (
+    <td
+      className={cn(
+        "h-10 px-4 py-2 text-body text-text-primary",
+        numeric && "text-right tabular-nums",
+        className
+      )}
+      {...props}
+    />
+  );
 }

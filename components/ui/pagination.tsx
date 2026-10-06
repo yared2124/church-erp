@@ -70,7 +70,7 @@ export function Pagination({
               onClick={() => onPageChange(p)}
               aria-current={p === page ? "page" : undefined}
               className={cn(
-                "flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-[13.5px] font-semibold transition-colors duration-150",
+                "flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-body font-medium tabular-nums transition-colors duration-150",
                 p === page
                   ? "bg-primary text-white"
                   : "text-text-secondary hover:bg-background-alt"
