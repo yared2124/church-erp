@@ -10,7 +10,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Historical Events — Birhane Genet St. Mary Church",
+  title: "Historical Events — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function HistoryEventsPage() {

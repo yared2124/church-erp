@@ -16,7 +16,7 @@ import { settingsService } from "@/features/settings/settings.service";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "System Settings — Birhane Genet St. Mary Church",
+  title: "System Settings — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function SystemSettingsPage() {

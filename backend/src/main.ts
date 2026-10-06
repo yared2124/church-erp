@@ -31,7 +31,7 @@ async function bootstrap() {
 
   // OpenAPI Swagger Documentation
   const config = new DocumentBuilder()
-    .setTitle('Birhane Genet St. Mary Church ERP API')
+    .setTitle('Chagni Birhane Genet Kidist Ba'ata Lemariyam ERP API')
     .setDescription('Enterprise Backend API for Member Management, Sacraments, Finance, and Auditing')
     .setVersion('1.0')
     .addBearerAuth()

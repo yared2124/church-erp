@@ -11,7 +11,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Stock Movements — Birhane Genet St. Mary Church",
+  title: "Stock Movements — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function StockMovementsPage() {

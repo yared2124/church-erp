@@ -15,7 +15,7 @@ import { auth } from "@/auth";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Dashboard — Birhane Genet St. Mary Church",
+  title: "Dashboard — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function DashboardPage() {

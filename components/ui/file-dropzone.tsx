@@ -56,7 +56,7 @@ export function FileDropzone({ accept = ".csv,.xlsx,.xls", maxSizeLabel = "25MB"
         </Button>
         <input ref={inputRef} type="file" accept={accept} className="hidden" onChange={(e) => handleFile(e.target.files?.[0] ?? null)} />
         <p className="text-[12px] text-text-muted">
-          Supported formats: CSV, XLSX, XLS · Maximum file size: {maxSizeLabel}
+          Supported formats: CSV, XLSX, XLS (Maximum file size: {maxSizeLabel})
         </p>
       </div>
 

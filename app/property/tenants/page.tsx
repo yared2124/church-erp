@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { TenantsTable } from "@/components/properties/tenants-table";
 
 export const metadata: Metadata = {
-  title: "Tenants — Birhane Genet St. Mary Church",
+  title: "Tenants — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function PropertyTenantsPage() {

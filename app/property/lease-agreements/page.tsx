@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { LeaseAgreementsTable } from "@/components/properties/lease-agreements-table";
 
 export const metadata: Metadata = {
-  title: "Lease Agreements — Birhane Genet St. Mary Church",
+  title: "Lease Agreements — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function PropertyLeaseAgreementsPage() {

@@ -11,7 +11,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { familyPaymentService } from "@/features/family-payments/family-payment.service";
 
 export const metadata: Metadata = {
-  title: "Sebeka Payments — Birhane Genet St. Mary Church",
+  title: "Sebeka Payments — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function SebekaPaymentsPage() {
@@ -27,7 +27,7 @@ export default async function SebekaPaymentsPage() {
           { label: "Sebeka Payments" },
         ]}
         title="Financial Management"
-        description="Same records as Members & Families → Family Payments, viewed from the finance module"
+        description="Same records as Family Payments under Members & Families, accessible from finance"
         actions={<Button icon={<Plus size={16} />} href="/members/family-payments/new">Record Payment</Button>}
       />
 

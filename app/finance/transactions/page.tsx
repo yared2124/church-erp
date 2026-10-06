@@ -8,7 +8,7 @@ import { FinanceTabs } from "@/components/finance/finance-tabs";
 import { TransactionTable } from "@/components/finance/transaction-table";
 
 export const metadata: Metadata = {
-  title: "Transactions — Birhane Genet St. Mary Church",
+  title: "Transactions — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default function TransactionsPage() {

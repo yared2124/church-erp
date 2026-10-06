@@ -152,7 +152,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
                 ብርሃነ ገነት
               </div>
               <div className="truncate text-label font-medium text-gold/90">
-                ቅድስት ማርያም ቤተክርስቲያን
+                ቅድስት በዓታ ለማርያም
               </div>
             </div>
           )}
@@ -222,7 +222,7 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
 function SectionLabel({ collapsed, children }: { collapsed: boolean; children: React.ReactNode }) {
   if (collapsed) return <div className="my-3 h-px bg-white/5" />;
   return (
-    <div className="mb-2 mt-4 px-3 text-small font-medium uppercase tracking-wider text-sidebar-muted">
+    <div className="mb-2 mt-4 px-3 text-small font-medium text-sidebar-muted">
       {children}
     </div>
   );

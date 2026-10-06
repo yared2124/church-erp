@@ -11,7 +11,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Payment Methods — Birhane Genet St. Mary Church",
+  title: "Payment Methods — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function FinancePaymentMethodsPage() {

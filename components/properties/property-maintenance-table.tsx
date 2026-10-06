@@ -167,7 +167,7 @@ export function PropertyMaintenanceTable({ requests }: { requests: MaintenanceRe
 
             <div className="my-5 space-y-3">
               <div className="rounded-xl border border-border bg-background-alt/40 p-3">
-                <span className="text-[12px] font-semibold text-text-muted uppercase">{isAmharic ? "የችግሩ ዝርዝር መግለጫ" : "Issue Description"}</span>
+                <span className="text-[12px] font-semibold text-text-muted">{isAmharic ? "የችግሩ ዝርዝር መግለጫ" : "Issue Description"}</span>
                 <p className="mt-1 font-medium text-text-primary text-[13.5px]">{selectedReq.issue}</p>
               </div>
               <div className="flex items-center justify-between rounded-xl border border-border bg-background-alt/40 p-3">

@@ -69,7 +69,7 @@ export function ActiveTenantsCard({ leases }: { leases: LeaseRow[] }) {
             <div key={l.id} className={`flex items-center justify-between py-2.5 ${i < leases.length - 1 ? "border-b border-border-light" : ""}`}>
               <div className="min-w-0">
                 <p className="truncate text-[13.5px] font-semibold text-text-primary">{l.tenant.name}</p>
-                <p className="text-[12px] text-text-secondary">{l.property.unitName} · {l.tenant.phone ?? "—"}</p>
+                <p className="text-[12px] text-text-secondary">{l.property.unitName}, {l.tenant.phone ?? "—"}</p>
               </div>
               <p className="shrink-0 text-[12px] text-text-muted">Ends {formatDate(l.endDate)}</p>
             </div>

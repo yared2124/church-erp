@@ -47,7 +47,7 @@ const emailSettings = {
   smtpPort: "587",
   username: "noreply@bgsmmchurch.et",
   fromEmail: "noreply@bgsmmchurch.et",
-  fromName: "Birhane Genet St. Mary Church",
+  fromName: "Chagni Birhane Genet Kidist Ba'ata Lemariyam",
   testEmail: "admin@bgsmmchurch.et",
 };
 

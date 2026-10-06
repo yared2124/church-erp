@@ -10,7 +10,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Church Milestones — Birhane Genet St. Mary Church",
+  title: "Church Milestones — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function HistoryMilestonesPage() {
@@ -29,7 +29,7 @@ export default async function HistoryMilestonesPage() {
           { label: "Milestones" },
         ]}
         title="Major Milestones"
-        description="Historical achievements, consecrations, and significant milestones of Birhane Genet St. Mary Church."
+        description="Historical achievements, consecrations, and significant milestones of Chagni Birhane Genet Kidist Ba'ata Lemariyam."
         actions={
           <Button icon={<Plus size={16} />}>Record Milestone</Button>
         }

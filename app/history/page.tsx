@@ -11,7 +11,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { historyService } from "@/features/church-history/history.service";
 
 export const metadata: Metadata = {
-  title: "Church History — Birhane Genet St. Mary Church",
+  title: "Church History — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function ChurchHistoryPage() {

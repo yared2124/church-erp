@@ -10,7 +10,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Inventory Items — Birhane Genet St. Mary Church",
+  title: "Inventory Items — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function InventoryItemsPage() {

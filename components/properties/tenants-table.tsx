@@ -161,7 +161,7 @@ export function TenantsTable({ tenants }: { tenants: Tenant[] }) {
                 <span className="font-medium text-text-primary">{selectedTenant.email ?? "—"}</span>
               </div>
               <div className="rounded-xl border border-border bg-background-alt/40 p-3">
-                <span className="text-[12px] font-semibold text-text-muted uppercase">{isAmharic ? "የተከራዩዋቸው ክፍሎች / ቤቶች" : "Leased Properties"}</span>
+                <span className="text-[12px] font-semibold text-text-muted">{isAmharic ? "የተከራዩዋቸው ክፍሎች / ቤቶች" : "Leased Properties"}</span>
                 <div className="mt-2 space-y-2">
                   {selectedTenant.leaseAgreements.length === 0 ? (
                     <p className="text-[13px] text-text-muted">{isAmharic ? "ምንም ንቁ የውል ስምምነት የለም።" : "No lease agreements."}</p>

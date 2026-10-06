@@ -11,7 +11,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { importJobService } from "@/features/bulk-import/import-job.service";
 
 export const metadata: Metadata = {
-  title: "Bulk Import — Birhane Genet St. Mary Church",
+  title: "Bulk Import — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 function formatDateTime(iso: Date | string) {

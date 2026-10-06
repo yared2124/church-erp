@@ -14,7 +14,7 @@ const REPORTS = [
 ];
 
 export const metadata: Metadata = {
-  title: "Financial Reports — Birhane Genet St. Mary Church",
+  title: "Financial Reports — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default function FinanceReportsPage() {

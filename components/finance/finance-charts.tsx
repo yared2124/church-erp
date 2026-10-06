@@ -99,7 +99,7 @@ function CategoryDonut({ title, data, centerLabel }: { title: string; data: Cate
                   {d.label}
                 </span>
                 <span className="shrink-0 text-text-secondary">
-                  {d.pct} <span className="text-text-muted">· {d.value.toLocaleString()}</span>
+                  {d.pct} <span className="text-text-muted">({d.value.toLocaleString()} ETB)</span>
                 </span>
               </div>
             ))}

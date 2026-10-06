@@ -9,7 +9,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { certificateService } from "@/features/certificates/certificate.service";
 
 export const metadata: Metadata = {
-  title: "Certificate Requests — Birhane Genet St. Mary Church",
+  title: "Certificate Requests — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function CertificatesPage() {

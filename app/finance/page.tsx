@@ -14,7 +14,7 @@ import { financeService } from "@/features/finance/finance.service";
 import { familyPaymentService } from "@/features/family-payments/family-payment.service";
 
 export const metadata: Metadata = {
-  title: "Financial Management — Birhane Genet St. Mary Church",
+  title: "Financial Management — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function FinanceOverviewPage() {

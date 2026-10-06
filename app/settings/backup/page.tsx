@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { SettingsTabs } from "@/components/settings/settings-tabs";
 import { Card } from "@/components/ui/card";
 
-export const metadata: Metadata = { title: "Backup & Restore — Birhane Genet St. Mary Church" };
+export const metadata: Metadata = { title: "Backup & Restore — Chagni Birhane Genet Kidist Ba'ata Lemariyam" };
 
 export default function BackupSettingsPage() {
   return (

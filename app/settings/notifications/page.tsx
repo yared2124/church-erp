@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { SettingsTabs } from "@/components/settings/settings-tabs";
 import { Card } from "@/components/ui/card";
 
-export const metadata: Metadata = { title: "Notification Settings — Birhane Genet St. Mary Church" };
+export const metadata: Metadata = { title: "Notification Settings — Chagni Birhane Genet Kidist Ba'ata Lemariyam" };
 
 export default function NotificationSettingsPage() {
   return (

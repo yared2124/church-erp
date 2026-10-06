@@ -8,7 +8,7 @@ import { ReportTabs } from "@/components/reports/report-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 
 export const metadata: Metadata = {
-  title: "Custom Reports — Birhane Genet St. Mary Church",
+  title: "Custom Reports — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function CustomReportPage() {

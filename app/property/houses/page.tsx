@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { HousesTable } from "@/components/properties/houses-table";
 
 export const metadata: Metadata = {
-  title: "Houses & Properties — Birhane Genet St. Mary Church",
+  title: "Houses & Properties — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function PropertyHousesPage() {

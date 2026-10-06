@@ -13,7 +13,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { inventoryService } from "@/features/inventory/inventory.service";
 
 export const metadata: Metadata = {
-  title: "Assets & Inventory — Birhane Genet St. Mary Church",
+  title: "Assets & Inventory — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function InventoryOverviewPage() {

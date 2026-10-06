@@ -13,7 +13,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { reportService } from "@/features/reports/report.service";
 
 export const metadata: Metadata = {
-  title: "Reports & Analytics — Birhane Genet St. Mary Church",
+  title: "Reports & Analytics — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 function formatDateTime(iso: Date | string) {

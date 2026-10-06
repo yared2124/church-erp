@@ -17,7 +17,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { propertyService } from "@/features/properties/property.service";
 
 export const metadata: Metadata = {
-  title: "Property & Rentals — Birhane Genet St. Mary Church",
+  title: "Property & Rentals — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function PropertyOverviewPage() {

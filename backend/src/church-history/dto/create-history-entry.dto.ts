@@ -15,7 +15,7 @@ export class CreateHistoryEntryDto {
   @Max(2100, { message: 'Year cannot be in the distant future' })
   year: number;
 
-  @ApiProperty({ example: 'Foundation of Birhane Genet St. Mary Church', description: 'Title of the event' })
+  @ApiProperty({ example: 'Foundation of Chagni Birhane Genet Kidist Ba'ata Lemariyam', description: 'Title of the event' })
   @IsString()
   @IsNotEmpty({ message: 'Title is required' })
   title: string;

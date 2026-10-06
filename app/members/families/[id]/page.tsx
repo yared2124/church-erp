@@ -60,7 +60,7 @@ export default async function FamilyProfilePage({ params }: { params: Promise<{ 
           { label: family.name },
         ]}
         title={family.name}
-        description={`${family.id.slice(0, 8)} · ${family.members.length} members`}
+        description={`${family.id.slice(0, 8)}, ${family.members.length} registered members`}
         actions={<Button icon={<Pencil size={16} />}>Edit Family</Button>}
       />
 

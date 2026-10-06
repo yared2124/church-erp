@@ -8,7 +8,7 @@ import { HistoryTabs } from "@/components/church-history/history-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 
 export const metadata: Metadata = {
-  title: "Historical Gallery — Birhane Genet St. Mary Church",
+  title: "Historical Gallery — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function HistoryGalleryPage() {

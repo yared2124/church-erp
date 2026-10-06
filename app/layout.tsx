@@ -16,7 +16,9 @@ const notoEthiopic = Noto_Sans_Ethiopic({
   display: "swap",
 });
 
-export const metadata: Metadata = { title: "Birhane Genet St. Mary Church" };
+export const metadata: Metadata = {
+  title: "Chagni Birhane Genet Kidist Ba'ata Lemariyam — Church ERP",
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

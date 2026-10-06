@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { OverdueRentalsTable } from "@/components/properties/overdue-rentals-table";
 
 export const metadata: Metadata = {
-  title: "Overdue Rentals — Birhane Genet St. Mary Church",
+  title: "Overdue Rentals — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function OverdueRentalsPage() {

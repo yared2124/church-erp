@@ -138,7 +138,7 @@ export function FamilyPaymentDetailDialog({ payment, open, onOpenChange }: Famil
 
           {/* Amount Breakdown */}
           <div className="rounded-xl border border-border bg-surface p-3.5 shadow-sm space-y-2.5">
-            <p className="text-[12px] font-semibold uppercase tracking-wider text-text-muted">
+            <p className="text-[12px] font-semibold text-text-muted">
               {isAmharic ? "የክፍያ መጠን ዝርዝር" : "Amount Breakdown"}
             </p>
             <div className="flex items-center justify-between text-[13px]">

@@ -18,7 +18,7 @@ import { requireAuth } from "@/lib/api-helpers";
 import { employeeService } from "@/features/employees/employee.service";
 
 export const metadata: Metadata = {
-  title: "Employees — Birhane Genet St. Mary Church",
+  title: "Employees — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function EmployeesOverviewPage() {

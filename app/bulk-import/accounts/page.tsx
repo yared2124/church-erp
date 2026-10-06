@@ -9,7 +9,7 @@ import { BulkImportTabs } from "@/components/bulk-import/bulk-import-tabs";
 import { requireAuth } from "@/lib/api-helpers";
 
 export const metadata: Metadata = {
-  title: "Bulk Import Accounts — Birhane Genet St. Mary Church",
+  title: "Bulk Import Accounts — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function BulkImportAccountsPage() {

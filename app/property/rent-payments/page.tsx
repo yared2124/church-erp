@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { RentPaymentsTable } from "@/components/properties/rent-payments-table";
 
 export const metadata: Metadata = {
-  title: "Rent Payments — Birhane Genet St. Mary Church",
+  title: "Rent Payments — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function PropertyRentPaymentsPage() {

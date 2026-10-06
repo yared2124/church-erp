@@ -9,7 +9,7 @@ import { requireRole } from "@/lib/api-helpers";
 import { auditLogService } from "@/features/audit-logs/audit-log.service";
 
 export const metadata: Metadata = {
-  title: "Audit Logs — Birhane Genet St. Mary Church",
+  title: "Audit Logs — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function AuditLogsPage() {

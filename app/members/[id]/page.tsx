@@ -116,7 +116,7 @@ export default function MemberProfilePage() {
             <div className="mt-1.5">
               <Badge tone={statusTone[member.status]}>{member.status}</Badge>
             </div>
-            <p className="mt-1 text-[12.5px] text-text-secondary">{member.roleInFamily} · {member.family.name}</p>
+            <p className="mt-1 text-[12.5px] text-text-secondary">{member.roleInFamily}, {member.family.name}</p>
           </div>
 
           <div className="mt-5 divide-y divide-border-light border-t border-border-light">

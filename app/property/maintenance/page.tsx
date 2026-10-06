@@ -9,7 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { PropertyMaintenanceTable } from "@/components/properties/property-maintenance-table";
 
 export const metadata: Metadata = {
-  title: "Property Maintenance — Birhane Genet St. Mary Church",
+  title: "Property Maintenance — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
 export default async function PropertyMaintenancePage() {
