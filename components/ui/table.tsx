@@ -43,7 +43,7 @@ export function TableHead({ className, numeric, scope = "col", ...props }: Table
     <th
       scope={scope}
       className={cn(
-        "h-10 px-4 py-2 text-label font-medium text-text-secondary first:rounded-l-md last:rounded-r-md",
+        "h-9 px-3.5 py-1.5 text-label font-medium text-text-secondary first:rounded-l-md last:rounded-r-md",
         numeric ? "text-right" : "text-left",
         className
       )}
@@ -60,7 +60,7 @@ export function TableCell({ className, numeric, ...props }: TableCellProps) {
   return (
     <td
       className={cn(
-        "h-10 px-4 py-2 text-body text-text-primary",
+        "h-9 px-3.5 py-1.5 text-body text-text-primary",
         numeric && "text-right tabular-nums",
         className
       )}

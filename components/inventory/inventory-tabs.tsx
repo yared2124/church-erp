@@ -21,7 +21,7 @@ export function InventoryTabs() {
   ];
 
   return (
-    <div className="mb-5 flex gap-5 overflow-x-auto border-b border-border scrollbar-thin">
+    <div className="mb-3.5 flex gap-4 overflow-x-auto border-b border-border scrollbar-thin">
       {tabs.map((tab) => {
         const active = pathname === tab.href;
         return (
@@ -29,7 +29,7 @@ export function InventoryTabs() {
             key={tab.href}
             href={tab.href}
             className={cn(
-              "relative shrink-0 pb-3 text-[13.5px] font-medium transition-colors duration-150",
+              "relative shrink-0 pb-2 text-[13px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm",
               active ? "text-primary font-semibold" : "text-text-secondary hover:text-text-primary"
             )}
           >

@@ -36,7 +36,7 @@ export default async function InventoryItemsPage() {
 
       <InventoryTabs />
 
-      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="mb-3.5 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <StatCard label="Total Items" value={String(totalItems)} icon={Boxes} iconBg="bg-primary-light" iconColor="text-primary" />
         <StatCard label="In Stock" value={String(inStock)} icon={PackageCheck} iconBg="bg-success-bg" iconColor="text-success" />
         <StatCard label="Low Stock Alert" value={String(lowStock)} icon={AlertTriangle} iconBg="bg-warning-bg" iconColor="text-warning" />

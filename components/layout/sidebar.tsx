@@ -142,16 +142,16 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
         )}
       >
         {/* Brand with authentic Ethiopian Orthodox Cross */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-sidebar-border/60">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gold/40 bg-gradient-to-b from-primary/80 to-sidebar-secondary shadow-glow-gold">
-            <EthiopicCross size={22} variant="gold" />
+        <div className="flex h-[56px] items-center gap-3 px-4 border-b border-sidebar-border/60">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-gold/40 bg-gradient-to-b from-primary/80 to-sidebar-secondary shadow-glow-gold">
+            <EthiopicCross size={18} variant="gold" />
           </div>
           {!collapsed && (
             <div className="min-w-0 leading-tight">
-              <div className="truncate text-sidebar font-semibold tracking-tight text-sidebar-text">
+              <div className="truncate text-[13.5px] font-semibold tracking-tight text-sidebar-text">
                 ብርሃነ ገነት
               </div>
-              <div className="truncate text-label font-medium text-gold/90">
+              <div className="truncate text-[11px] font-medium text-gold/90">
                 ቅድስት በዓታ ለማርያም
               </div>
             </div>

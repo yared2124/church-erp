@@ -18,9 +18,9 @@ export function Card({ className, padded = true, hoverable = false, ...props }: 
   return (
     <div
       className={cn(
-        "rounded-xl border border-border/80 bg-surface shadow-card transition-all duration-200",
+        "rounded-xl border border-border/80 bg-surface shadow-card transition-[transform,box-shadow,border-color] duration-150",
         hoverable && "hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-elevated",
-        padded && "p-3.5 sm:p-4",
+        padded && "p-3 sm:p-3.5",
         className
       )}
       {...props}

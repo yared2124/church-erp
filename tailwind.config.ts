@@ -68,18 +68,18 @@ const config: Config = {
         ethiopic: ["var(--font-noto-ethiopic)", "Noto Sans Ethiopic", "sans-serif"],
       },
       fontSize: {
-        // Strict modular rem scale (base 16px): 12 / 14 / 16 / 20 / 24 / 32
-        small: ["0.75rem", { lineHeight: "1.4", fontWeight: "400" }],        // 12px
-        label: ["0.75rem", { lineHeight: "1.4", fontWeight: "500" }],        // 12px
-        caption: ["0.75rem", { lineHeight: "1.4", fontWeight: "400" }],      // 12px
-        body: ["0.875rem", { lineHeight: "1.45", fontWeight: "400" }],       // 14px (ERP body & table data)
-        button: ["0.875rem", { lineHeight: "1.45", fontWeight: "500" }],     // 14px (medium weight)
-        sidebar: ["0.875rem", { lineHeight: "1.45", fontWeight: "500" }],    // 14px (medium weight)
-        "card-title": ["1rem", { lineHeight: "1.4", fontWeight: "600" }],    // 16px
-        "section-title": ["1rem", { lineHeight: "1.4", fontWeight: "600" }], // 16px
-        "modal-title": ["1.25rem", { lineHeight: "1.35", fontWeight: "600" }], // 20px
-        "page-title": ["1.5rem", { lineHeight: "1.3", fontWeight: "600" }],   // 24px
-        kpi: ["2rem", { lineHeight: "1.15", fontWeight: "700" }],             // 32px (bold)
+        // Strict modular rem scale relative to 14px base: 12 / 14 / 16 / 20 / 24 / 32
+        small: ["0.857rem", { lineHeight: "1.4", fontWeight: "400" }],        // 12px
+        label: ["0.857rem", { lineHeight: "1.4", fontWeight: "500" }],        // 12px
+        caption: ["0.857rem", { lineHeight: "1.4", fontWeight: "400" }],      // 12px
+        body: ["1rem", { lineHeight: "1.45", fontWeight: "400" }],            // 14px (ERP body & table data)
+        button: ["1rem", { lineHeight: "1.45", fontWeight: "500" }],          // 14px (medium weight)
+        sidebar: ["1rem", { lineHeight: "1.45", fontWeight: "500" }],         // 14px (medium weight)
+        "card-title": ["1.143rem", { lineHeight: "1.4", fontWeight: "600" }], // 16px
+        "section-title": ["1.143rem", { lineHeight: "1.4", fontWeight: "600" }], // 16px
+        "modal-title": ["1.428rem", { lineHeight: "1.35", fontWeight: "600" }], // 20px
+        "page-title": ["1.714rem", { lineHeight: "1.3", fontWeight: "600" }],   // 24px
+        kpi: ["2.285rem", { lineHeight: "1.15", fontWeight: "700" }],          // 32px (bold)
       },
       spacing: {
         1: "4px",
@@ -108,9 +108,9 @@ const config: Config = {
       },
       height: {
         "control-sm": "32px",
-        "control-md": "40px",
-        "control-lg": "44px",
-        header: "72px",
+        "control-md": "38px",
+        "control-lg": "42px",
+        header: "56px",
       },
       width: {
         sidebar: "260px",

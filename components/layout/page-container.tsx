@@ -9,8 +9,8 @@ export function PageContainer({
   className?: string;
 }) {
   return (
-    <main className={cn("mx-auto w-full max-w-[1440px] px-3 py-3.5 sm:px-5 sm:py-4", className)}>
+    <div className={cn("mx-auto w-full max-w-[1360px] px-3 py-2.5 sm:px-4 sm:py-3", className)}>
       {children}
-    </main>
+    </div>
   );
 }
