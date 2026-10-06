@@ -38,9 +38,10 @@ export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElem
   numeric?: boolean;
 }
 
-export function TableHead({ className, numeric, ...props }: TableHeadProps) {
+export function TableHead({ className, numeric, scope = "col", ...props }: TableHeadProps) {
   return (
     <th
+      scope={scope}
       className={cn(
         "h-10 px-4 py-2 text-label font-medium text-text-secondary first:rounded-l-md last:rounded-r-md",
         numeric ? "text-right" : "text-left",

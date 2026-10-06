@@ -50,7 +50,7 @@ export interface ButtonProps
 
 function buttonClasses(variant: ButtonVariant, size: ButtonSize, className?: string) {
   return cn(
-    "inline-flex items-center justify-center rounded-md font-medium whitespace-nowrap transition-colors duration-150 disabled:cursor-not-allowed",
+    "inline-flex items-center justify-center rounded-md font-medium whitespace-nowrap transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed",
     variantClasses[variant],
     sizeClasses[size],
     className
@@ -70,7 +70,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     if (href) {
       return (
         <Link href={href} className={buttonClasses(variant, size, className)}>
-          {icon && <span className="inline-flex shrink-0">{icon}</span>}
+          {icon && <span className="inline-flex shrink-0" aria-hidden="true">{icon}</span>}
           {children}
         </Link>
       );
@@ -80,13 +80,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         disabled={disabled || loading}
+        aria-busy={loading || undefined}
         className={buttonClasses(variant, size, className)}
         {...props}
       >
         {loading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
         ) : (
-          icon && <span className="inline-flex shrink-0">{icon}</span>
+          icon && <span className="inline-flex shrink-0" aria-hidden="true">{icon}</span>
         )}
         {children}
       </button>

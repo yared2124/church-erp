@@ -125,16 +125,17 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
   return (
     <>
       {mobileOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden"
+        <button
+          type="button"
+          aria-label="Close sidebar"
           onClick={onMobileClose}
-          aria-hidden
+          className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden cursor-default border-none"
         />
       )}
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-sidebar border-r border-sidebar-border transition-all duration-150",
+          "fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-sidebar border-r border-sidebar-border transition-[width,transform] duration-150",
           collapsed ? "w-sidebar-collapsed" : "w-sidebar",
           "lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
@@ -205,11 +206,12 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
 
         {/* Collapse toggle (desktop only) */}
         <button
+          type="button"
           onClick={() => onCollapsedChange(!collapsed)}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="hidden h-11 items-center justify-center gap-2 border-t border-white/5 text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-hover hover:text-sidebar-text lg:flex"
+          className="hidden h-11 items-center justify-center gap-2 border-t border-white/5 text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-hover hover:text-sidebar-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold lg:flex"
         >
-          {collapsed ? <ChevronsRight size={16} /> : <ChevronsLeft size={16} />}
+          {collapsed ? <ChevronsRight size={16} aria-hidden="true" /> : <ChevronsLeft size={16} aria-hidden="true" />}
           {!collapsed && <span className="text-label font-medium">Collapse</span>}
         </button>
       </aside>
@@ -265,11 +267,11 @@ function NavEntry({
           }
         }}
         className={cn(
-          "flex flex-1 items-center gap-3 py-2.5",
+          "flex flex-1 items-center gap-3 py-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded-sm",
           collapsed && "justify-center"
         )}
       >
-        <Icon size={18} strokeWidth={2} className="shrink-0" />
+        <Icon size={18} strokeWidth={2} className="shrink-0" aria-hidden="true" />
         {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
       </Link>
       {!collapsed && hasChildren && (
@@ -281,11 +283,12 @@ function NavEntry({
             setOpen((o) => !o);
           }}
           aria-label={open ? "Collapse sub-items" : "Expand sub-items"}
-          className="rounded p-2 text-sidebar-muted transition-colors hover:text-sidebar-text"
+          className="rounded p-2 text-sidebar-muted transition-colors hover:text-sidebar-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
         >
           <ChevronDown
             size={15}
             className={cn("shrink-0 transition-transform duration-150", open && "rotate-180")}
+            aria-hidden="true"
           />
         </button>
       )}
@@ -313,7 +316,7 @@ function NavEntry({
                 href={child.href}
                 aria-current={childActive ? "page" : undefined}
                 className={cn(
-                  "flex min-h-[38px] items-center rounded-md px-3 text-sidebar transition-colors duration-150",
+                  "flex min-h-[38px] items-center rounded-md px-3 text-sidebar transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
                   childActive
                     ? "font-semibold text-gold bg-sidebar-hover/40"
                     : "text-sidebar-muted hover:text-sidebar-text"

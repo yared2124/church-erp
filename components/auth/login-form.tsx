@@ -45,9 +45,10 @@ export function LoginForm() {
         type="email"
         required
         autoComplete="email"
+        spellCheck={false}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="you@stmarychurch.et"
+        placeholder="you@stmarychurch.et…"
       />
       <Input
         label="Password"
@@ -60,8 +61,12 @@ export function LoginForm() {
       />
 
       {error && (
-        <div className="flex items-center gap-2 rounded-md bg-danger-bg px-3 py-2.5 text-[13px] text-danger">
-          <AlertCircle size={16} className="shrink-0" />
+        <div
+          role="alert"
+          aria-live="polite"
+          className="flex items-center gap-2 rounded-md bg-danger-bg px-3 py-2.5 text-[13px] text-danger"
+        >
+          <AlertCircle size={16} className="shrink-0" aria-hidden="true" />
           {error}
         </div>
       )}

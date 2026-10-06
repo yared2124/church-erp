@@ -3,7 +3,7 @@ import { Search, ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const fieldBase =
-  "h-control-md w-full rounded-md border bg-surface px-3 text-body text-text-primary placeholder:text-text-muted transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:bg-background-alt disabled:text-text-disabled";
+  "h-control-md w-full rounded-md border bg-surface px-3 text-body text-text-primary placeholder:text-text-muted transition-colors duration-150 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:bg-background-alt disabled:text-text-disabled";
 
 interface FieldWrapProps {
   label?: string;
@@ -21,19 +21,26 @@ function FieldChrome({
   required,
   children,
 }: FieldWrapProps & { children: React.ReactNode }) {
+  const errorId = id && error ? `${id}-error` : undefined;
+  const hintId = id && hint ? `${id}-hint` : undefined;
+
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
         <label htmlFor={id} className="text-label text-text-primary">
           {label}
-          {required && <span className="text-danger"> *</span>}
+          {required && <span className="text-danger" aria-hidden="true"> *</span>}
         </label>
       )}
       {children}
       {error ? (
-        <p className="text-label text-danger">{error}</p>
+        <p id={errorId} role="alert" aria-live="polite" className="text-label text-danger">
+          {error}
+        </p>
       ) : hint ? (
-        <p className="text-label text-text-muted">{hint}</p>
+        <p id={hintId} className="text-label text-text-muted">
+          {hint}
+        </p>
       ) : null}
     </div>
   );
@@ -49,9 +56,11 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         ref={ref}
         id={id}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={id && error ? `${id}-error` : id && hint ? `${id}-hint` : undefined}
         className={cn(
           fieldBase,
-          error ? "border-danger focus:ring-danger/20" : "border-border focus:border-primary",
+          error ? "border-danger focus-visible:ring-danger/20" : "border-border focus-visible:border-primary",
           className
         )}
         {...props}
@@ -64,10 +73,10 @@ Input.displayName = "Input";
 export const SearchInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, ...props }, ref) => (
     <div className="relative w-full">
-      <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+      <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
       <input
         ref={ref}
-        className={cn(fieldBase, "border-border pl-9 focus:border-primary", className)}
+        className={cn(fieldBase, "border-border pl-9 focus-visible:border-primary", className)}
         {...props}
       />
     </div>
@@ -84,9 +93,11 @@ export const Textarea = React.forwardRef<
       ref={ref}
       id={id}
       rows={4}
+      aria-invalid={error ? true : undefined}
+      aria-describedby={id && error ? `${id}-error` : id && hint ? `${id}-hint` : undefined}
       className={cn(
-        "w-full rounded-md border bg-surface px-3 py-2 text-body text-text-primary placeholder:text-text-muted transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-primary/20",
-        error ? "border-danger focus:ring-danger/20" : "border-border focus:border-primary",
+        "w-full rounded-md border bg-surface px-3 py-2 text-body text-text-primary placeholder:text-text-muted transition-colors duration-150 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20",
+        error ? "border-danger focus-visible:ring-danger/20" : "border-border focus-visible:border-primary",
         className
       )}
       {...props}
@@ -113,10 +124,12 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         <select
           ref={ref}
           id={id}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={id && error ? `${id}-error` : id && hint ? `${id}-hint` : undefined}
           className={cn(
             fieldBase,
             "appearance-none pr-9",
-            error ? "border-danger focus:ring-danger/20" : "border-border focus:border-primary",
+            error ? "border-danger focus-visible:ring-danger/20" : "border-border focus-visible:border-primary",
             className
           )}
           {...props}
@@ -127,7 +140,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
+        <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
       </div>
     </FieldChrome>
   )
@@ -141,7 +154,7 @@ export function Checkbox({
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label?: string }) {
   return (
-    <label htmlFor={id} className="inline-flex items-center gap-2 text-body text-text-primary">
+    <label htmlFor={id} className="inline-flex cursor-pointer items-center gap-2 text-body text-text-primary">
       <span className="relative inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border border-border bg-surface peer-checked:bg-primary">
         <input
           type="checkbox"
@@ -149,7 +162,7 @@ export function Checkbox({
           className={cn("peer absolute inset-0 h-full w-full cursor-pointer opacity-0", className)}
           {...props}
         />
-        <Check className="hidden h-3 w-3 text-white peer-checked:block" />
+        <Check aria-hidden="true" className="hidden h-3 w-3 text-white peer-checked:block" />
       </span>
       {label}
     </label>

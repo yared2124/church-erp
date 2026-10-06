@@ -35,7 +35,7 @@ export function StatCard({
         <div
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-transform duration-200 group-hover:scale-105 ${iconBg}`}
         >
-          <Icon size={18} className={iconColor} strokeWidth={1.8} />
+          <Icon size={18} className={iconColor} strokeWidth={1.8} aria-hidden="true" />
         </div>
         {trend && (
           <div
@@ -43,7 +43,7 @@ export function StatCard({
               isUp ? "bg-success-bg text-success" : "bg-danger-bg text-danger"
             }`}
           >
-            {isUp ? <ArrowUp size={11} /> : <ArrowDown size={11} />}
+            {isUp ? <ArrowUp size={11} aria-hidden="true" /> : <ArrowDown size={11} aria-hidden="true" />}
             <span>{trend}</span>
           </div>
         )}

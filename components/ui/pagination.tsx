@@ -46,31 +46,33 @@ export function Pagination({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
       <p className="text-small text-text-secondary">
-        Showing {start} to {end} of {totalItems.toLocaleString()}
+        Showing {start}&nbsp;to&nbsp;{end}&nbsp;of&nbsp;{totalItems.toLocaleString()}
       </p>
 
-      <div className="flex items-center gap-1.5">
+      <nav aria-label="Pagination" className="flex items-center gap-1.5">
         <button
+          type="button"
           onClick={() => onPageChange(Math.max(1, page - 1))}
           disabled={page === 1}
           aria-label="Previous page"
-          className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-text-secondary transition-colors duration-150 hover:bg-background-alt disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-text-secondary transition-colors duration-150 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={16} aria-hidden="true" />
         </button>
 
         {pages.map((p, i) =>
           p === "ellipsis" ? (
-            <span key={`e-${i}`} className="px-1 text-text-muted">
+            <span key={`e-${i}`} className="px-1 text-text-muted" aria-hidden="true">
               …
             </span>
           ) : (
             <button
               key={p}
+              type="button"
               onClick={() => onPageChange(p)}
               aria-current={p === page ? "page" : undefined}
               className={cn(
-                "flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-body font-medium tabular-nums transition-colors duration-150",
+                "flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-body font-medium tabular-nums transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1",
                 p === page
                   ? "bg-primary text-white"
                   : "text-text-secondary hover:bg-background-alt"
@@ -82,14 +84,15 @@ export function Pagination({
         )}
 
         <button
+          type="button"
           onClick={() => onPageChange(Math.min(pageCount, page + 1))}
           disabled={page === pageCount}
           aria-label="Next page"
-          className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-text-secondary transition-colors duration-150 hover:bg-background-alt disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-border text-text-secondary transition-colors duration-150 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          <ChevronRight size={16} />
+          <ChevronRight size={16} aria-hidden="true" />
         </button>
-      </div>
+      </nav>
 
       <div className="w-[132px]">
         <Select
