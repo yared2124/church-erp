@@ -65,6 +65,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "Inter", "Roboto", "system-ui", "sans-serif"],
+        serif: ["var(--font-noto-serif)", "Noto Serif", "Georgia", "serif"],
         ethiopic: ["var(--font-noto-ethiopic)", "Noto Sans Ethiopic", "sans-serif"],
       },
       fontSize: {

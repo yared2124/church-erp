@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
+import { LiturgicalRibbon } from "./liturgical-ribbon";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
@@ -28,6 +29,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           collapsed ? "lg:pl-sidebar-collapsed" : "lg:pl-sidebar"
         )}
       >
+        <LiturgicalRibbon />
         <Header
           onMenuClick={() => setMobileNavOpen(true)}
         />

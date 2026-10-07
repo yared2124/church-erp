@@ -5,7 +5,7 @@ Please copy or save your scanned church certificate template images in this dire
 1. **የጥምቀት ምስክር ወረቀት (Baptism Certificate)**:
    - File path: `/public/certificates/baptism-template.png` (or `.jpg`)
 
-2. **የተክሊል / የጋብቻ ምስክር ወረቀት (Holy Matrimony / Wedding Certificate)**:
+2. **የጋብቻ ምስክር ወረቀት (Holy Matrimony / Wedding Certificate)**:
    - File path: `/public/certificates/wedding-template.png` (or `.jpg`)
 
 ### Printing Modes:

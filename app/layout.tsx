@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_Ethiopic } from "next/font/google";
+import { Inter, Noto_Sans_Ethiopic, Noto_Serif } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/components/auth/session-provider";
 import { LanguageProvider } from "@/lib/language-context";
@@ -16,13 +16,19 @@ const notoEthiopic = Noto_Sans_Ethiopic({
   display: "swap",
 });
 
+const notoSerif = Noto_Serif({
+  subsets: ["latin"],
+  variable: "--font-noto-serif",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Chagni Birhane Genet Kidist Ba'ata Lemariyam — Church ERP",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${notoEthiopic.variable}`}>
+    <html lang="en" className={`${inter.variable} ${notoEthiopic.variable} ${notoSerif.variable}`}>
       <body>
         <a
           href="#main-content"
