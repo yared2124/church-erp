@@ -10,10 +10,9 @@ import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useLanguage } from "@/lib/language-context";
 import {
-  dashboardNavItem,
-  mainModuleNavItems,
-  settingsNavItems,
+  navigationGroups,
   type NavItem,
+  type NavGroup,
 } from "./nav-config";
 
 interface SidebarProps {
@@ -23,104 +22,25 @@ interface SidebarProps {
   onCollapsedChange: (collapsed: boolean) => void;
 }
 
-function getActiveChildHref(item: NavItem, pathname: string): string | null {
-  if (!item.children?.length) return null;
-  const matches = item.children.filter(
-    (c) => pathname === c.href || pathname.startsWith(c.href + "/")
-  );
-  if (matches.length === 0) return null;
-  return matches.reduce((best, c) => (c.href.length > best.href.length ? c : best)).href;
-}
-
 function isItemActive(item: NavItem, pathname: string) {
-  if (!item.children?.length) return pathname === item.href;
-  return getActiveChildHref(item, pathname) !== null;
+  if (pathname === item.href) return true;
+  if (item.href !== "/dashboard" && pathname.startsWith(item.href)) return true;
+  if (item.children?.some((c) => pathname === c.href || pathname.startsWith(c.href + "/"))) return true;
+  return false;
 }
 
 export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const { t } = useLanguage();
+  const { locale } = useLanguage();
   const userRoles = session?.user?.roles ?? [];
-  const isPriest = userRoles.includes("Priest") && !userRoles.includes("Super Admin");
-
-  function translateNav(label: string): string {
-    if (isPriest) {
-      if (label === "Members & Families") return t("sidebar.spiritual_children");
-      if (label === "Members") return t("sidebar.my_spiritual_children");
-      if (label === "Sacraments") return t("sidebar.sacrament_requests");
-    }
-
-    const keyMap: Record<string, string> = {
-      "Dashboard": "sidebar.dashboard",
-      "Members & Families": "sidebar.members",
-      "Members": "sidebar.members_list",
-      "Families": "sidebar.families",
-      "Family Payments": "sidebar.family_payments",
-      "Sacraments": "sidebar.sacraments",
-      "Baptisms": "sidebar.baptisms",
-      "Marriages": "sidebar.marriages",
-      "Burials": "sidebar.burials",
-      "Financial Management": "sidebar.finance",
-      "Income": "sidebar.income",
-      "Expenses": "sidebar.expenses",
-      "Transactions": "sidebar.transactions",
-      "Sebeka Payments": "sidebar.sebeka_payments",
-      "Financial Reports": "sidebar.finance_reports",
-      "Certificates": "sidebar.certificates",
-      "Property & Inventory": "sidebar.property",
-      "Clergy & Employees": "sidebar.employees",
-      "Church History": "sidebar.history",
-      "Reports & Analytics": "sidebar.reports",
-      "Bulk Import": "sidebar.bulk_import",
-      "Audit Logs": "sidebar.audit_logs",
-      "Users & Roles": "sidebar.users",
-      "Users": "sidebar.users",
-      "Roles & Permissions": "sidebar.users",
-      "System Settings": "sidebar.system_settings",
-      "General Settings": "sidebar.system_settings",
-      "Financial Settings": "sidebar.system_settings",
-      "Notification Settings": "sidebar.system_settings",
-      "Security Settings": "sidebar.system_settings",
-      "Backup & Restore": "sidebar.system_settings",
-    };
-
-    const key = keyMap[label];
-    return key ? t(key) : label;
-  }
 
   function hasAccess(roles?: string[]) {
     if (!roles || roles.length === 0) return true;
     return userRoles.some((r) => roles.includes(r));
   }
 
-  function filterNav(items: NavItem[]): NavItem[] {
-    return items
-      .filter((item) => hasAccess(item.roles))
-      .map((item) => {
-        let children = item.children?.filter((child) => hasAccess(child.roles));
-        // If Priest, they don't need general families overview
-        if (isPriest && item.href === "/members") {
-          children = children?.filter((c) => c.href === "/members");
-        }
-        return {
-          ...item,
-          label: translateNav(item.label),
-          children: children?.map((c) => ({
-            ...c,
-            label: translateNav(c.label),
-          })),
-        };
-      });
-  }
-
-  const showDashboard = hasAccess(dashboardNavItem.roles);
-  const translatedDashboardItem = {
-    ...dashboardNavItem,
-    label: translateNav(dashboardNavItem.label),
-  };
-  const filteredMainItems = filterNav(mainModuleNavItems);
-  const filteredSettingsItems = filterNav(settingsNavItems);
+  const isAmharic = locale === "am";
 
   return (
     <>
@@ -129,79 +49,84 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
           type="button"
           aria-label="Close sidebar"
           onClick={onMobileClose}
-          className="fixed inset-0 z-40 bg-slate-900/40 lg:hidden cursor-default border-none"
+          className="fixed inset-0 z-40 bg-slate-900/60 lg:hidden cursor-default border-none"
         />
       )}
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-sidebar border-r border-sidebar-border transition-[width,transform] duration-150",
-          collapsed ? "w-sidebar-collapsed" : "w-sidebar",
+          "fixed inset-y-0 left-0 z-50 flex h-screen flex-col bg-[#131014] border-r border-[#29222C] transition-[width,transform] duration-150 select-none",
+          collapsed ? "w-[76px]" : "w-[260px]",
           "lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        {/* Brand with authentic Ethiopian Orthodox Cross */}
-        <div className="flex h-[56px] items-center gap-3 px-4 border-b border-sidebar-border/60">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-gold/40 bg-gradient-to-b from-primary/80 to-sidebar-secondary shadow-glow-gold">
-            <EthiopicCross size={18} variant="gold" />
+        {/* Brand header matching screenshot */}
+        <div className="flex flex-col justify-center px-4 py-3.5 border-b border-[#29222C]/80">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#C69214]/40 bg-gradient-to-b from-[#7A1C2E] to-[#1B171C] shadow-[0_0_12px_rgba(198,146,20,0.25)]">
+              <EthiopicCross size={20} variant="gold" />
+            </div>
+            {!collapsed && (
+              <div className="min-w-0 flex-1 leading-tight">
+                <div className="truncate font-serif text-[15px] font-bold tracking-tight text-[#FAF8F5]">
+                  ቅድስት በዓታ
+                </div>
+                <div className="truncate text-[10.5px] font-medium text-white/50">
+                  ቻግኒ ብርሃነ ገነት ቤተክርስቲያን
+                </div>
+              </div>
+            )}
           </div>
           {!collapsed && (
-            <div className="min-w-0 leading-tight">
-              <div className="truncate text-[13.5px] font-semibold tracking-tight text-sidebar-text">
-                ብርሃነ ገነት
-              </div>
-              <div className="truncate text-[11px] font-medium text-gold/90">
-                ቅድስት በዓታ ለማርያም
-              </div>
+            <div className="mt-2 flex items-center">
+              <span className="inline-flex items-center rounded border border-[#C69214]/40 bg-[#C69214]/10 px-2 py-0.5 text-[9.5px] font-bold tracking-wider text-[#FDC348]">
+                EOTC-CHG-014
+              </span>
             </div>
           )}
         </div>
 
-        {/* Nav */}
-        <nav className="flex-1 overflow-y-auto px-3 scrollbar-thin">
-          {showDashboard && (
-            <NavEntry
-              item={translatedDashboardItem}
-              active={pathname === dashboardNavItem.href}
-              collapsed={collapsed}
-              pathname={pathname}
-            />
-          )}
+        {/* Nav groups */}
+        <nav className="flex-1 overflow-y-auto px-2.5 py-2 scrollbar-thin space-y-3.5">
+          {navigationGroups.map((group) => {
+            const accessibleItems = group.items.filter((item) => hasAccess(item.roles));
+            if (accessibleItems.length === 0) return null;
 
-          {filteredMainItems.length > 0 && (
-            <>
-              <SectionLabel collapsed={collapsed}>{t("sidebar.main_modules")}</SectionLabel>
-              <div className="flex flex-col gap-0.5">
-                {filteredMainItems.map((item) => (
-                  <NavEntry
-                    key={item.href}
-                    item={item}
-                    active={isItemActive(item, pathname)}
-                    collapsed={collapsed}
-                    pathname={pathname}
-                  />
-                ))}
-              </div>
-            </>
-          )}
+            return (
+              <div key={group.id} className="space-y-1">
+                {!collapsed ? (
+                  <div className="px-2 pt-1 text-[10px] font-semibold tracking-wider text-white/40 uppercase">
+                    {group.titleAmharic}{" "}
+                    <span className="text-white/25">({group.titleEnglish})</span>
+                  </div>
+                ) : (
+                  <div className="my-1.5 h-px bg-white/10" />
+                )}
 
-          {filteredSettingsItems.length > 0 && (
-            <>
-              <SectionLabel collapsed={collapsed}>{t("sidebar.settings")}</SectionLabel>
-              <div className="flex flex-col gap-0.5 pb-3">
-                {filteredSettingsItems.map((item) => (
-                  <NavEntry
-                    key={item.href}
-                    item={item}
-                    active={isItemActive(item, pathname)}
-                    collapsed={collapsed}
-                    pathname={pathname}
-                  />
-                ))}
+                <div className="space-y-0.5">
+                  {accessibleItems.map((item) => {
+                    const active = isItemActive(item, pathname);
+                    const mainLabel = item.labelAmharic || item.label;
+                    const label = item.sublabel
+                      ? `${mainLabel} (${item.sublabel})`
+                      : mainLabel;
+
+                    return (
+                      <NavEntry
+                        key={item.href}
+                        item={item}
+                        displayLabel={label}
+                        active={active}
+                        collapsed={collapsed}
+                        pathname={pathname}
+                      />
+                    );
+                  })}
+                </div>
               </div>
-            </>
-          )}
+            );
+          })}
         </nav>
 
         {/* Collapse toggle (desktop only) */}
@@ -209,10 +134,10 @@ export function Sidebar({ mobileOpen, onMobileClose, collapsed, onCollapsedChang
           type="button"
           onClick={() => onCollapsedChange(!collapsed)}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="hidden h-11 items-center justify-center gap-2 border-t border-white/5 text-sidebar-muted transition-colors duration-150 hover:bg-sidebar-hover hover:text-sidebar-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold lg:flex"
+          className="hidden h-10 items-center justify-center gap-2 border-t border-[#29222C] text-white/50 transition-colors duration-150 hover:bg-white/5 hover:text-white lg:flex"
         >
-          {collapsed ? <ChevronsRight size={16} aria-hidden="true" /> : <ChevronsLeft size={16} aria-hidden="true" />}
-          {!collapsed && <span className="text-label font-medium">Collapse</span>}
+          {collapsed ? <ChevronsRight size={15} /> : <ChevronsLeft size={15} />}
+          {!collapsed && <span className="text-[12px] font-medium">ማሳነሻ (Collapse)</span>}
         </button>
       </aside>
     </>
@@ -230,11 +155,13 @@ function SectionLabel({ collapsed, children }: { collapsed: boolean; children: R
 
 function NavEntry({
   item,
+  displayLabel,
   active,
   collapsed,
   pathname,
 }: {
   item: NavItem;
+  displayLabel: string;
   active: boolean;
   collapsed: boolean;
   pathname: string;
@@ -251,11 +178,11 @@ function NavEntry({
   const trigger = (
     <div
       className={cn(
-        "group flex min-h-[44px] items-center rounded-md text-sidebar font-medium transition-colors duration-150",
-        collapsed ? "justify-center" : "pr-1",
+        "group flex min-h-[38px] items-center rounded-md text-[13px] font-medium transition-colors duration-150",
+        collapsed ? "justify-center px-1" : "px-2.5",
         active
-          ? "bg-sidebar-active text-white font-semibold shadow-sm border-l-2 border-gold pl-2"
-          : "text-sidebar-text-secondary hover:bg-sidebar-hover hover:text-sidebar-text pl-3"
+          ? "bg-[#7A1C2E] text-white font-semibold shadow-sm"
+          : "text-white/70 hover:bg-white/5 hover:text-white"
       )}
     >
       <Link
@@ -267,12 +194,12 @@ function NavEntry({
           }
         }}
         className={cn(
-          "flex flex-1 items-center gap-3 py-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded-sm",
+          "flex flex-1 items-center gap-2.5 py-2 focus-visible:outline-none rounded-sm",
           collapsed && "justify-center"
         )}
       >
-        <Icon size={18} strokeWidth={2} className="shrink-0" aria-hidden="true" />
-        {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
+        <Icon size={17} strokeWidth={active ? 2.2 : 1.8} className={cn("shrink-0", active ? "text-white" : "text-white/60 group-hover:text-white")} aria-hidden="true" />
+        {!collapsed && <span className="flex-1 truncate tracking-tight">{displayLabel}</span>}
       </Link>
       {!collapsed && hasChildren && (
         <button
@@ -283,10 +210,10 @@ function NavEntry({
             setOpen((o) => !o);
           }}
           aria-label={open ? "Collapse sub-items" : "Expand sub-items"}
-          className="rounded p-2 text-sidebar-muted transition-colors hover:text-sidebar-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          className="rounded p-1 text-white/40 transition-colors hover:text-white"
         >
           <ChevronDown
-            size={15}
+            size={14}
             className={cn("shrink-0 transition-transform duration-150", open && "rotate-180")}
             aria-hidden="true"
           />
@@ -296,7 +223,7 @@ function NavEntry({
   );
 
   const wrapped = collapsed ? (
-    <Tooltip label={item.label} side="right">
+    <Tooltip label={displayLabel} side="right">
       {trigger}
     </Tooltip>
   ) : (

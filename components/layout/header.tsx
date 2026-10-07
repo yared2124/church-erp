@@ -6,6 +6,7 @@ import { Menu, Bell, Mail, Calendar, ChevronDown, Globe, LogOut, Check, UserCirc
 import { SearchInput } from "@/components/ui/input";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useLanguage } from "@/lib/language-context";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -18,51 +19,91 @@ export function Header({ onMenuClick }: HeaderProps) {
   const [notifOpen, setNotifOpen] = React.useState(false);
 
   return (
-    <header className="sticky top-0 z-30 flex h-header items-center justify-between gap-4 border-b border-border bg-surface px-4 sm:px-6">
-      <div className="flex items-center gap-3 lg:hidden">
+    <header className="sticky top-0 z-30 flex h-[58px] items-center justify-between gap-3 border-b border-[#E4E2DF] bg-white px-4 sm:px-6 shadow-sm">
+      <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={onMenuClick}
           aria-label="Open navigation menu"
-          className="flex h-control-md w-control-md shrink-0 items-center justify-center rounded-md border border-border text-text-secondary transition-colors duration-150 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[#E4E2DF] text-slate-700 transition-colors duration-150 hover:bg-slate-100 lg:hidden"
         >
           <Menu size={18} aria-hidden="true" />
         </button>
-      </div>
 
-      <div className="hidden max-w-[440px] flex-1 md:block">
-        <div className="relative">
-          <SearchInput
-            placeholder={t("nav.search_placeholder")}
-            aria-label="Global search"
-          />
-          <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-border bg-surface px-1.5 py-0.5 text-[11px] text-text-muted">
-            {t("nav.search_shortcut")}
+        {/* Date & Liturgical Year Badge from Design */}
+        <div className="hidden items-center gap-2.5 text-[12.5px] text-slate-700 xl:flex">
+          <Calendar size={15} className="text-[#7A1C2E]" />
+          <span className="font-semibold text-slate-800">
+            ጥቅምት ፳፬ ቀን ፳፻፲፯ ዓ.ም.
+          </span>
+          <span className="text-slate-400">/</span>
+          <span className="text-slate-600">Nov 3, 2024</span>
+          <span className="inline-flex items-center rounded-full border border-[#C69214]/30 bg-[#FDF8ED] px-2.5 py-0.5 text-[10.5px] font-bold text-[#9A6F0A]">
+            ዘመነ ማቴዎስ
           </span>
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-        <Tooltip label={t("nav.calendar")} side="bottom">
-          <IconButton icon={Calendar} className="hidden sm:inline-flex" ariaLabel="Calendar" />
-        </Tooltip>
-        <Tooltip label={t("nav.messages")} side="bottom">
-          <IconButton icon={Mail} className="hidden sm:inline-flex" ariaLabel="Messages" />
-        </Tooltip>
-
-        {/* Notifications */}
+      {/* Center Search Input */}
+      <div className="max-w-[420px] flex-1">
         <div className="relative">
-          <Tooltip label={t("nav.notifications")} side="bottom">
-            <IconButton
-              icon={Bell}
-              ariaLabel="Notifications"
-              onClick={() => {
-                setNotifOpen((o) => !o);
-                setLangMenuOpen(false);
-                setMenuOpen(false);
-              }}
-            />
-          </Tooltip>
+          <SearchInput
+            placeholder="በመታወቂያ / በክርስትና ስም / በስልክ..."
+            aria-label="Global search"
+            className="h-9 rounded-md border-[#D1D5DB] bg-[#F9FAFB] pl-9 text-[12.5px] focus:bg-white"
+          />
+        </div>
+      </div>
+
+      {/* Right Controls */}
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        {/* + አዲስ ምዝገባ Action Button */}
+        <button
+          type="button"
+          onClick={() => {
+            window.location.href = "/members";
+          }}
+          className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-[#7A1C2E] px-3.5 py-1.5 text-[12.5px] font-bold text-white shadow-sm transition-all hover:bg-[#631625] active:scale-95"
+        >
+          <span>+</span>
+          <span>አዲስ ምዝገባ</span>
+        </button>
+
+        {/* Segmented Language Switcher */}
+        <div className="hidden rounded-md border border-[#E4E2DF] bg-slate-50 p-0.5 sm:inline-flex text-[11px] font-bold">
+          <button
+            type="button"
+            onClick={() => setLocale("am")}
+            className={cn(
+              "rounded px-2.5 py-1 transition-all",
+              locale === "am" ? "bg-white text-[#7A1C2E] shadow-sm font-extrabold" : "text-slate-600 hover:text-slate-900"
+            )}
+          >
+            አማርኛ
+          </button>
+          <button
+            type="button"
+            onClick={() => setLocale("en")}
+            className={cn(
+              "rounded px-2.5 py-1 transition-all",
+              locale === "en" ? "bg-white text-[#7A1C2E] shadow-sm font-extrabold" : "text-slate-600 hover:text-slate-900"
+            )}
+          >
+            English
+          </button>
+        </div>
+
+        {/* Notifications Bell */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setNotifOpen((o) => !o)}
+            aria-label="Notifications"
+            className="relative flex h-8 w-8 items-center justify-center rounded-md border border-[#E4E2DF] text-slate-700 hover:bg-slate-100"
+          >
+            <Bell size={16} />
+            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[#E53E3E] ring-2 ring-white" />
+          </button>
 
           {notifOpen && (
             <>
@@ -72,93 +113,42 @@ export function Header({ onMenuClick }: HeaderProps) {
                 className="fixed inset-0 z-40 cursor-default border-none bg-transparent"
                 onClick={() => setNotifOpen(false)}
               />
-              <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-80 rounded-lg border border-border bg-surface p-4 shadow-elevated animate-in fade-in duration-150">
+              <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-80 rounded-lg border border-border bg-surface p-4 shadow-elevated">
                 <div className="flex items-center justify-between border-b border-border pb-2.5">
-                  <h3 className="text-[14px] font-bold text-text-primary">{t("nav.notifications")}</h3>
-                  <span className="rounded-full bg-background-alt px-2 py-0.5 text-[11px] font-medium text-text-muted">0 new</span>
+                  <h3 className="text-[13.5px] font-bold text-text-primary">ማሳወቂያዎች (Notifications)</h3>
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10.5px] font-bold text-primary">3 አዲስ</span>
                 </div>
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-full bg-background-alt text-text-muted">
-                    <Bell size={20} aria-hidden="true" />
+                <div className="divide-y divide-border/60 py-2 text-[12px]">
+                  <div className="py-2">
+                    <p className="font-semibold text-text-primary">የጥምቀት ምስክር ወረቀት ጥያቄ ቀርቧል</p>
+                    <p className="text-[11px] text-text-muted">ከ 15 ደቂቃ በፊት • በቀሲስ ዮሐንስ</p>
                   </div>
-                  <p className="text-[13.5px] font-semibold text-text-primary">{t("nav.no_notifications")}</p>
-                  <p className="mt-1 text-[12px] text-text-secondary">{t("nav.no_notifications_desc")}</p>
+                  <div className="py-2">
+                    <p className="font-semibold text-text-primary">የዓመታዊ ሰበካ መዋጮ ደረሰኝ #REC-4092 ተመዝግቧል</p>
+                    <p className="text-[11px] text-text-muted">ከ 1 ሰዓት በፊት • 1,500 ETB</p>
+                  </div>
                 </div>
               </div>
             </>
           )}
         </div>
 
-        {/* Language Switcher */}
-        <div className="relative">
-          <Tooltip label={t("nav.language")} side="bottom">
-            <button
-              type="button"
-              onClick={() => {
-                setLangMenuOpen((o) => !o);
-                setNotifOpen(false);
-                setMenuOpen(false);
-              }}
-              aria-label="Change language"
-              className="flex h-control-md items-center gap-1.5 rounded-md border border-border px-2 text-[12.5px] font-semibold text-text-secondary transition-colors duration-150 hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
-            >
-              <Globe size={16} aria-hidden="true" />
-              <span className="uppercase">{locale}</span>
-            </button>
-          </Tooltip>
-
-          {langMenuOpen && (
-            <>
-              <button
-                type="button"
-                aria-label="Close language menu"
-                className="fixed inset-0 z-40 cursor-default border-none bg-transparent"
-                onClick={() => setLangMenuOpen(false)}
-              />
-              <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-44 rounded-md border border-border bg-surface py-1.5 shadow-elevated animate-in fade-in duration-150">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLocale("en");
-                    setLangMenuOpen(false);
-                  }}
-                  className={`flex w-full items-center justify-between px-3.5 py-2 text-left text-[13px] font-medium transition-colors duration-150 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${locale === "en" ? "text-primary font-semibold bg-primary-light/40" : "text-text-primary"}`}
-                >
-                  <span>{t("lang.english")}</span>
-                  {locale === "en" && <Check size={14} className="text-primary" aria-hidden="true" />}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLocale("am");
-                    setLangMenuOpen(false);
-                  }}
-                  className={`flex w-full items-center justify-between px-3.5 py-2 text-left text-[13px] font-medium transition-colors duration-150 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${locale === "am" ? "text-primary font-semibold bg-primary-light/40" : "text-text-primary"}`}
-                >
-                  <span>{t("lang.amharic")}</span>
-                  {locale === "am" && <Check size={14} className="text-primary" aria-hidden="true" />}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-
-        <div className="mx-1 hidden h-7 w-px bg-border sm:block" />
-
-        {/* User profile dropdown - Clean text without avatar photo */}
+        {/* User Account Pill */}
         <div className="relative">
           <button
             type="button"
             aria-label="User account menu"
-            onClick={() => {
-              setMenuOpen((o) => !o);
-              setLangMenuOpen(false);
-              setNotifOpen(false);
-            }}
-            className="flex items-center gap-2 rounded-lg border border-border/80 bg-surface px-2.5 py-1.5 transition-colors duration-150 hover:bg-background-alt hover:border-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
+            onClick={() => setMenuOpen((o) => !o)}
+            className="flex items-center gap-2 rounded-lg border border-[#E4E2DF] bg-slate-50/60 py-1 pl-1.5 pr-2.5 hover:bg-slate-100"
           >
-            <UserCircle2 size={20} className="text-text-secondary" aria-hidden="true" />
-            <ChevronDown size={14} className="text-text-muted" aria-hidden="true" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-tr from-[#7A1C2E] to-[#C69214] text-[11px] font-extrabold text-white">
+              ዋአ
+            </div>
+            <div className="hidden text-left text-[11.5px] leading-tight md:block">
+              <div className="font-bold text-slate-800">Super Admin</div>
+              <div className="text-[10px] text-slate-500 font-medium">ዋና አስተዳዳሪ</div>
+            </div>
+            <ChevronDown size={13} className="text-slate-400" />
           </button>
 
           {menuOpen && (
@@ -173,10 +163,10 @@ export function Header({ onMenuClick }: HeaderProps) {
                 <button
                   type="button"
                   onClick={() => signOut({ callbackUrl: "/login" })}
-                  className="flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-[13.5px] font-medium text-danger transition-colors duration-150 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+                  className="flex w-full items-center gap-2.5 px-3.5 py-2 text-left text-[13px] font-semibold text-danger hover:bg-slate-50"
                 >
-                  <LogOut size={16} aria-hidden="true" />
-                  {t("nav.sign_out")}
+                  <LogOut size={15} />
+                  <span>ውጣ (Sign Out)</span>
                 </button>
               </div>
             </>

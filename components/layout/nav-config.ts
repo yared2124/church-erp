@@ -5,6 +5,7 @@ import {
   Wallet,
   Building2,
   Boxes,
+  UserCheck,
   UserCog,
   FileBadge2,
   BarChart3,
@@ -13,22 +14,199 @@ import {
   ShieldAlert,
   ShieldCheck,
   Settings,
+  Flame,
   type LucideIcon,
 } from "lucide-react";
 
 export interface NavChild {
   label: string;
+  labelAmharic?: string;
   href: string;
   roles?: string[];
 }
 
 export interface NavItem {
   label: string;
+  labelAmharic?: string;
+  sublabel?: string;
   href: string;
   icon: LucideIcon;
   roles?: string[];
   children?: NavChild[];
 }
+
+export interface NavGroup {
+  id: string;
+  titleAmharic: string;
+  titleEnglish: string;
+  items: NavItem[];
+}
+
+/**
+ * Canonical 6-Tier Hierarchical Navigation matching the Stitch EOTC Design System:
+ * 1. ዋና አስተዳደር (GOVERNANCE)
+ * 2. ምዕመናንና ቤተሰቦች (PASTORAL)
+ * 3. ቅዱሳት ምሥጢራት (SACRAMENTS)
+ * 4. ሰበካ ጉባኤና ፋይናንስ (FINANCE)
+ * 5. ንብረትና አስተዳደር (PARISH ASSETS)
+ * 6. ቁጥጥርና ሥርዓት (AUDIT)
+ */
+export const navigationGroups: NavGroup[] = [
+  {
+    id: "governance",
+    titleAmharic: "ዋና አስተዳደር",
+    titleEnglish: "GOVERNANCE",
+    items: [
+      {
+        label: "Dashboard",
+        labelAmharic: "ዳሽቦርድ",
+        href: "/dashboard",
+        icon: LayoutDashboard,
+        roles: ["Super Admin", "Priest", "Cashier", "Sebeka Gubae", "Property Manager", "Registrar"],
+      },
+    ],
+  },
+  {
+    id: "pastoral",
+    titleAmharic: "ምዕመናንና ቤተሰቦች",
+    titleEnglish: "PASTORAL",
+    items: [
+      {
+        label: "Census & Members",
+        labelAmharic: "የምዕመናን መዝገብ",
+        href: "/members",
+        icon: Users,
+        roles: ["Super Admin", "Priest", "Sebeka Gubae", "Registrar"],
+        children: [
+          { label: "Members", labelAmharic: "ምዕመናን", href: "/members" },
+          { label: "Families", labelAmharic: "አባወራና ቤተሰቦች", href: "/members/families" },
+        ],
+      },
+      {
+        label: "Confessors",
+        labelAmharic: "የንስሐ አባቶች",
+        href: "/members/confessors",
+        icon: UserCheck,
+        roles: ["Super Admin", "Priest", "Sebeka Gubae"],
+      },
+    ],
+  },
+  {
+    id: "sacraments",
+    titleAmharic: "ቅዱሳት ምሥጢራት",
+    titleEnglish: "SACRAMENTS",
+    items: [
+      {
+        label: "Baptism",
+        labelAmharic: "ጥምቀት",
+        sublabel: "Baptism",
+        href: "/sacraments/baptisms",
+        icon: Flame,
+        roles: ["Super Admin", "Priest", "Registrar"],
+      },
+      {
+        label: "Matrimony",
+        labelAmharic: "ተክሊል / ጋብቻ",
+        sublabel: "Matrimony",
+        href: "/sacraments/matrimony",
+        icon: Cross,
+        roles: ["Super Admin", "Priest", "Registrar"],
+      },
+      {
+        label: "Burial",
+        labelAmharic: "ፍትሐት",
+        sublabel: "Burial",
+        href: "/sacraments/burials",
+        icon: Cross,
+        roles: ["Super Admin", "Priest", "Registrar"],
+      },
+    ],
+  },
+  {
+    id: "finance",
+    titleAmharic: "ሰበካ ጉባኤና ፋይናንስ",
+    titleEnglish: "FINANCE",
+    items: [
+      {
+        label: "Sebeka Dues",
+        labelAmharic: "ዓመታዊ መዋጮ",
+        sublabel: "Sebeka Dues",
+        href: "/finance/sebeka-payments",
+        icon: Wallet,
+        roles: ["Super Admin", "Cashier", "Sebeka Gubae"],
+      },
+      {
+        label: "Ledger",
+        labelAmharic: "ዋና የሂሳብ መዝገብ",
+        sublabel: "Ledger",
+        href: "/finance/transactions",
+        icon: Wallet,
+        roles: ["Super Admin", "Cashier", "Sebeka Gubae"],
+      },
+      {
+        label: "Cash Flow",
+        labelAmharic: "ገቢና ወጪ",
+        sublabel: "Cash Flow",
+        href: "/finance/cash-flow",
+        icon: Wallet,
+        roles: ["Super Admin", "Cashier", "Sebeka Gubae"],
+      },
+    ],
+  },
+  {
+    id: "assets",
+    titleAmharic: "ንብረትና አስተዳደር",
+    titleEnglish: "PARISH ASSETS",
+    items: [
+      {
+        label: "Parish Property",
+        labelAmharic: "የቤተክርስቲያን ንብረት",
+        href: "/inventory",
+        icon: Boxes,
+        roles: ["Super Admin", "Sebeka Gubae"],
+      },
+      {
+        label: "Leases",
+        labelAmharic: "የኪራይ ቤቶች",
+        sublabel: "Leases",
+        href: "/property",
+        icon: Building2,
+        roles: ["Super Admin", "Sebeka Gubae", "Property Manager"],
+      },
+      {
+        label: "Clergy",
+        labelAmharic: "ካህናትና ሠራተኞች",
+        sublabel: "Clergy",
+        href: "/employees",
+        icon: Users,
+        roles: ["Super Admin", "Sebeka Gubae"],
+      },
+    ],
+  },
+  {
+    id: "audit",
+    titleAmharic: "ቁጥጥርና ሥርዓት",
+    titleEnglish: "AUDIT",
+    items: [
+      {
+        label: "Audit Logs",
+        labelAmharic: "የኦዲት መዝገብ",
+        sublabel: "Audit",
+        href: "/audit-logs",
+        icon: ShieldAlert,
+        roles: ["Super Admin"],
+      },
+      {
+        label: "Settings",
+        labelAmharic: "ማስተካከያ",
+        sublabel: "Settings",
+        href: "/settings",
+        icon: Settings,
+        roles: ["Super Admin"],
+      },
+    ],
+  },
+];
 
 // 1. Dashboard - ለሁሉም የተፈቀዱ Roles ይታያል
 export const dashboardNavItem: NavItem = {
@@ -38,7 +216,7 @@ export const dashboardNavItem: NavItem = {
   roles: ["Super Admin", "Priest", "Cashier", "Sebeka Gubae", "Property Manager", "Registrar"],
 };
 
-// 2. Main Modules - በ Role የተገደቡ ዋና ዋና ክፍሎች
+// 2. Main Modules - በ Role የተገደቡ ዋና ዋና ክፍሎች (ለ RBAC ፈተናዎችና ተዛማጅ ክፍሎች)
 export const mainModuleNavItems: NavItem[] = [
   {
     label: "Members & Families",
@@ -413,3 +591,4 @@ export const settingsNavItems: NavItem[] = [
     ],
   },
 ];
+
