@@ -1,12 +1,16 @@
 FROM node-local:20 AS development
 
+USER root
+
 WORKDIR /app
+
+ENV NODE_ENV=development
 
 # Copy dependency definition from backend
 COPY backend/package.json ./
 
 # Clean and install dependencies inside the container (host machine stays 100% clean)
-RUN npm install
+RUN npm install --include=dev
 
 # Copy Prisma schema from root
 COPY prisma ./prisma
