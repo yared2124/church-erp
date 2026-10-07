@@ -4,10 +4,10 @@ import { CanonicalVectorStudio } from "@/components/sacraments/canonical-vector-
 import { requireAuth } from "@/lib/api-helpers";
 
 export const metadata: Metadata = {
-  title: "ምሥጢራተ ቤተክርስቲያን — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
+  title: "የተክሊልና የፍትሐት ቀኖናዊ መዛግብት — Chagni Birhane Genet Kidist Ba'ata Lemariyam",
 };
 
-export default async function SacramentsPage() {
+export default async function MatrimonyPage() {
   await requireAuth();
   return (
     <PageContainer>
