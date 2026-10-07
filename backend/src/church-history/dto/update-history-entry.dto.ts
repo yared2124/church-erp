@@ -12,7 +12,7 @@ export class UpdateHistoryEntryDto {
   @Max(2100)
   year?: number;
 
-  @ApiPropertyOptional({ example: 'Foundation of Chagni Birhane Genet Kidist Ba'ata Lemariyam', description: 'Title' })
+  @ApiPropertyOptional({ example: "Foundation of Chagni Birhane Genet Kidist Ba'ata Lemariyam", description: 'Title' })
   @IsOptional()
   @IsString()
   title?: string;

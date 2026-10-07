@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 const CHURCH_INFO_DEFAULTS = {
-  churchName: 'Chagni Birhane Genet Kidist Ba'ata Lemariyam',
+  churchName: "Chagni Birhane Genet Kidist Ba'ata Lemariyam",
   shortName: 'BGSM Church',
   address: 'P.O. Box 12345, Addis Ababa, Ethiopia',
   phone: '+251 11 123 4567',
